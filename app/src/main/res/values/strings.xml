@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">My Allowance</string>
+    <string name="prompt_transaction_title">Title</string>
+    <string name="title_add_income">Add Income</string>
+    <string name="title_add_expense">Add Expense</string>
+    <string name="title_add_transaction">Add Transaction</string>
+    <string name="prompt_transaction_description">Description</string>
+    <string name="prompt_transaction_date">Date</string>
+    <string name="prompt_transaction_amount">Amount</string>
+    <string name="title_expenses">Expenses</string>
+    <string name="title_income">Income</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="label_current_balance">Current Balance</string>
+    <string name="overview_no_data">Add some transactions to see an overview of your spending here</string>
+    <string name="action_save">Save</string>
+</resources>
