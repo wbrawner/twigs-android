@@ -1,10 +1,8 @@
 package com.wbrawner.myallowance.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.os.Handler
 import android.os.HandlerThread
-import java.util.*
 
 class TransactionRepository(val dao: TransactionDao) {
     val handler: Handler
@@ -50,6 +48,16 @@ class TransactionRepository(val dao: TransactionDao) {
 
     fun save(transaction: Transaction) {
         handler.post { dao.save(transaction) }
+    }
+
+
+    fun delete(transaction: Transaction) {
+        handler.post { dao.delete(transaction) }
+    }
+
+
+    fun deleteById(id: Int) {
+        handler.post { dao.deleteById(id) }
     }
 
 

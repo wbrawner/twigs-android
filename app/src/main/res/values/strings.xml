@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">My Allowance</string>
+    <string name="app_name_short">Allowance</string>
     <string name="prompt_transaction_title">Title</string>
     <string name="title_add_income">Add Income</string>
     <string name="title_add_expense">Add Expense</string>
@@ -11,6 +12,11 @@
     <string name="title_income">Income</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="label_current_balance">Current Balance</string>
-    <string name="overview_no_data">Add some transactions to see an overview of your spending here</string>
+    <string name="overview_no_data">&#x1F4C8;\nAdd some transactions to see an overview of your spending here</string>
     <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="title_edit_income">Edit Income</string>
+    <string name="title_edit_expense">Edit Expense</string>
+    <string name="income_no_data">&#x1F333;\nGet to work! Money doesn\'t grow on trees after all</string>
+    <string name="expenses_no_data">&#x1F914;\nAre you sure you haven\'t spent any money?</string>
 </resources>

@@ -62,6 +62,6 @@ class OverviewFragment : Fragment() {
 
     companion object {
         const val TAG_FRAGMENT = "overview"
-        const val TITLE_FRAGMENT = R.string.title_dashboard
+        const val TITLE_FRAGMENT = R.string.app_name
     }
 }

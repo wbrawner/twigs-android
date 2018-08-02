@@ -9,7 +9,18 @@
         android:id="@+id/list_transactions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="fill_vertical|center_horizontal" />
+
+    <android.support.text.emoji.widget.EmojiTextView
+        android:id="@+id/transaction_list_no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_gravity="center"
+        android:textColor="@color/colorTextPrimary"
+        android:visibility="gone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_transaction"

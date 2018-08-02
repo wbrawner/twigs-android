@@ -1,8 +1,10 @@
 package com.wbrawner.myallowance.transactions
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.text.emoji.EmojiCompat
+import android.support.text.emoji.bundled.BundledEmojiCompatConfig
+import android.support.v7.app.AppCompatActivity
 import com.wbrawner.myallowance.R
 import com.wbrawner.myallowance.data.TransactionType
 import com.wbrawner.myallowance.overview.OverviewFragment
@@ -11,7 +13,9 @@ import kotlinx.android.synthetic.main.activity_transaction_list.*
 class TransactionListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EmojiCompat.init(BundledEmojiCompatConfig(this))
         setContentView(R.layout.activity_transaction_list)
+        setSupportActionBar(action_bar)
 
         menu_main.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {

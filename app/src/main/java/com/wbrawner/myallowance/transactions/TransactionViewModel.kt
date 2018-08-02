@@ -21,4 +21,8 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
     fun getCurrentBalance(): LiveData<Double> = transactionRepo.getCurrentBalance()
 
     fun saveTransaction(transaction: Transaction) = transactionRepo.save(transaction)
+
+    fun deleteTransaction(transaction: Transaction) = transactionRepo.delete(transaction)
+
+    fun deleteTransactionById(id: Int) = transactionRepo.deleteById(id)
 }
