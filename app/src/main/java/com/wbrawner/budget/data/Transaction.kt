@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.data
+package com.wbrawner.budget.data
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.addedittransaction
+package com.wbrawner.budget.addedittransaction
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.wbrawner.myallowance.R
-import com.wbrawner.myallowance.data.Transaction
-import com.wbrawner.myallowance.data.TransactionType
-import com.wbrawner.myallowance.transactions.TransactionViewModel
+import com.wbrawner.budget.R
+import com.wbrawner.budget.data.Transaction
+import com.wbrawner.budget.data.TransactionType
+import com.wbrawner.budget.transactions.TransactionViewModel
 import kotlinx.android.synthetic.main.activity_add_edit_transaction.*
 import java.util.*
 

@@ -1,12 +1,12 @@
-package com.wbrawner.myallowance.transactions
+package com.wbrawner.budget.transactions
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import com.wbrawner.myallowance.AllowanceApplication
-import com.wbrawner.myallowance.data.Transaction
-import com.wbrawner.myallowance.data.TransactionRepository
-import com.wbrawner.myallowance.data.TransactionType
+import com.wbrawner.budget.AllowanceApplication
+import com.wbrawner.budget.data.Transaction
+import com.wbrawner.budget.data.TransactionRepository
+import com.wbrawner.budget.data.TransactionType
 
 class TransactionViewModel(application: Application): AndroidViewModel(application) {
     private val transactionRepo = TransactionRepository((application as AllowanceApplication).dao)

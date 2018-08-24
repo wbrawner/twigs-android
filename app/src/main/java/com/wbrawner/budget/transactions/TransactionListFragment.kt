@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.transactions
+package com.wbrawner.budget.transactions
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -12,11 +12,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.wbrawner.myallowance.R
-import com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity
-import com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity.Companion.EXTRA_TYPE
-import com.wbrawner.myallowance.data.Transaction
-import com.wbrawner.myallowance.data.TransactionType
+import com.wbrawner.budget.R
+import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity
+import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity.Companion.EXTRA_TYPE
+import com.wbrawner.budget.data.Transaction
+import com.wbrawner.budget.data.TransactionType
 
 class TransactionListFragment : Fragment() {
     lateinit var viewModel: TransactionViewModel

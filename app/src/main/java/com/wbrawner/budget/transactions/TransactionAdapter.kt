@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.transactions
+package com.wbrawner.budget.transactions
 
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
@@ -7,10 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.wbrawner.myallowance.R
-import com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity
-import com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
-import com.wbrawner.myallowance.data.Transaction
+import com.wbrawner.budget.R
+import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity
+import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
+import com.wbrawner.budget.data.Transaction
 import java.text.SimpleDateFormat
 
 class TransactionAdapter(private val data: List<Transaction>)

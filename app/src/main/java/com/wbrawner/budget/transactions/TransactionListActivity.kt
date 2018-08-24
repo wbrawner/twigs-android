@@ -1,13 +1,13 @@
-package com.wbrawner.myallowance.transactions
+package com.wbrawner.budget.transactions
 
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.text.emoji.EmojiCompat
 import android.support.text.emoji.bundled.BundledEmojiCompatConfig
 import android.support.v7.app.AppCompatActivity
-import com.wbrawner.myallowance.R
-import com.wbrawner.myallowance.data.TransactionType
-import com.wbrawner.myallowance.overview.OverviewFragment
+import com.wbrawner.budget.R
+import com.wbrawner.budget.data.TransactionType
+import com.wbrawner.budget.overview.OverviewFragment
 import kotlinx.android.synthetic.main.activity_transaction_list.*
 
 class TransactionListActivity : AppCompatActivity() {

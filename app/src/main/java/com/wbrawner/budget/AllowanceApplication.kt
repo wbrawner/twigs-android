@@ -1,10 +1,11 @@
-package com.wbrawner.myallowance
+package com.wbrawner.budget
 
 import android.app.Application
 import android.arch.persistence.room.Room
 import android.content.Context
-import com.wbrawner.myallowance.data.TransactionDao
-import com.wbrawner.myallowance.data.TransactionsDatabase
+import com.wbrawner.budget.data.TransactionDao
+import com.wbrawner.budget.data.TransactionsDatabase
+import com.wbrawner.budget.BuildConfig
 import org.acra.ACRA
 import org.acra.annotation.AcraCore
 import org.acra.annotation.AcraHttpSender

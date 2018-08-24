@@ -1,8 +1,8 @@
-package com.wbrawner.myallowance.data
+package com.wbrawner.budget.data
 
 import android.support.annotation.ColorRes
 import android.support.annotation.StringRes
-import com.wbrawner.myallowance.R
+import com.wbrawner.budget.R
 import java.io.Serializable
 
 enum class TransactionType(

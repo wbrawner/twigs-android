@@ -9,8 +9,8 @@
         tools:ignore="UnusedAttribute">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.wbrawner.myallowance"
-            android:targetClass="com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity">
+            android:targetPackage="com.wbrawner.budget"
+            android:targetClass="com.wbrawner.budget.addedittransaction.AddEditTransactionActivity">
             <extra
                 android:name="EXTRA_TRANSACTION_TYPE"
                 android:value="EXPENSE" />
@@ -24,8 +24,8 @@
         tools:ignore="UnusedAttribute">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.wbrawner.myallowance"
-            android:targetClass="com.wbrawner.myallowance.addedittransaction.AddEditTransactionActivity">
+            android:targetPackage="com.wbrawner.budget"
+            android:targetClass="com.wbrawner.budget.addedittransaction.AddEditTransactionActivity">
             <extra
                 android:name="EXTRA_TRANSACTION_TYPE"
                 android:value="INCOME" />

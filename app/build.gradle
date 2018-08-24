@@ -17,7 +17,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
-        applicationId "com.wbrawner.myallowance"
+        applicationId "com.wbrawner.budget"
         minSdkVersion 23
         targetSdkVersion 27
         versionCode 1

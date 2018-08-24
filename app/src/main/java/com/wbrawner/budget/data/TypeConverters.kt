@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.data
+package com.wbrawner.budget.data
 
 import java.text.SimpleDateFormat
 import java.util.*

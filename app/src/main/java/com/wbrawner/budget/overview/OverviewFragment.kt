@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance.overview
+package com.wbrawner.budget.overview
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.wbrawner.myallowance.R
-import com.wbrawner.myallowance.transactions.TransactionViewModel
+import com.wbrawner.budget.R
+import com.wbrawner.budget.transactions.TransactionViewModel
 
 class OverviewFragment : Fragment() {
     lateinit var viewModel: TransactionViewModel

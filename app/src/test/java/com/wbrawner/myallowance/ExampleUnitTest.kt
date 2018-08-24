@@ -1,4 +1,4 @@
-package com.wbrawner.myallowance
+package com.wbrawner.budget
 
 import org.junit.Test
 
