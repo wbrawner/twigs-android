@@ -88,10 +88,31 @@
             <DatePicker
                 android:id="@+id/edit_transaction_date"
                 style="@style/AppTheme.DatePicker"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/container_edit_transaction_category"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_date" />
+
+            <TextView
+                android:id="@+id/container_edit_transaction_category"
+                style="@style/AppTheme.EditText.Hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/prompt_transaction_category"
+                app:layout_constraintBottom_toTopOf="@+id/edit_transaction_category"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_transaction_date" />
+
+            <Spinner
+                android:id="@+id/edit_transaction_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_category" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.wbrawner.budget.data
 
+import android.arch.persistence.room.TypeConverter
 import java.text.SimpleDateFormat
 import java.util.*
 

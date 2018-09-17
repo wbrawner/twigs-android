@@ -20,7 +20,8 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name="com.wbrawner.budget.addedittransaction.AddEditTransactionActivity" />
+        <activity android:name="com.wbrawner.budget.transactions.AddEditTransactionActivity" />
+        <activity android:name="com.wbrawner.budget.categories.AddEditCategoryActivity" />
     </application>
 
 </manifest>

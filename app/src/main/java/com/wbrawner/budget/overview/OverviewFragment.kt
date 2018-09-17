@@ -20,12 +20,7 @@ class OverviewFragment : Fragment() {
             return
         }
 
-        if (savedInstanceState != null) {
-            return
-        }
-
         viewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

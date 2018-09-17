@@ -8,13 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.wbrawner.budget.R
-import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity
-import com.wbrawner.budget.addedittransaction.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
-import com.wbrawner.budget.data.Transaction
+import com.wbrawner.budget.transactions.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
+import com.wbrawner.budget.data.model.Transaction
+import com.wbrawner.budget.data.model.TransactionWithCategory
 import java.text.SimpleDateFormat
 
-class TransactionAdapter(private val data: List<Transaction>)
-    : RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
+class TransactionAdapter() : RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
+    private lateinit var data: List<Any>
+    private lateinit var listType: Class<Any>
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item_transaction, parent, false)
@@ -24,7 +26,9 @@ class TransactionAdapter(private val data: List<Transaction>)
     override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val transaction = data[position]
+        val transaction: Transaction =
+                if (listType == TransactionWithCategory::class.java) (data[position] as TransactionWithCategory).transaction
+                else data[position] as Transaction
         holder.title.text = transaction.title
         holder.date.text = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT).format(transaction.date)
         holder.amount.text = String.format("${'$'}%.02f", transaction.amount)
@@ -44,7 +48,16 @@ class TransactionAdapter(private val data: List<Transaction>)
         }
     }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    constructor(transactions: List<Any>) : this() {
+        if (transactions.isEmpty()) {
+            return
+        }
+
+        listType = transactions.first().javaClass
+        data = transactions
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.transaction_title)
         val date = itemView.findViewById<TextView>(R.id.transaction_date)
         val amount = itemView.findViewById<TextView>(R.id.transaction_amount)

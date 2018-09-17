@@ -3,10 +3,13 @@ package com.wbrawner.budget.data
 import android.arch.lifecycle.LiveData
 import android.os.Handler
 import android.os.HandlerThread
+import com.wbrawner.budget.data.dao.TransactionDao
+import com.wbrawner.budget.data.model.Transaction
+import com.wbrawner.budget.data.model.TransactionCategory
+import com.wbrawner.budget.data.model.TransactionWithCategory
 
-class TransactionRepository(val dao: TransactionDao) {
-    val handler: Handler
-    val uiHandler: Handler = Handler()
+class TransactionRepository(private val dao: TransactionDao) {
+    private val handler: Handler
 
     init {
         val thread = HandlerThread("transactions")
@@ -14,36 +17,13 @@ class TransactionRepository(val dao: TransactionDao) {
         handler = Handler(thread.looper)
     }
 
-    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<Transaction>> =
+    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>> =
             dao.loadMultipleByType(count, type)
 
-    fun getTransactions(count: Int): LiveData<List<Transaction>> = dao.loadMultiple(count)
+    fun getTransactions(count: Int): LiveData<List<TransactionWithCategory>> = dao.loadMultiple(count)
 
-//    fun getTransactions(count: Int): LiveData<List<Transaction>> {
-//        val data = MutableLiveData<List<Transaction>>()
-//
-//        handler.post {
-//            val transactions = ArrayList<Transaction>()
-//            for (i in 0..count) {
-//                transactions.add(Transaction(
-//                        i,
-//                        "Transaction $i",
-//                        Date(),
-//                        "Spent some money on something",
-//                        (Math.random() * 100).toFloat(),
-//                        TransactionType.EXPENSE
-//                ))
-//            }
-//
-//            uiHandler.post {
-//                data.value = transactions
-//            }
-//        }
-//
-//        return data
-//    }
 
-    fun getTransaction(id: Int): LiveData<Transaction> = dao.load(id)
+    fun getTransaction(id: Int): LiveData<TransactionWithCategory> = dao.load(id)
 
 
     fun save(transaction: Transaction) {
@@ -62,4 +42,6 @@ class TransactionRepository(val dao: TransactionDao) {
 
 
     fun getCurrentBalance(): LiveData<Double> = dao.getBalance()
+
+    fun getCategories(): LiveData<List<TransactionCategory>> = dao.loadCategories()
 }

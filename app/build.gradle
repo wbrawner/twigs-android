@@ -18,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId "com.wbrawner.budget"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -29,12 +29,20 @@ android {
         buildConfigField "String", "ACRA_URL", "\"${acra.getProperty("url")}\""
         buildConfigField "String", "ACRA_USER", "\"${acra.getProperty("user")}\""
         buildConfigField "String", "ACRA_PASS", "\"${acra.getProperty("pass")}\""
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 }
 

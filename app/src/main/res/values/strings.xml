@@ -19,4 +19,13 @@
     <string name="title_edit_expense">Edit Expense</string>
     <string name="income_no_data">&#x1F333;\nGet to work! Money doesn\'t grow on trees after all</string>
     <string name="expenses_no_data">&#x1F914;\nAre you sure you haven\'t spent any money?</string>
+    <string name="title_categories">Categories</string>
+    <string name="title_edit_category">Edit Category</string>
+    <string name="prompt_category_amount">Amount</string>
+    <string name="prompt_category_name">Name</string>
+    <string name="title_add_category">Add Category</string>
+    <string name="uncategorized">Uncategorized</string>
+    <string name="prompt_transaction_category">Category</string>
+    <string name="required_field_name">Name is a required field</string>
+    <string name="required_field_amount">Amount is a required field</string>
 </resources>
