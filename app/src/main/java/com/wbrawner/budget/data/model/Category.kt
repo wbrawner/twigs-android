@@ -8,8 +8,9 @@ import android.support.annotation.ColorInt
 class Category(
         @PrimaryKey
         val id: Int?,
+        val remoteId: String?,
         val name: String,
-        val amount: Double,
+        val amount: Int,
         val repeat: String?,
         @ColorInt val color: Int
 )

@@ -21,9 +21,9 @@ interface CategoryDao {
     fun loadMultiple(): LiveData<List<Category>>
 
     @Query("SELECT " +
-            "(SELECT TOTAL(amount) from `Transaction` WHERE type = 'INCOME' AND categoryId = :categoryId) " +
-            "- (SELECT TOTAL(amount) from `Transaction` WHERE type = 'EXPENSE' AND categoryId = :categoryId)")
-    fun getBalanceForCategory(categoryId: Int): LiveData<Double>
+            "(SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 0 AND categoryId = :categoryId) " +
+            "- (SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 1 AND categoryId = :categoryId)")
+    fun getBalanceForCategory(categoryId: Int): LiveData<Int>
 
     @Delete
     fun delete(category: Category)

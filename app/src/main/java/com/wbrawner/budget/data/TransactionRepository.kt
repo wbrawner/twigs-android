@@ -17,8 +17,8 @@ class TransactionRepository(private val dao: TransactionDao) {
         handler = Handler(thread.looper)
     }
 
-    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>> =
-            dao.loadMultipleByType(count, type)
+//    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>> =
+//            dao.loadMultipleByType(count, type)
 
     fun getTransactions(count: Int): LiveData<List<TransactionWithCategory>> = dao.loadMultiple(count)
 
@@ -41,7 +41,7 @@ class TransactionRepository(private val dao: TransactionDao) {
     }
 
 
-    fun getCurrentBalance(): LiveData<Double> = dao.getBalance()
+    fun getCurrentBalance(): LiveData<Int> = dao.getBalance()
 
     fun getCategories(): LiveData<List<TransactionCategory>> = dao.loadCategories()
 }

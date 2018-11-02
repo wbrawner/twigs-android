@@ -22,7 +22,7 @@
         android:id="@+id/category_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        style="?android:attr/textAppearanceSmall"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintBottom_toTopOf="@id/barrier"
         app:layout_constraintStart_toEndOf="@+id/category_title"

@@ -37,7 +37,7 @@ class CategoryRepository(private val dao: CategoryDao) {
     }
 
 
-    fun getCurrentBalance(id: Int): LiveData<Double> = dao.getBalanceForCategory(id)
+    fun getCurrentBalance(id: Int): LiveData<Int> = dao.getBalanceForCategory(id)
 
 
     fun getTransactions(id: Int): LiveData<List<Transaction>> = dao.getTransactions(id)

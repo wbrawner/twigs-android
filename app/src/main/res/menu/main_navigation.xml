@@ -5,13 +5,9 @@
         android:icon="@drawable/ic_baseline_dashboard_24dp"
         android:title="@string/title_dashboard" />
     <item
-        android:id="@+id/action_expenses"
-        android:icon="@drawable/ic_money_off_black_24dp"
-        android:title="@string/title_expenses" />
-    <item
-        android:id="@+id/action_income"
+        android:id="@+id/action_transactions"
         android:icon="@drawable/ic_attach_money_black_24dp"
-        android:title="@string/title_income" />
+        android:title="@string/title_transactions" />
     <item
         android:id="@+id/action_categories"
         android:icon="@drawable/ic_baseline_category_24px"

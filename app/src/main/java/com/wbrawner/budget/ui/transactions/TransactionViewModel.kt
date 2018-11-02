@@ -1,4 +1,4 @@
-package com.wbrawner.budget.transactions
+package com.wbrawner.budget.ui.transactions
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
@@ -16,10 +16,10 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
 
     fun getTransactions(count: Int): LiveData<List<TransactionWithCategory>> = transactionRepo.getTransactions(count)
 
-    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>>
-            = transactionRepo.getTransactionsByType(count, type)
+//    fun getTransactionsByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>>
+//            = transactionRepo.getTransactionsByType(count, type)
 
-    fun getCurrentBalance(): LiveData<Double> = transactionRepo.getCurrentBalance()
+    fun getCurrentBalance(): LiveData<Int> = transactionRepo.getCurrentBalance()
 
     fun getCategories(): LiveData<List<TransactionCategory>> = transactionRepo.getCategories()
 

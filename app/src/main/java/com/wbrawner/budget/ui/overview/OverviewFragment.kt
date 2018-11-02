@@ -1,4 +1,4 @@
-package com.wbrawner.budget.overview
+package com.wbrawner.budget.ui.overview
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.wbrawner.budget.R
-import com.wbrawner.budget.transactions.TransactionViewModel
+import com.wbrawner.budget.ui.transactions.TransactionViewModel
 
 class OverviewFragment : Fragment() {
     lateinit var viewModel: TransactionViewModel
@@ -32,15 +32,15 @@ class OverviewFragment : Fragment() {
             }
 
             viewModel.getCurrentBalance().observe(this, Observer { balance ->
-                val safeBalance: Double = balance?: 0.0
+                val safeBalance: Int = balance?: 0
                 val balanceView = view.findViewById<TextView>(R.id.overview_current_balance)
                 val color = when {
-                    safeBalance > 0.0 -> R.color.colorTextGreen
-                    safeBalance == 0.0 -> R.color.colorTextPrimary
+                    safeBalance > 0 -> R.color.colorTextGreen
+                    safeBalance == 0 -> R.color.colorTextPrimary
                     else -> R.color.colorTextRed
                 }
                 balanceView.setTextColor(resources.getColor(color, activity!!.theme))
-                balanceView.text = String.format("${'$'}%.02f", safeBalance)
+                balanceView.text = String.format("${'$'}%.02f", safeBalance / 100.0f)
             })
             showData(view, true)
         })

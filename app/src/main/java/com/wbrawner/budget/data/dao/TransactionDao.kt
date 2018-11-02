@@ -8,7 +8,6 @@ import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import android.arch.persistence.room.Query
 import com.wbrawner.budget.data.model.Transaction
 import com.wbrawner.budget.data.model.TransactionCategory
-import com.wbrawner.budget.data.TransactionType
 import com.wbrawner.budget.data.model.TransactionWithCategory
 
 @Dao
@@ -22,11 +21,8 @@ interface TransactionDao {
     @Query("SELECT * FROM `Transaction` LIMIT :count")
     fun loadMultiple(count: Int): LiveData<List<TransactionWithCategory>>
 
-    @Query("SELECT * FROM `Transaction` WHERE type = :type LIMIT :count")
-    fun loadMultipleByType(count: Int, type: TransactionType): LiveData<List<TransactionWithCategory>>
-
-    @Query("SELECT (SELECT TOTAL(amount) from `Transaction` WHERE type = 'INCOME') - (SELECT TOTAL(amount) from `Transaction` WHERE type = 'EXPENSE')")
-    fun getBalance(): LiveData<Double>
+    @Query("SELECT (SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 0) - (SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 1)")
+    fun getBalance(): LiveData<Int>
 
     @Delete
     fun delete(transaction: Transaction)

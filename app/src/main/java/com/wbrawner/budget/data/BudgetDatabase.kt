@@ -8,8 +8,8 @@ import com.wbrawner.budget.data.dao.TransactionDao
 import com.wbrawner.budget.data.model.Category
 import com.wbrawner.budget.data.model.Transaction
 
-@Database(entities = [(Transaction::class), (Category::class)], version = 2)
-@TypeConverters(DateTypeConverter::class, TransactionTypeTypeConverter::class)
+@Database(entities = [(Transaction::class), (Category::class)], version = 3)
+@TypeConverters(DateTypeConverter::class)
 abstract class BudgetDatabase: RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun categoryDao(): CategoryDao

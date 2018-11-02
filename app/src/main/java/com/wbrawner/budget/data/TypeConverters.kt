@@ -4,14 +4,6 @@ import android.arch.persistence.room.TypeConverter
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TransactionTypeTypeConverter {
-    @android.arch.persistence.room.TypeConverter
-    fun toTransactionType(value: String): TransactionType? = TransactionType.valueOf(value)
-
-    @android.arch.persistence.room.TypeConverter
-    fun toString(type: TransactionType?): String? = type?.name
-}
-
 class DateTypeConverter {
     @android.arch.persistence.room.TypeConverter
     fun toDate(value: String): Date? = dateFormat.parse(value)

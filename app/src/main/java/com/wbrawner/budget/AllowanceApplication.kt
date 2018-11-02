@@ -7,6 +7,7 @@ import com.wbrawner.budget.data.dao.TransactionDao
 import com.wbrawner.budget.data.BudgetDatabase
 import com.wbrawner.budget.data.dao.CategoryDao
 import com.wbrawner.budget.data.migrations.MIGRATION_1_2
+import com.wbrawner.budget.data.migrations.MIGRATION_2_3
 import org.acra.ACRA
 import org.acra.annotation.AcraCore
 import org.acra.annotation.AcraHttpSender
@@ -33,6 +34,7 @@ class AllowanceApplication: Application() {
 
         database = Room.databaseBuilder(applicationContext, BudgetDatabase::class.java, "transactions")
                 .addMigrations(MIGRATION_1_2())
+                .addMigrations(MIGRATION_2_3())
                 .build()
         transactionDao = database.transactionDao()
         categoryDao = database.categoryDao()

@@ -2,33 +2,15 @@
 <shortcuts xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
-        android:shortcutId="expense"
-        android:enabled="true"
-        android:icon="@drawable/ic_shortcut_money_off"
-        android:shortcutShortLabel="@string/title_add_expense"
-        tools:ignore="UnusedAttribute">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="com.wbrawner.budget"
-            android:targetClass="com.wbrawner.budget.transactions.AddEditTransactionActivity">
-            <extra
-                android:name="EXTRA_TRANSACTION_TYPE"
-                android:value="EXPENSE" />
-        </intent>
-    </shortcut>
-    <shortcut
-        android:shortcutId="income"
+        android:shortcutId="transaction"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_attach_money"
-        android:shortcutShortLabel="@string/title_add_income"
+        android:shortcutShortLabel="@string/title_add_transaction"
         tools:ignore="UnusedAttribute">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.wbrawner.budget"
-            android:targetClass="com.wbrawner.budget.transactions.AddEditTransactionActivity">
-            <extra
-                android:name="EXTRA_TRANSACTION_TYPE"
-                android:value="INCOME" />
+            android:targetClass="com.wbrawner.budget.ui.transactions.AddEditTransactionActivity">
         </intent>
     </shortcut>
 </shortcuts>

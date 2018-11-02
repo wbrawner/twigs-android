@@ -1,4 +1,4 @@
-package com.wbrawner.budget.transactions
+package com.wbrawner.budget.ui.categories
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -13,13 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.wbrawner.budget.R
-import com.wbrawner.budget.transactions.AddEditTransactionActivity.Companion.EXTRA_TYPE
-import com.wbrawner.budget.data.TransactionType
-import com.wbrawner.budget.data.model.TransactionWithCategory
+import com.wbrawner.budget.data.model.Category
 
-class TransactionListFragment : Fragment() {
-    lateinit var viewModel: TransactionViewModel
-    lateinit var type: TransactionType
+class CategoryListFragment : Fragment() {
+    lateinit var viewModel: CategoryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +28,7 @@ class TransactionListFragment : Fragment() {
             return
         }
 
-        type = arguments?.getSerializable(ARG_TYPE) as? TransactionType ?: TransactionType.EXPENSE
-
-        viewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(CategoryViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -41,16 +36,16 @@ class TransactionListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.list_transactions)
         val fab = view.findViewById<FloatingActionButton>(R.id.fab_add_transaction)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        viewModel.getTransactionsByType(20, type)
-                .observe(this, Observer<List<TransactionWithCategory>> { data ->
+        viewModel.getCategories()
+                .observe(this, Observer<List<Category>> { data ->
                     val noDataView = view.findViewById<EmojiTextView>(R.id.transaction_list_no_data)
                     if (data == null || data.isEmpty()) {
                         recyclerView.adapter = null
-                        noDataView?.setText(type.noDataText)
+                        noDataView?.setText(R.string.categories_no_data)
                         recyclerView?.visibility = View.GONE
                         noDataView?.visibility = View.VISIBLE
                     } else {
-                        recyclerView.adapter = TransactionAdapter(data)
+                        recyclerView.adapter = CategoryAdapter(this, data, viewModel)
                         recyclerView.visibility = View.VISIBLE
                         noDataView.visibility = View.GONE
                     }
@@ -61,17 +56,14 @@ class TransactionListFragment : Fragment() {
             }
         })
         fab.setOnClickListener {
-            startActivity(
-                    Intent(activity, AddEditTransactionActivity::class.java).apply {
-                        this.putExtra(EXTRA_TYPE, this@TransactionListFragment.type.name)
-                    }
-            )
+            startActivity(Intent(activity, AddEditCategoryActivity::class.java))
         }
 
         return view
     }
 
     companion object {
-        const val ARG_TYPE = "TRANSACTION_TYPE"
+        const val TAG_FRAGMENT = "categories"
+        const val TITLE_FRAGMENT = R.string.title_categories
     }
 }

@@ -1,4 +1,4 @@
-package com.wbrawner.budget.transactions
+package com.wbrawner.budget.ui.transactions
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -10,14 +10,12 @@ import android.widget.ArrayAdapter
 import com.wbrawner.budget.R
 import com.wbrawner.budget.data.model.Transaction
 import com.wbrawner.budget.data.model.TransactionCategory
-import com.wbrawner.budget.data.TransactionType
 import com.wbrawner.budget.data.model.TransactionWithCategory
 import kotlinx.android.synthetic.main.activity_add_edit_transaction.*
 import java.util.*
 
 class AddEditTransactionActivity : AppCompatActivity() {
     lateinit var viewModel: TransactionViewModel
-    lateinit var type: TransactionType
     var id: Int? = null
     var date: Date = Date()
     var menu: Menu? = null
@@ -27,6 +25,8 @@ class AddEditTransactionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit_transaction)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.title_add_transaction)
+        edit_transaction_type_expense.isChecked = true
         viewModel = ViewModelProviders.of(this).get(TransactionViewModel::class.java)
         viewModel.getCategories()
                 .observe(this, Observer<List<TransactionCategory>> { categories ->
@@ -44,13 +44,8 @@ class AddEditTransactionActivity : AppCompatActivity() {
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     edit_transaction_category.adapter = adapter
                 })
-        if (intent?.hasExtra(EXTRA_TYPE) == true) {
-            type = TransactionType.valueOf(intent?.extras?.getString(EXTRA_TYPE, "EXPENSE")
-                    ?: "EXPENSE")
-            setTitle(type.addTitle)
-            return
-        } else if (intent?.hasExtra(EXTRA_TRANSACTION_ID) != true) {
-            finish()
+
+        if (intent?.hasExtra(EXTRA_TRANSACTION_ID) != true) {
             return
         }
 
@@ -62,12 +57,15 @@ class AddEditTransactionActivity : AppCompatActivity() {
                     }
                     val transaction = transactionWithCategory.transaction
                     id = transaction.id
-                    type = transaction.type
-                    setTitle(type.editTitle)
                     menu?.findItem(R.id.action_delete)?.isVisible = true
-                    edit_transaction_title.setText(transaction.title)
+                    edit_transaction_title.setText(transaction.name)
                     edit_transaction_description.setText(transaction.description)
-                    edit_transaction_amount.setText(String.format("%.02f", transaction.amount))
+                    edit_transaction_amount.setText(String.format("%.02f", transaction.amount / 100.0f))
+                    if (transaction.isExpense) {
+                        edit_transaction_type_expense.isChecked = true
+                    } else {
+                        edit_transaction_type_income.isChecked = true
+                    }
                     val field = Calendar.getInstance()
                     field.time = transaction.date
                     val year = field.get(Calendar.YEAR)
@@ -105,12 +103,13 @@ class AddEditTransactionActivity : AppCompatActivity() {
 
                 viewModel.saveTransaction(Transaction(
                         id = id,
-                        title = edit_transaction_title.text.toString(),
+                        name = edit_transaction_title.text.toString(),
                         date = cal.time,
                         description = edit_transaction_description.text.toString(),
-                        amount = edit_transaction_amount.text.toString().toDouble(),
-                        type = type,
-                        categoryId = (edit_transaction_category.selectedItem as TransactionCategory).id
+                        amount = edit_transaction_amount.rawValue.toInt(),
+                        isExpense = edit_transaction_type_expense.isChecked,
+                        categoryId = (edit_transaction_category.selectedItem as TransactionCategory).id,
+                        remoteId = null
                 ))
                 finish()
             }
@@ -124,7 +123,6 @@ class AddEditTransactionActivity : AppCompatActivity() {
 
 
     companion object {
-        const val EXTRA_TYPE = "EXTRA_TRANSACTION_TYPE"
         const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
     }
 }

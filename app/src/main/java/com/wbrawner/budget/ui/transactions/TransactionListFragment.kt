@@ -1,4 +1,4 @@
-package com.wbrawner.budget.categories
+package com.wbrawner.budget.ui.transactions
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -13,10 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.wbrawner.budget.R
-import com.wbrawner.budget.data.model.Category
+import com.wbrawner.budget.data.model.TransactionWithCategory
 
-class CategoryListFragment : Fragment() {
-    lateinit var viewModel: CategoryViewModel
+class TransactionListFragment : Fragment() {
+    lateinit var viewModel: TransactionViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +28,7 @@ class CategoryListFragment : Fragment() {
             return
         }
 
-        viewModel = ViewModelProviders.of(activity!!).get(CategoryViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,16 +36,16 @@ class CategoryListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.list_transactions)
         val fab = view.findViewById<FloatingActionButton>(R.id.fab_add_transaction)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        viewModel.getCategories()
-                .observe(this, Observer<List<Category>> { data ->
+        viewModel.getTransactions(20)
+                .observe(this, Observer<List<TransactionWithCategory>> { data ->
                     val noDataView = view.findViewById<EmojiTextView>(R.id.transaction_list_no_data)
                     if (data == null || data.isEmpty()) {
                         recyclerView.adapter = null
-                        noDataView?.setText("No data FIX ME")
+                        noDataView?.setText(R.string.transactions_no_data)
                         recyclerView?.visibility = View.GONE
                         noDataView?.visibility = View.VISIBLE
                     } else {
-                        recyclerView.adapter = CategoryAdapter(this, data, viewModel)
+                        recyclerView.adapter = TransactionAdapter(data)
                         recyclerView.visibility = View.VISIBLE
                         noDataView.visibility = View.GONE
                     }
@@ -56,14 +56,16 @@ class CategoryListFragment : Fragment() {
             }
         })
         fab.setOnClickListener {
-            startActivity(Intent(activity, AddEditCategoryActivity::class.java))
+            startActivity(
+                    Intent(activity, AddEditTransactionActivity::class.java)
+            )
         }
 
         return view
     }
 
     companion object {
-        const val TAG_FRAGMENT = "categories"
-        const val TITLE_FRAGMENT = R.string.title_categories
+        const val TAG_FRAGMENT = "transactions"
+        const val TITLE_FRAGMENT = R.string.title_transactions
     }
 }

@@ -1,4 +1,4 @@
-package com.wbrawner.budget.categories
+package com.wbrawner.budget.ui.categories
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel

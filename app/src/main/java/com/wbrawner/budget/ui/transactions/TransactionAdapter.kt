@@ -1,4 +1,4 @@
-package com.wbrawner.budget.transactions
+package com.wbrawner.budget.ui.transactions
 
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.wbrawner.budget.R
-import com.wbrawner.budget.transactions.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
+import com.wbrawner.budget.ui.transactions.AddEditTransactionActivity.Companion.EXTRA_TRANSACTION_ID
 import com.wbrawner.budget.data.model.Transaction
 import com.wbrawner.budget.data.model.TransactionWithCategory
 import java.text.SimpleDateFormat
@@ -29,13 +29,12 @@ class TransactionAdapter() : RecyclerView.Adapter<TransactionAdapter.ViewHolder>
         val transaction: Transaction =
                 if (listType == TransactionWithCategory::class.java) (data[position] as TransactionWithCategory).transaction
                 else data[position] as Transaction
-        holder.title.text = transaction.title
+        holder.title.text = transaction.name
         holder.date.text = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT).format(transaction.date)
-        holder.amount.text = String.format("${'$'}%.02f", transaction.amount)
+        holder.amount.text = String.format("${'$'}%.02f", transaction.amount / 100.0f)
         val context = holder.itemView.context
-        holder.amount.setTextColor(
-                context.resources.getColor(transaction.type.textColor, context.theme)
-        )
+        val color = if (transaction.isExpense) R.color.colorTextRed else R.color.colorTextGreen
+        holder.amount.setTextColor(context.resources.getColor(color, context.theme))
         holder.itemView.setOnClickListener {
             startActivity(
                     it.context.applicationContext,

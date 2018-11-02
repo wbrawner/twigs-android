@@ -1,4 +1,4 @@
-package com.wbrawner.budget.categories
+package com.wbrawner.budget.ui.categories
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.wbrawner.budget.R
 import com.wbrawner.budget.data.model.Category
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
@@ -28,6 +29,7 @@ class AddEditCategoryActivity : AppCompatActivity() {
             return
         }
 
+
         viewModel.getCategory(intent!!.extras!!.getInt(EXTRA_CATEGORY_ID))
                 .observe(this, Observer<Category> { category ->
                     if (category == null) {
@@ -38,7 +40,7 @@ class AddEditCategoryActivity : AppCompatActivity() {
                     setTitle(R.string.title_edit_category)
                     menu?.findItem(R.id.action_delete)?.isVisible = true
                     edit_category_name.setText(category.name)
-                    edit_category_amount.setText(String.format("%.02f", category.amount))
+                    edit_category_amount.setText(String.format("%.02f", category.amount / 100.0f))
                 })
     }
 
@@ -58,8 +60,9 @@ class AddEditCategoryActivity : AppCompatActivity() {
                 if (!validateFields()) return true
                 viewModel.saveCategory(Category(
                         id = id,
+                        remoteId = null,
                         name = edit_category_name.text.toString(),
-                        amount = edit_category_amount.text.toString().toDouble(),
+                        amount = edit_category_amount.rawValue.toInt(),
                         color = Color.parseColor("#FF0000"),
                         repeat = "never"
                 ))
