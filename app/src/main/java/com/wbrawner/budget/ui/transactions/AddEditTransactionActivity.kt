@@ -2,7 +2,10 @@ package com.wbrawner.budget.ui.transactions
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.NavUtils
+import android.support.v4.app.TaskStackBuilder
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -95,7 +98,7 @@ class AddEditTransactionActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> onNavigateUp()
             R.id.action_save -> {
                 val field = edit_transaction_date
                 val cal = Calendar.getInstance()
@@ -111,16 +114,33 @@ class AddEditTransactionActivity : AppCompatActivity() {
                         categoryId = (edit_transaction_category.selectedItem as TransactionCategory).id,
                         remoteId = null
                 ))
-                finish()
+                onNavigateUp()
             }
             R.id.action_delete -> {
                 viewModel.deleteTransactionById(this@AddEditTransactionActivity.id!!)
-                finish()
+                onNavigateUp()
             }
         }
         return true
     }
 
+    override fun onNavigateUp(): Boolean {
+        val upIntent: Intent? = NavUtils.getParentActivityIntent(this)
+
+        when {
+            upIntent == null -> throw IllegalStateException("No Parent Activity Intent")
+            NavUtils.shouldUpRecreateTask(this, upIntent) || isTaskRoot -> {
+                TaskStackBuilder.create(this)
+                        .addNextIntentWithParentStack(upIntent)
+                        .startActivities()
+            }
+            else -> {
+                NavUtils.navigateUpTo(this, upIntent)
+            }
+        }
+
+        return true
+    }
 
     companion object {
         const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"

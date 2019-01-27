@@ -11,4 +11,4 @@
 *.log
 .idea/
 *~
-acra.properties
+*/google-services.json

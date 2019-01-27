@@ -2,12 +2,14 @@ package com.wbrawner.budget.ui.categories
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.NavUtils
+import android.support.v4.app.TaskStackBuilder
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.wbrawner.budget.R
 import com.wbrawner.budget.data.model.Category
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
@@ -55,7 +57,21 @@ class AddEditCategoryActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> {
+                val upIntent: Intent? = NavUtils.getParentActivityIntent(this)
+
+                when {
+                    upIntent == null -> throw IllegalStateException("No Parent Activity Intent")
+                    NavUtils.shouldUpRecreateTask(this, upIntent) || isTaskRoot -> {
+                        TaskStackBuilder.create(this)
+                                .addNextIntentWithParentStack(upIntent)
+                                .startActivities()
+                    }
+                    else -> {
+                        NavUtils.navigateUpTo(this, upIntent)
+                    }
+                }
+            }
             R.id.action_save -> {
                 if (!validateFields()) return true
                 viewModel.saveCategory(Category(
@@ -79,7 +95,7 @@ class AddEditCategoryActivity : AppCompatActivity() {
 
     private fun validateFields(): Boolean {
         var errors = false
-        if (edit_category_name.text.isEmpty()) {
+        if (edit_category_name.text?.isEmpty() == true) {
             edit_category_name.error = getString(R.string.required_field_name)
             errors = true
         }

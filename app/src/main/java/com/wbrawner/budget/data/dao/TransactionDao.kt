@@ -18,7 +18,7 @@ interface TransactionDao {
     @Query("SELECT * FROM `Transaction` WHERE id = :id")
     fun load(id: Int): LiveData<TransactionWithCategory>
 
-    @Query("SELECT * FROM `Transaction` LIMIT :count")
+    @Query("SELECT * FROM `Transaction` ORDER BY date DESC LIMIT :count")
     fun loadMultiple(count: Int): LiveData<List<TransactionWithCategory>>
 
     @Query("SELECT (SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 0) - (SELECT TOTAL(amount) from `Transaction` WHERE isExpense = 1)")
