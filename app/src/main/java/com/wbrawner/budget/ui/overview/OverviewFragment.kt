@@ -1,55 +1,59 @@
 package com.wbrawner.budget.ui.overview
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProviders
+import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.ui.transactions.TransactionViewModel
+import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.di.BudgetViewModelFactory
+import com.wbrawner.budget.ui.autoDispose
+import com.wbrawner.budget.ui.fromBackgroundToMain
+import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
-class OverviewFragment : Fragment() {
-    lateinit var viewModel: TransactionViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (activity == null) {
-            return
-        }
-
-        viewModel = ViewModelProviders.of(activity!!).get(TransactionViewModel::class.java)
-    }
+class OverviewFragment : androidx.fragment.app.Fragment() {
+    private val disposables = CompositeDisposable()
+    @Inject
+    lateinit var viewModelFactory: BudgetViewModelFactory
+    lateinit var viewModel: AccountOverviewViewModel
+    lateinit var account: Account
+    private var inflatedView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
-        viewModel.getTransactions(1).observe(this, Observer { data ->
-            if (data == null || data.isEmpty()) {
-                showData(view, false)
-                return@Observer
-            }
-
-            viewModel.getCurrentBalance().observe(this, Observer { balance ->
-                val safeBalance: Int = balance?: 0
-                val balanceView = view.findViewById<TextView>(R.id.overview_current_balance)
-                val color = when {
-                    safeBalance > 0 -> R.color.colorTextGreen
-                    safeBalance == 0 -> R.color.colorTextPrimary
-                    else -> R.color.colorTextRed
-                }
-                balanceView.setTextColor(resources.getColor(color, activity!!.theme))
-                balanceView.text = String.format("${'$'}%.02f", safeBalance / 100.0f)
-            })
-            showData(view, true)
-        })
+        (activity!!.application as AllowanceApplication).appComponent.inject(this)
+        viewModel = ViewModelProviders.of(activity!!, viewModelFactory)
+                .get(AccountOverviewViewModel::class.java)
+        inflatedView = view
         return view
     }
 
-    private fun showData(view: View, show: Boolean) {
+    override fun onResume() {
+        super.onResume()
+        viewModel.getBalance(account.id!!)
+                .fromBackgroundToMain()
+                .subscribe { balance ->
+                    val balanceView = view!!.findViewById<TextView>(R.id.overview_current_balance)
+                    val color = when {
+                        balance > 0 -> R.color.colorTextGreen
+                        balance == 0L -> R.color.colorTextPrimary
+                        else -> R.color.colorTextRed
+                    }
+                    balanceView.setTextColor(ContextCompat.getColor(context!!, color))
+                    balanceView.text = String.format("${'$'}%.02f", balance / 100.0f)
+                    showData(inflatedView, true)
+                }.autoDispose(disposables)
+    }
+
+    private fun showData(view: View?, show: Boolean) {
+        if (view == null) return
         val dataVisibility = if (show) View.VISIBLE else View.GONE
-        val noDataVisibility =  if (show) View.GONE else View.VISIBLE
+        val noDataVisibility = if (show) View.GONE else View.VISIBLE
         view.findViewById<TextView>(R.id.overview_current_balance_label).visibility = dataVisibility
         view.findViewById<TextView>(R.id.overview_current_balance).visibility = dataVisibility
         view.findViewById<TextView>(R.id.overview_no_data).visibility = noDataVisibility

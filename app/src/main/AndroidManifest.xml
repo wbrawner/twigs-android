@@ -4,7 +4,7 @@
     package="com.wbrawner.budget">
 
     <application
-        android:name="com.wbrawner.budget.AllowanceApplication"
+        android:name=".AllowanceApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,25 +12,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.wbrawner.budget.ui.MainActivity">
-            <intent-filter android:label="@string/app_name_short">
+        <activity
+            android:name=".ui.SplashActivity"
+            android:theme="@style/SplashTheme"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
         </activity>
+        <meta-data
+            android:name="android.app.shortcuts"
+            android:resource="@xml/shortcuts" />
+
+        <activity android:name=".ui.MainActivity" />
         <activity
-            android:name="com.wbrawner.budget.ui.transactions.AddEditTransactionActivity"
+            android:name=".ui.transactions.AddEditTransactionActivity"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name="com.wbrawner.budget.ui.categories.AddEditCategoryActivity"
+            android:name=".ui.categories.AddEditCategoryActivity"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

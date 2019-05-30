@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -22,12 +22,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_transaction_title"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_transaction_title"
@@ -35,13 +35,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_transaction_title"
                     style="@style/AppTheme.EditText"
                     android:inputType="textCapWords" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_transaction_description"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_transaction_description"
@@ -49,14 +49,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_title">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_transaction_description"
                     style="@style/AppTheme.EditText"
                     android:inputType="textCapSentences|textMultiLine"
                     android:scrollHorizontally="false" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_transaction_amount"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_transaction_amount"
@@ -68,7 +68,7 @@
                     android:id="@+id/edit_transaction_amount"
                     style="@style/AppTheme.EditText"
                     android:inputType="numberDecimal" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <RadioGroup
                 android:id="@+id/container_edit_transaction_type"
@@ -126,6 +126,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_category" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

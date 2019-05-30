@@ -1,24 +1,29 @@
 package com.wbrawner.budget.ui.categories
 
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Observer
+import android.app.Activity
 import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import com.wbrawner.budget.R
+import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.common.category.Category
+import com.wbrawner.budget.ui.autoDispose
+import com.wbrawner.budget.ui.categories.AddEditCategoryActivity.Companion.EXTRA_ACCOUNT_ID
 import com.wbrawner.budget.ui.categories.AddEditCategoryActivity.Companion.EXTRA_CATEGORY_ID
-import com.wbrawner.budget.data.model.Category
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class CategoryAdapter(
-        private val lifecycleOwner: LifecycleOwner,
+        private val activity: Activity,
+        private val account: Account,
         private val data: List<Category>,
         private val viewModel: CategoryViewModel
-) : RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
+) : androidx.recyclerview.widget.RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item_category, parent, false)
@@ -29,40 +34,48 @@ class CategoryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = data[position]
-        holder.title?.text = category.name
+        holder.title?.text = category.title
+        // TODO: Format according to account's currency
         holder.amount?.text = String.format("${'$'}%.02f", category.amount / 100.0f)
-        viewModel.getCurrentBalance(category.id!!)
-                .observe(lifecycleOwner, Observer<Int> { balance ->
+        holder.progress?.max = category.amount.toInt()
+        viewModel.getBalance(category.id!!)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { balance, _ ->
                     holder.progress?.isIndeterminate = false
-                    if (balance == null) {
-                        holder.progress?.progress = 0
-                    } else {
-                        holder.progress?.max = category.amount
-                        holder.progress?.setProgress(
-                                -1 * balance,
-                                true
-                        )
-                        holder.amount?.text = holder.itemView.context.getString(
-                                R.string.balance_remaning,
-                                (category.amount + balance) / 100.0f
-                        )
-                    }
-                })
+                    holder.progress?.setProgress(
+                            (-1 * balance).toInt(),
+                            true
+                    )
+                    holder.amount?.text = holder.itemView.context.getString(
+                            R.string.balance_remaning,
+                            (category.amount + balance) / 100.0f
+                    )
+                }
+                .autoDispose(holder.disposables)
         holder.itemView.setOnClickListener {
             startActivity(
-                    it.context.applicationContext,
+                    activity,
                     Intent(it.context.applicationContext, AddEditCategoryActivity::class.java)
                             .apply {
-                                putExtra(EXTRA_CATEGORY_ID, category.id)
+                                putExtra(EXTRA_ACCOUNT_ID, account.id!!)
+                                putExtra(EXTRA_CATEGORY_ID, category.id!!)
                             },
                     null
             )
         }
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.disposables.dispose()
+        holder.disposables.clear()
+        super.onViewRecycled(holder)
+    }
+
+    inner class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         val title: TextView? = itemView.findViewById(R.id.category_title)
         val amount: TextView? = itemView.findViewById(R.id.category_amount)
         val progress: ProgressBar? = itemView.findViewById(R.id.category_progress)
+        val disposables = CompositeDisposable()
     }
 }

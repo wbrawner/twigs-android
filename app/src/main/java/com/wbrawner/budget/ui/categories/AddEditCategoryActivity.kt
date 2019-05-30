@@ -1,22 +1,33 @@
 package com.wbrawner.budget.ui.categories
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.NavUtils
-import android.support.v4.app.TaskStackBuilder
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
+import androidx.core.app.TaskStackBuilder
+import androidx.lifecycle.ViewModelProviders
+import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.data.model.Category
+import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.common.category.Category
+import com.wbrawner.budget.di.BudgetViewModelFactory
+import com.wbrawner.budget.ui.autoDispose
+import com.wbrawner.budget.ui.fromBackgroundToMain
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
+import javax.inject.Inject
 
 class AddEditCategoryActivity : AppCompatActivity() {
+    private val disposables = CompositeDisposable()
+    private lateinit var account: Account
+    @Inject
+    lateinit var viewModelFactory: BudgetViewModelFactory
     lateinit var viewModel: CategoryViewModel
-    var id: Int? = null
+    var id: Long? = null
     var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,34 +35,50 @@ class AddEditCategoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit_category)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        viewModel = ViewModelProviders.of(this).get(CategoryViewModel::class.java)
+        (application as AllowanceApplication).appComponent.inject(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(CategoryViewModel::class.java)
+        viewModel.getAccount(intent!!.extras!!.getLong(EXTRA_ACCOUNT_ID))
+                .fromBackgroundToMain()
+                .subscribe { account, err ->
+                    if (err != null) {
+                        finish()
+                        // TODO: Hide a progress spinner and show error message
+                        return@subscribe
+                    }
+                    this@AddEditCategoryActivity.account = account
+                    loadCategory()
+                }
+                .autoDispose(disposables)
+    }
 
+    private fun loadCategory() {
         if (intent?.hasExtra(EXTRA_CATEGORY_ID) == false) {
             setTitle(R.string.title_add_category)
             return
         }
-
-
-        viewModel.getCategory(intent!!.extras!!.getInt(EXTRA_CATEGORY_ID))
-                .observe(this, Observer<Category> { category ->
-                    if (category == null) {
+        viewModel.getCategory(intent!!.extras!!.getLong(EXTRA_CATEGORY_ID))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { category, err ->
+                    if (err != null) {
                         menu?.findItem(R.id.action_delete)?.isVisible = false
-                        return@Observer
+                        return@subscribe
                     }
                     id = category.id
                     setTitle(R.string.title_edit_category)
                     menu?.findItem(R.id.action_delete)?.isVisible = true
-                    edit_category_name.setText(category.name)
+                    edit_category_name.setText(category.title)
                     edit_category_amount.setText(String.format("%.02f", category.amount / 100.0f))
-                })
+                }
+                .autoDispose(disposables)
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_add_edit, menu)
         if (id != null) {
             menu?.findItem(R.id.action_delete)?.isVisible = true
         }
+        this.menu = menu
         return true
     }
 
@@ -76,17 +103,21 @@ class AddEditCategoryActivity : AppCompatActivity() {
                 if (!validateFields()) return true
                 viewModel.saveCategory(Category(
                         id = id,
-                        remoteId = null,
-                        name = edit_category_name.text.toString(),
-                        amount = edit_category_amount.rawValue.toInt(),
-                        color = Color.parseColor("#FF0000"),
-                        repeat = "never"
+                        title = edit_category_name.text.toString(),
+                        amount = edit_category_amount.rawValue,
+                        accountId = account.id!!
                 ))
-                finish()
+                        .fromBackgroundToMain()
+                        .subscribe { _, err ->
+                            finish()
+                        }
             }
             R.id.action_delete -> {
                 viewModel.deleteCategoryById(this@AddEditCategoryActivity.id!!)
-                finish()
+                        .fromBackgroundToMain()
+                        .subscribe { _, _ ->
+                            finish()
+                        }
             }
         }
         return true
@@ -108,8 +139,13 @@ class AddEditCategoryActivity : AppCompatActivity() {
         return !errors
     }
 
+    override fun onDestroy() {
+        disposables.dispose()
+        super.onDestroy()
+    }
 
     companion object {
+        const val EXTRA_ACCOUNT_ID = "EXTRA_ACCOUNT_ID"
         const val EXTRA_CATEGORY_ID = "EXTRA_CATEGORY_ID"
     }
 }

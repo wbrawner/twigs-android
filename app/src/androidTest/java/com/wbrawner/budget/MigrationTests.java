@@ -4,8 +4,9 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.arch.persistence.room.testing.MigrationTestHelper;
 import android.database.Cursor;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.wbrawner.budget.data.BudgetDatabase;
 import com.wbrawner.budget.data.migrations.MIGRATION_1_2;
@@ -67,7 +68,7 @@ public class MigrationTests {
                 "VALUES (1,'An expense','2018-10-31','Spent some money',12.34,1,'EXPENSE')");
         db.execSQL("INSERT INTO `Transaction` (id,title,date,description,amount,categoryId,type) " +
                 "VALUES (2,'Some income','2018-01-02','Made some money',42.65,0,'INCOME')");
-        db.execSQL("INSERT INTO `Category` (id,name,amount,repeat,color) " +
+        db.execSQL("INSERT INTO `Category` (id,title,amount,repeat,color) " +
                 "VALUES (1,'Groceries',1234.56,'monthly',987)");
         db.close();
         db = migrationHelper.runMigrationsAndValidate(
@@ -81,27 +82,27 @@ public class MigrationTests {
         assertTrue(cursor.moveToFirst());
         assertEquals(1, cursor.getInt(cursor.getColumnIndex("id")));
         assertNull(cursor.getString(cursor.getColumnIndex("remoteId")));
-        assertEquals("An expense", cursor.getString(cursor.getColumnIndex("name")));
+        assertEquals("An expense", cursor.getString(cursor.getColumnIndex("title")));
         assertEquals("2018-10-31", cursor.getString(cursor.getColumnIndex("date")));
         assertEquals("Spent some money", cursor.getString(cursor.getColumnIndex("description")));
         assertEquals(1234, cursor.getInt(cursor.getColumnIndex("amount")));
         assertEquals(1, cursor.getInt(cursor.getColumnIndex("categoryId")));
-        assertEquals(1, cursor.getInt(cursor.getColumnIndex("isExpense")));
+        assertEquals(1, cursor.getInt(cursor.getColumnIndex("expense")));
         assertTrue(cursor.moveToNext());
         assertEquals(2, cursor.getInt(cursor.getColumnIndex("id")));
         assertNull(cursor.getString(cursor.getColumnIndex("remoteId")));
-        assertEquals("Some income", cursor.getString(cursor.getColumnIndex("name")));
+        assertEquals("Some income", cursor.getString(cursor.getColumnIndex("title")));
         assertEquals("2018-01-02", cursor.getString(cursor.getColumnIndex("date")));
         assertEquals("Made some money", cursor.getString(cursor.getColumnIndex("description")));
         assertEquals(4265, cursor.getInt(cursor.getColumnIndex("amount")));
         assertEquals(0, cursor.getInt(cursor.getColumnIndex("categoryId")));
-        assertEquals(0, cursor.getInt(cursor.getColumnIndex("isExpense")));
+        assertEquals(0, cursor.getInt(cursor.getColumnIndex("expense")));
         cursor = db.query("SELECT * FROM 'Category'");
         assertEquals(1, cursor.getCount());
         assertTrue(cursor.moveToFirst());
         assertEquals(1, cursor.getInt(cursor.getColumnIndex("id")));
         assertNull(cursor.getString(cursor.getColumnIndex("remoteId")));
-        assertEquals("Groceries", cursor.getString(cursor.getColumnIndex("name")));
+        assertEquals("Groceries", cursor.getString(cursor.getColumnIndex("title")));
         assertEquals(123456, cursor.getInt(cursor.getColumnIndex("amount")));
         assertEquals("monthly", cursor.getString(cursor.getColumnIndex("repeat")));
         assertEquals(987, cursor.getInt(cursor.getColumnIndex("color")));
