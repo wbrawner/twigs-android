@@ -1,23 +1,15 @@
 package com.wbrawner.budget.ui
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.content.res.Resources
+import android.content.Context
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wbrawner.budget.R
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-
-fun Disposable.autoDispose(compositeDisposable: CompositeDisposable) {
-    compositeDisposable.add(this)
-}
 
 fun RecyclerView.hideFabOnScroll(fab: FloatingActionButton) {
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -27,35 +19,12 @@ fun RecyclerView.hideFabOnScroll(fab: FloatingActionButton) {
     })
 }
 
-fun <T> Single<T>.fromBackgroundToMain(): Single<T> {
-    return this.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-}
-
-fun <T> Observable<T>.fromBackgroundToMain(): Observable<T> {
-    return this.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-}
-
 fun View.hide() {
     show(false)
 }
 
 fun View.show(show: Boolean = true) {
-    val shortAnimTime = Resources.getSystem().getInteger(android.R.integer.config_shortAnimTime).toLong()
-    if (show) {
-        // Put the view back on the screen before animating its visibility
-        alpha = 0f
-        visibility = View.VISIBLE
-    }
-    animate()
-            .setDuration(shortAnimTime)
-            .alpha((if (show) 1 else 0).toFloat())
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    this@show.visibility = if (show) View.VISIBLE else View.GONE
-                }
-            })
+    visibility = if (show) View.VISIBLE else View.GONE
 }
 
 fun EditText.ensureNotEmpty(): Boolean {
@@ -66,4 +35,24 @@ fun EditText.ensureNotEmpty(): Boolean {
         this.error = null
         true
     }
+}
+
+fun Long.toAmountSpannable(context: Context? = null): Spannable {
+    val spannableStringBuilder = SpannableStringBuilder()
+    spannableStringBuilder.append(String.format("${'$'}%.02f", this / 100.0f))
+    if (context == null) {
+        return spannableStringBuilder
+    }
+    val color = when {
+        this > 0 -> R.color.colorTextGreen
+        this == 0L -> R.color.colorTextPrimary
+        else -> R.color.colorTextRed
+    }
+    spannableStringBuilder.setSpan(
+            ForegroundColorSpan(ContextCompat.getColor(context, color)),
+            0,
+            spannableStringBuilder.length,
+            0
+    )
+    return spannableStringBuilder
 }

@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="BaseTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="BaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -10,11 +10,17 @@
         <item name="android:statusBarColor">?android:attr/windowBackground</item>
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
         <item name="android:navigationBarColor">@color/colorBackgroundPrimary</item>
+        <item name="android:timePickerDialogTheme">
+            @style/Theme.MaterialComponents.DayNight.Dialog.Alert
+        </item>
+        <item name="android:datePickerDialogTheme">
+            @style/Theme.MaterialComponents.DayNight.Dialog.Alert
+        </item>
     </style>
 
     <style name="AppTheme" parent="BaseTheme" />
 
-    <style name="SplashTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_splash</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowTranslucentStatus">true</item>
@@ -25,24 +31,15 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
-    <style name="AppTheme.EditText.Container" parent="AppTheme.EditText">
+    <style name="AppTheme.EditText.Container" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
     </style>
 
     <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint">
     </style>
 
-    <style name="BaseTheme.DatePicker">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:startYear">2000</item>
-        <item name="android:calendarViewShown">false</item>
-        <item name="android:datePickerMode">spinner</item>
-    </style>
-
-    <style name="AppTheme.DatePicker" parent="BaseTheme.DatePicker">
-    </style>
-
-    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+    <style name="AppTheme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@drawable/bg_rounded</item>
         <item name="android:gravity">bottom</item>
     </style>

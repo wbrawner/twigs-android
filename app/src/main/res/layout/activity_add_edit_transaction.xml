@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/action_bar"
@@ -64,10 +65,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_description">
 
-                <com.blackcat.currencyedittext.CurrencyEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_transaction_amount"
                     style="@style/AppTheme.EditText"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:scrollHorizontally="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <RadioGroup
@@ -81,6 +83,7 @@
                 <RadioButton
                     android:id="@+id/edit_transaction_type_expense"
                     android:text="@string/type_expense"
+                    android:checked="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <RadioButton
@@ -101,12 +104,48 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_type" />
 
-            <DatePicker
-                android:id="@+id/edit_transaction_date"
-                style="@style/AppTheme.DatePicker"
-                app:layout_constraintEnd_toEndOf="parent"
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/transactionDate"
+                tools:text="9/23/2019"
+                android:padding="8dp"
+                android:textColor="@color/colorTextPrimary"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintEnd_toStartOf="@+id/transactionTime"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_date" />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/transactionTime"
+                android:padding="8dp"
+                android:textColor="@color/colorTextPrimary"
+                tools:text="10:23 pm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/transactionDate"
+                app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_date" />
+
+            <TextView
+                android:id="@+id/budgetHint"
+                style="@style/AppTheme.EditText.Hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/prompt_budget"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/transactionDate" />
+
+            <Spinner
+                android:id="@+id/budgetSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/budgetHint" />
 
             <TextView
                 android:id="@+id/container_edit_transaction_category"
@@ -117,7 +156,7 @@
                 android:text="@string/prompt_transaction_category"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit_transaction_date" />
+                app:layout_constraintTop_toBottomOf="@+id/budgetSpinner" />
 
             <Spinner
                 android:id="@+id/edit_transaction_category"

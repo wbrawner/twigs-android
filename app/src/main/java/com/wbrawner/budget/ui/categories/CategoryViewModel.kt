@@ -1,30 +1,57 @@
 package com.wbrawner.budget.ui.categories
 
 import androidx.lifecycle.ViewModel
-import com.wbrawner.budget.common.account.AccountRepository
+import com.wbrawner.budget.common.budget.Budget
+import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
+import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.di.ViewModelKey
+import com.wbrawner.budget.ui.base.LoadingViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import io.reactivex.Single
 import javax.inject.Inject
 
-class CategoryViewModel @Inject constructor(private val accountRepo: AccountRepository, private val categoryRepo:
-CategoryRepository) : ViewModel() {
-    fun getAccount(id: Long) = accountRepo.findById(id)
+class CategoryViewModel @Inject constructor(
+        private val transactionRepo: TransactionRepository,
+        private val categoryRepo: CategoryRepository,
+        private val budgetRepo: BudgetRepository
+) : LoadingViewModel() {
+    suspend fun getBudget(budgetId: Long): Budget = showLoader {
+        budgetRepo.findById(budgetId)
+    }
 
-    fun getCategory(id: Long): Single<Category> = categoryRepo.findById(id)
+    suspend fun getBudgets() = showLoader {
+        budgetRepo.findAll()
+    }
 
-    fun getCategories(accountId: Long): Single<Collection<Category>> = categoryRepo.findAll(accountId)
+    suspend fun getTransactions(categoryId: Long) = showLoader {
+        transactionRepo.findAll(categoryId = categoryId)
+    }
 
-    fun saveCategory(category: Category) = if (category.id == null) categoryRepo.create(category)
-    else categoryRepo.update(category)
+    suspend fun getCategory(id: Long): Category = showLoader {
+        categoryRepo.findById(id)
+    }
 
-    fun deleteCategoryById(id: Long) = categoryRepo.delete(id)
+    suspend fun getCategories(budgetId: Long? = null): Collection<Category> = showLoader {
+        categoryRepo.findAll(budgetId)
+    }
 
-    fun getBalance(id: Long) = categoryRepo.getBalance(id)
+    suspend fun saveCategory(category: Category) = showLoader {
+        if (category.id == null)
+            categoryRepo.create(category)
+        else
+            categoryRepo.update(category)
+    }
+
+    suspend fun deleteCategoryById(id: Long) = showLoader {
+        categoryRepo.delete(id)
+    }
+
+    suspend fun getBalance(id: Long) = showLoader {
+        categoryRepo.getBalance(id)
+    }
 }
 
 @Module

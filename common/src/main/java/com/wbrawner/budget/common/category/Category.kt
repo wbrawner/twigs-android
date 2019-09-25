@@ -1,7 +1,7 @@
 package com.wbrawner.budget.common.category
 
 data class Category(
-        val accountId: Long,
+        val budgetId: Long,
         val id: Long? = null,
         val title: String,
         val description: String? = null,

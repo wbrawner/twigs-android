@@ -31,4 +31,22 @@
     <string name="prompt_password">Password</string>
     <string name="action_submit">Submit</string>
     <string name="error_required_field">This is a required field</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_accounts">Accounts</string>
+    <string name="title_profile">Profile</string>
+    <string name="info_login">Login to manage your budget</string>
+    <string name="action_login">Login</string>
+    <string name="title_register">Register</string>
+    <string name="title_forgot_password">Forgot password?</string>
+    <string name="prompt_account">Account</string>
+    <string name="prompt_account_name">Name</string>
+    <string name="prompt_account_description">Description</string>
+    <string name="prompt_share_with">Share with...</string>
+    <string name="title_budgets">Budgets</string>
+    <string name="prompt_budget">Budget</string>
+    <string name="title_add_budget">Add Budget</string>
+    <string name="title_edit_budget">Edit Budget</string>
+    <string name="title_edit">Edit</string>
 </resources>

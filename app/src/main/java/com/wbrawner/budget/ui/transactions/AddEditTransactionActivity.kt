@@ -1,9 +1,15 @@
 package com.wbrawner.budget.ui.transactions
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
@@ -11,36 +17,31 @@ import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.ViewModelProviders
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.di.BudgetViewModelFactory
+import com.wbrawner.budget.ui.EXTRA_TRANSACTION_ID
 import com.wbrawner.budget.ui.MainActivity
-import com.wbrawner.budget.ui.autoDispose
-import com.wbrawner.budget.ui.fromBackgroundToMain
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_add_edit_transaction.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-const val EXTRA_ACCOUNT_ID = "EXTRA_ACCOUNT_ID"
-const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
-
-class AddEditTransactionActivity : AppCompatActivity() {
-    private val disposables = CompositeDisposable()
-    private lateinit var account: Account
+class AddEditTransactionActivity : AppCompatActivity(), CoroutineScope {
+    override val coroutineContext: CoroutineContext = Dispatchers.Main
     @Inject
     lateinit var viewModelFactory: BudgetViewModelFactory
     private lateinit var viewModel: AddEditTransactionViewModel
     var id: Long? = null
     var menu: Menu? = null
+    var transaction: Transaction? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent?.hasExtra(EXTRA_ACCOUNT_ID) != true) {
-            finish()
-            return
-        }
         setContentView(R.layout.activity_add_edit_transaction)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -48,78 +49,112 @@ class AddEditTransactionActivity : AppCompatActivity() {
         edit_transaction_type_expense.isChecked = true
         (application as AllowanceApplication).appComponent.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(AddEditTransactionViewModel::class.java)
-        viewModel.getAccount(intent!!.extras!!.getLong(EXTRA_ACCOUNT_ID))
-                .fromBackgroundToMain()
-                .subscribe { account, err ->
-                    if (err != null) {
-                        finish()
-                        // TODO: Hide a progress spinner and show error message
-                        return@subscribe
-                    }
-                    this@AddEditTransactionActivity.account = account
-                    loadCategories()
-                }
-                .autoDispose(disposables)
-    }
+        launch {
+            val accounts = viewModel.getAccounts().toTypedArray()
+            setCategories()
+            budgetSpinner.adapter = ArrayAdapter<Budget>(
+                    this@AddEditTransactionActivity,
+                    android.R.layout.simple_list_item_1,
+                    accounts
+            )
 
-    private fun loadCategories() {
-        viewModel.getCategories(account.id!!)
-                .fromBackgroundToMain()
-                .subscribe { categories ->
-                    val adapter = ArrayAdapter<Category>(
-                            this@AddEditTransactionActivity,
-                            android.R.layout.simple_list_item_1
-                    )
-                    adapter.add(Category(id = 0, title = getString(R.string.uncategorized),
-                            amount = 0, accountId = 0))
-                    // TODO: Add option to create new category on-the-fly
-                    if (!categories.isEmpty()) {
-                        adapter.addAll(categories)
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        edit_transaction_category.adapter = adapter
-                    }
-                    if (intent?.hasExtra(EXTRA_TRANSACTION_ID) == true) {
-                        loadTransaction()
+            budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    this@AddEditTransactionActivity.launch {
+                        val account = budgetSpinner.selectedItem as Budget
+                        setCategories(viewModel.getCategories(account.id!!))
                     }
                 }
-                .autoDispose(disposables)
-
-    }
-
-    private fun loadTransaction() {
-        viewModel.getTransaction(intent!!.extras!!.getLong(EXTRA_TRANSACTION_ID))
-                .fromBackgroundToMain()
-                .subscribe { transaction, err ->
-                    if (err != null) {
-                        menu?.findItem(R.id.action_delete)?.isVisible = false
-                        return@subscribe
-                    }
-                    id = transaction.id
-                    menu?.findItem(R.id.action_delete)?.isVisible = true
-                    edit_transaction_title.setText(transaction.title)
-                    edit_transaction_description.setText(transaction.description)
-                    edit_transaction_amount.setText(String.format("%.02f", transaction.amount / 100.0f))
-                    if (transaction.expense) {
-                        edit_transaction_type_expense.isChecked = true
-                    } else {
-                        edit_transaction_type_income.isChecked = true
-                    }
-                    val field = Calendar.getInstance()
-                    field.time = transaction.date
-                    val year = field.get(Calendar.YEAR)
-                    val month = field.get(Calendar.MONTH)
-                    val day = field.get(Calendar.DAY_OF_MONTH)
-                    edit_transaction_date.updateDate(year, month, day)
-                    transaction.categoryId?.let {
-                        for (i in 0 until edit_transaction_category.adapter.count) {
-                            if (it == (edit_transaction_category.adapter.getItem(i) as Category).id) {
-                                edit_transaction_category.setSelection(i)
-                                break
+            }
+            loadTransaction()
+            transactionDate.setOnClickListener {
+                val currentDate = DateFormat.getDateFormat(this@AddEditTransactionActivity)
+                        .parse(transactionDate.text.toString())
+                DatePickerDialog(
+                        this@AddEditTransactionActivity,
+                        { _, year, month, dayOfMonth ->
+                            transactionDate.text = DateFormat.getDateFormat(this@AddEditTransactionActivity)
+                                    .format(Date(year, month, dayOfMonth))
+                        },
+                        currentDate.year + 1900,
+                        currentDate.month,
+                        currentDate.date
+                ).show()
+            }
+            transactionTime.setOnClickListener {
+                val currentDate = DateFormat.getTimeFormat(this@AddEditTransactionActivity)
+                        .parse(transactionTime.text.toString())
+                TimePickerDialog(
+                        this@AddEditTransactionActivity,
+                        TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                            val newTime = Date().apply {
+                                hours = hourOfDay
+                                minutes = minute
                             }
-                        }
-                    }
+                            transactionTime.text = DateFormat.getTimeFormat(this@AddEditTransactionActivity)
+                                    .format(newTime)
+                        },
+                        currentDate.hours,
+                        currentDate.minutes,
+                        DateFormat.is24HourFormat(this@AddEditTransactionActivity)
+                ).show()
+            }
+        }
+    }
+
+    private suspend fun loadTransaction() {
+        transaction = try {
+            viewModel.getTransaction(intent!!.extras!!.getLong(EXTRA_TRANSACTION_ID))
+        } catch (e: Exception) {
+            menu?.findItem(R.id.action_delete)?.isVisible = false
+            val date = Date()
+            transactionDate.text = DateFormat.getDateFormat(this).format(date)
+            transactionTime.text = DateFormat.getTimeFormat(this).format(date)
+            return
+        }
+        setTitle(R.string.title_edit_transaction)
+        id = transaction?.id
+        menu?.findItem(R.id.action_delete)?.isVisible = true
+        edit_transaction_title.setText(transaction?.title)
+        edit_transaction_description.setText(transaction?.description)
+        edit_transaction_amount.setText(String.format("%.02f", transaction!!.amount / 100.0f))
+        if (transaction!!.expense) {
+            edit_transaction_type_expense.isChecked = true
+        } else {
+            edit_transaction_type_income.isChecked = true
+        }
+        transactionDate.text = DateFormat.getDateFormat(this).format(transaction!!.date)
+        transactionTime.text = DateFormat.getTimeFormat(this).format(transaction!!.date)
+        transaction?.categoryId?.let {
+            for (i in 0 until edit_transaction_category.adapter.count) {
+                if (it == (edit_transaction_category.adapter.getItem(i) as Category).id) {
+                    edit_transaction_category.setSelection(i)
+                    break
                 }
-                .autoDispose(disposables)
+            }
+        }
+    }
+
+    private fun setCategories(categories: Collection<Category> = emptyList()) {
+        val adapter = ArrayAdapter<Category>(
+                this@AddEditTransactionActivity,
+                android.R.layout.simple_list_item_1
+        )
+        adapter.add(Category(id = 0, title = getString(R.string.uncategorized),
+                amount = 0, budgetId = 0))
+        adapter.addAll(categories)
+        edit_transaction_category.adapter = adapter
+        transaction?.categoryId?.let {
+            for (i in 0 until edit_transaction_category.adapter.count) {
+                if (it == (edit_transaction_category.adapter.getItem(i) as Category).id) {
+                    edit_transaction_category.setSelection(i)
+                    break
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -135,38 +170,35 @@ class AddEditTransactionActivity : AppCompatActivity() {
         when (item?.itemId) {
             android.R.id.home -> onNavigateUp()
             R.id.action_save -> {
-                val field = edit_transaction_date
-                val cal = Calendar.getInstance()
-                cal.set(field.year, field.month, field.dayOfMonth)
-                var categoryId = (edit_transaction_category.selectedItem as? Category)?.id
+                val date = DateFormat.getDateFormat(this).parse(transactionDate.text.toString())
+                val time = DateFormat.getTimeFormat(this).parse(transactionTime.text.toString())
+                date.hours = time.hours
+                date.minutes = time.minutes
+                val categoryId = (edit_transaction_category.selectedItem as? Category)?.id
                         ?.let {
                             if (it > 0) it
                             else null
                         }
-                viewModel.saveTransaction(Transaction(
-                        id = id,
-                        accountId = account.id!!,
-                        title = edit_transaction_title.text.toString(),
-                        date = cal.time,
-                        description = edit_transaction_description.text.toString(),
-                        amount = edit_transaction_amount.rawValue,
-                        expense = edit_transaction_type_expense.isChecked,
-                        categoryId = categoryId,
-                        createdBy = (application as AllowanceApplication).currentUser!!.id!!
-                ))
-                        .fromBackgroundToMain()
-                        .subscribe { transaction, err ->
-                            onNavigateUp()
-                        }
-                        .autoDispose(disposables)
+                launch {
+                    viewModel.saveTransaction(Transaction(
+                            id = id,
+                            budgetId = (budgetSpinner.selectedItem as Budget).id!!,
+                            title = edit_transaction_title.text.toString(),
+                            date = date,
+                            description = edit_transaction_description.text.toString(),
+                            amount = edit_transaction_amount.text.toLong(),
+                            expense = edit_transaction_type_expense.isChecked,
+                            categoryId = categoryId,
+                            createdBy = (application as AllowanceApplication).currentUser!!.id!!
+                    ))
+                    onNavigateUp()
+                }
             }
             R.id.action_delete -> {
-                viewModel.deleteTransaction(this@AddEditTransactionActivity.id!!)
-                        .fromBackgroundToMain()
-                        .subscribe { _, err ->
-                            err?.printStackTrace()
-                            onNavigateUp()
-                        }
+                launch {
+                    viewModel.deleteTransaction(this@AddEditTransactionActivity.id!!)
+                    onNavigateUp()
+                }
             }
         }
         return true
@@ -190,9 +222,6 @@ class AddEditTransactionActivity : AppCompatActivity() {
 
         return true
     }
-
-    override fun onDestroy() {
-        disposables.dispose()
-        super.onDestroy()
-    }
 }
+
+fun Editable?.toLong(): Long = toString().toDouble().toLong() * 100

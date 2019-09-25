@@ -28,8 +28,8 @@ dependencies {
     implementation project(':auth')
     // Retrofit
     api "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.ext.retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$rootProject.ext.retrofit"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     api "com.squareup.moshi:moshi:$rootProject.ext.moshi"
     implementation "com.squareup.moshi:moshi-adapters:$rootProject.ext.moshi"
     // Dagger

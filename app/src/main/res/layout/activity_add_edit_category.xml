@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -32,7 +31,6 @@
                 android:id="@+id/container_edit_category_name"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_category_name"
-                app:layout_constraintBottom_toTopOf="@+id/container_edit_category_amount"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -47,38 +45,30 @@
                 android:id="@+id/container_edit_category_amount"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_category_amount"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/container_edit_category_name">
 
-                <com.blackcat.currencyedittext.CurrencyEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_category_amount"
                     style="@style/AppTheme.EditText"
-                    android:text="0.00"
-                    android:inputType="number"
-                    tools:ignore="HardcodedText" />
+                    android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!--<TextView-->
-                <!--android:id="@+id/container_edit_transaction_date"-->
-                <!--style="@style/AppTheme.EditText.Hint"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginStart="4dp"-->
-                <!--android:text="@string/prompt_transaction_date"-->
-                <!--app:layout_constraintBottom_toTopOf="@+id/edit_transaction_date"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_amount" />-->
+            <TextView
+                android:id="@+id/budgetHint"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_account"
+                app:layout_constraintTop_toBottomOf="@+id/container_edit_category_amount"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <!--<DatePicker-->
-                <!--android:id="@+id/edit_transaction_date"-->
-                <!--style="@style/AppTheme.DatePicker"-->
-                <!--app:layout_constraintBottom_toBottomOf="parent"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toBottomOf="@+id/container_edit_transaction_date" />-->
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/budgetSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/budgetHint" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

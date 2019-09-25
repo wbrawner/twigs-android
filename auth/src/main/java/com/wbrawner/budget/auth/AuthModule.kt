@@ -17,6 +17,7 @@ class AuthModule {
             SharedPreferencesCredentialsProvider(sharedPreferences)
 
     @Provides
+    @Singleton
     fun provideSharedPreferences(context: Context): SharedPreferences =
             EncryptedSharedPreferences.create(
                     ENCRYPTED_SHARED_PREFS_FILE_NAME,

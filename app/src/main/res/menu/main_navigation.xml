@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_overview"
-        android:icon="@drawable/ic_baseline_dashboard_24dp"
-        android:title="@string/title_dashboard" />
-    <item
-        android:id="@+id/action_transactions"
+        android:id="@+id/transactionListFragment"
         android:icon="@drawable/ic_attach_money_black_24dp"
         android:title="@string/title_transactions" />
     <item
-        android:id="@+id/action_categories"
+        android:id="@+id/budgetsFragment"
         android:icon="@drawable/ic_baseline_category_24px"
-        android:title="@string/title_categories" />
+        android:title="@string/title_budgets" />
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/title_profile" />
 </menu>

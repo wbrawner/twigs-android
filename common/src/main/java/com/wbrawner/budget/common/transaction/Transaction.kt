@@ -9,7 +9,7 @@ data class Transaction(
         val description: String,
         val amount: Long,
         val categoryId: Long? = null,
-        val accountId: Long,
+        val budgetId: Long,
         val expense: Boolean,
         val createdBy: Long
 )

@@ -5,23 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.di.BudgetViewModelFactory
-import com.wbrawner.budget.ui.autoDispose
-import com.wbrawner.budget.ui.fromBackgroundToMain
-import io.reactivex.disposables.CompositeDisposable
+import com.wbrawner.budget.ui.toAmountSpannable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class OverviewFragment : androidx.fragment.app.Fragment() {
-    private val disposables = CompositeDisposable()
+class OverviewFragment : Fragment(), CoroutineScope {
+    override val coroutineContext: CoroutineContext = Dispatchers.Main
     @Inject
     lateinit var viewModelFactory: BudgetViewModelFactory
     lateinit var viewModel: AccountOverviewViewModel
-    lateinit var account: Account
+    lateinit var budget: Budget
     private var inflatedView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,21 +35,14 @@ class OverviewFragment : androidx.fragment.app.Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getBalance(account.id!!)
-                .fromBackgroundToMain()
-                .subscribe { balance ->
-                    val balanceView = view!!.findViewById<TextView>(R.id.overview_current_balance)
-                    val color = when {
-                        balance > 0 -> R.color.colorTextGreen
-                        balance == 0L -> R.color.colorTextPrimary
-                        else -> R.color.colorTextRed
-                    }
-                    balanceView.setTextColor(ContextCompat.getColor(context!!, color))
-                    balanceView.text = String.format("${'$'}%.02f", balance / 100.0f)
-                    showData(inflatedView, true)
-                }.autoDispose(disposables)
+    override fun onStart() {
+        super.onStart()
+        launch {
+            val balance = viewModel.getBalance(budget.id!!)
+            view?.findViewById<TextView>(R.id.overview_current_balance)
+                    ?.text = balance.toAmountSpannable(view?.context)
+            showData(inflatedView, true)
+        }
     }
 
     private fun showData(view: View?, show: Boolean) {

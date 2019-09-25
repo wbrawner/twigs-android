@@ -6,10 +6,7 @@ import com.wbrawner.budget.di.AppComponent
 import com.wbrawner.budget.di.DaggerAppComponent
 
 class AllowanceApplication : Application() {
-    var currentUser: User? = User(
-            id = 1,
-            username = "wbrawner"
-    )
+    var currentUser: User? = null
     lateinit var appComponent: AppComponent
         private set
 

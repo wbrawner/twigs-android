@@ -1,107 +1,115 @@
 package com.wbrawner.budget.lib.network
 
-import com.wbrawner.budget.common.account.Account
+import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.transaction.Transaction
+import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
-import io.reactivex.Single
+import com.wbrawner.budget.lib.repository.NewBudgetRequest
 import retrofit2.http.*
 
 interface BudgetApiService {
-    // Accounts
-    @GET("accounts")
-    fun getAccounts(
+    // Budgets
+    @GET("budgets")
+    suspend fun getBudgets(
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Single<Collection<Account>>
+    ): Collection<Budget>
 
-    @GET("accounts/{id}")
-    fun getAccount(@Path("id") id: Long): Single<Account>
+    @GET("budgets/{id}")
+    suspend fun getBudget(@Path("id") id: Long): Budget
 
-    @GET("accounts/{id}/balance")
-    fun getAccountBalance(@Path("id") id: Long): Single<AccountBalanceResponse>
+    @GET("budgets/{id}/balance")
+    suspend fun getBudgetBalance(@Path("id") id: Long): BudgetBalanceResponse
 
-    @POST("accounts/new")
-    fun newAccount(@Body account: Account): Single<Account>
+    @POST("budgets/new")
+    suspend fun newBudget(@Body budget: NewBudgetRequest): Budget
 
-    @PUT("accounts/{id}")
-    fun updateAccount(
+    @PUT("budgets/{id}")
+    suspend fun updateBudget(
             @Path("id") id: Long,
-            @Body account: Account
-    ): Single<Account>
+            @Body budget: Budget
+    ): Budget
 
-    @DELETE("accounts/{id}")
-    fun deleteAccount(@Path("id") id: Long): Single<Void>
+    @DELETE("budgets/{id}")
+    suspend fun deleteBudget(@Path("id") id: Long)
 
     // Categories
     @GET("categories")
-    fun getCategories(
-            @Query("accountId") accountId: Long,
+    suspend fun getCategories(
+            @Query("budgetId") budgetId: Long? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Single<Collection<Category>>
+    ): Collection<Category>
 
     @GET("categories/{id}")
-    fun getCategory(@Path("id") id: Long): Single<Category>
+    suspend fun getCategory(@Path("id") id: Long): Category
 
     @GET("categories/{id}/balance")
-    fun getCategoryBalance(@Path("id") id: Long): Single<CategoryBalanceResponse>
+    suspend fun getCategoryBalance(@Path("id") id: Long): CategoryBalanceResponse
 
     @POST("categories/new")
-    fun newCategory(@Body category: Category): Single<Category>
+    suspend fun newCategory(@Body category: Category): Category
 
     @PUT("categories/{id}")
-    fun updateCategory(
+    suspend fun updateCategory(
             @Path("id") id: Long,
             @Body category: Category
-    ): Single<Category>
+    ): Category
 
     @DELETE("categories/{id}")
-    fun deleteCategory(@Path("id") id: Long): Single<Void>
+    suspend fun deleteCategory(@Path("id") id: Long)
 
     // Transactions
     @GET("transactions")
-    fun getTransactions(
-            @Query("accountId") accountId: Long,
+    suspend fun getTransactions(
+            @Query("budgetId") budgetId: Long? = null,
+            @Query("categoryId") categoryId: Long? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Single<Collection<Transaction>>
+    ): Collection<Transaction>
 
     @GET("transactions/{id}")
-    fun getTransaction(@Path("id") id: Long): Single<Transaction>
+    suspend fun getTransaction(@Path("id") id: Long): Transaction
 
     @POST("transactions/new")
-    fun newTransaction(@Body transaction: Transaction): Single<Transaction>
+    suspend fun newTransaction(@Body transaction: Transaction): Transaction
 
     @PUT("transactions/{id}")
-    fun updateTransaction(
+    suspend fun updateTransaction(
             @Path("id") id: Long,
             @Body transaction: Transaction
-    ): Single<Transaction>
+    ): Transaction
 
     @DELETE("transactions/{id}")
-    fun deleteTransaction(@Path("id") id: Long): Single<Void>
+    suspend fun deleteTransaction(@Path("id") id: Long)
 
     // Users
     @GET("users")
-    fun getUsers(
-            @Query("accountId") accountId: Long,
+    suspend fun getUsers(
+            @Query("budgetId") budgetId: Long? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Single<Collection<User>>
+    ): Collection<User>
+
+    @POST("users/login")
+    suspend fun login(@Body request: LoginRequest): User
+
+    @GET("users/search")
+    suspend fun searchUsers(@Query("query") query: String): List<User>
 
     @GET("users/{id}")
-    fun getUser(@Path("id") id: Long): Single<User>
+    suspend fun getUser(@Path("id") id: Long): User
 
     @POST("users/new")
-    fun newUser(@Body user: User): Single<User>
+    suspend fun newUser(@Body user: User): User
 
     @PUT("users/{id}")
-    fun updateUser(
+    suspend fun updateUser(
             @Path("id") id: Long,
             @Body user: User
-    ): Single<User>
+    ): User
 
     @DELETE("users/{id}")
-    fun deleteUser(@Path("id") id: Long): Single<Void>
+    suspend fun deleteUser(@Path("id") id: Long)
 }

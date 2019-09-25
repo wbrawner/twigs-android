@@ -6,7 +6,14 @@ import com.wbrawner.budget.lib.network.NetworkModule
 import com.wbrawner.budget.ui.MainActivity
 import com.wbrawner.budget.ui.SplashActivity
 import com.wbrawner.budget.ui.SplashViewModelMapper
+import com.wbrawner.budget.ui.auth.LoginFragment
+import com.wbrawner.budget.ui.auth.RegisterFragment
+import com.wbrawner.budget.ui.budgets.AddEditAccountsViewModelMapper
+import com.wbrawner.budget.ui.budgets.AddEditBudgetFragment
+import com.wbrawner.budget.ui.budgets.BudgetListFragment
+import com.wbrawner.budget.ui.budgets.BudgetViewModelMapper
 import com.wbrawner.budget.ui.categories.AddEditCategoryActivity
+import com.wbrawner.budget.ui.categories.CategoryFragment
 import com.wbrawner.budget.ui.categories.CategoryListFragment
 import com.wbrawner.budget.ui.categories.CategoryViewModelMapper
 import com.wbrawner.budget.ui.overview.AccountOverviewViewModelMapper
@@ -25,6 +32,11 @@ import javax.inject.Singleton
 @Component(modules = [AuthModule::class, AppModule::class, NetworkModule::class])
 interface AppComponent {
     fun inject(fragment: OverviewFragment)
+    fun inject(fragment: LoginFragment)
+    fun inject(fragment: BudgetListFragment)
+    fun inject(fragment: RegisterFragment)
+    fun inject(fragment: AddEditBudgetFragment)
+    fun inject(fragment: CategoryFragment)
     fun inject(fragment: TransactionListFragment)
     fun inject(fragment: CategoryListFragment)
     fun inject(activity: MainActivity)
@@ -46,7 +58,9 @@ interface AppComponent {
 @Module(
         includes = [
             AccountOverviewViewModelMapper::class,
+            AddEditAccountsViewModelMapper::class,
             AddEditTransactionViewModelMapper::class,
+            BudgetViewModelMapper::class,
             CategoryViewModelMapper::class,
             SplashViewModelMapper::class,
             TransactionListViewModelMapper::class,

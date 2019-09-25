@@ -1,19 +1,21 @@
 package com.wbrawner.budget.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.di.BudgetViewModelFactory
-import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_splash.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class SplashActivity : AppCompatActivity() {
-    private val disposables = CompositeDisposable()
+class SplashActivity : AppCompatActivity(), CoroutineScope {
+    override val coroutineContext: CoroutineContext = Dispatchers.Main
     private lateinit var viewModel: SplashViewModel
     @Inject
     lateinit var viewModelFactory: BudgetViewModelFactory
@@ -30,54 +32,20 @@ class SplashActivity : AppCompatActivity() {
         }
         (application as AllowanceApplication).appComponent.inject(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SplashViewModel::class.java)
-        viewModel.checkForExistingCredentials()
-                .fromBackgroundToMain()
-                .subscribe { hasExistingCredentials, err ->
-                    if (hasExistingCredentials) {
-                        startActivity(Intent(applicationContext, MainActivity::class.java))
-                        finish()
-                    } else {
-                        showLogin()
-                    }
+        val navController = findNavController(R.id.auth_content)
+        launch {
+            val navId = try {
+                val user = viewModel.checkForExistingCredentials()
+                if (user != null) {
+                    (application as AllowanceApplication).currentUser = user
+                    R.id.mainActivity
+                } else {
+                    R.id.loginFragment
                 }
-                .autoDispose(disposables)
-    }
-
-    private fun showLogin() {
-        loginContainer.show()
-        viewModel.isLoading
-                .fromBackgroundToMain()
-                .subscribe { isLoading ->
-                    formPrompt.show(!isLoading)
-                    usernameContainer.show(!isLoading)
-                    passwordContainer.show(!isLoading)
-                    submit.show(!isLoading)
-                    progressBar.show(isLoading)
-                }
-                .autoDispose(disposables)
-        submit.setOnClickListener {
-            if (!username.ensureNotEmpty() || !password.ensureNotEmpty()) {
-                return@setOnClickListener
+            } catch (e: Exception) {
+                R.id.loginFragment
             }
-            viewModel.login(username.text.toString(), password.text.toString())
-                    .fromBackgroundToMain()
-                    .subscribe { success, error ->
-                        if (error != null || !success) {
-                            username.error = "Invalid username/password"
-                            password.error = "Invalid username/password"
-                            return@subscribe
-                        }
-
-                        startActivity(Intent(applicationContext, MainActivity::class.java))
-                    }
-                    .autoDispose(disposables)
+            navController.navigate(navId)
         }
-
-    }
-
-    override fun onDestroy() {
-        disposables.dispose()
-        disposables.clear()
-        super.onDestroy()
     }
 }

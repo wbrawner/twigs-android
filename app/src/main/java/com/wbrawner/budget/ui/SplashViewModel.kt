@@ -1,38 +1,38 @@
 package com.wbrawner.budget.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.budget.auth.CredentialsProvider
-import com.wbrawner.budget.common.account.AccountRepository
+import com.wbrawner.budget.common.budget.BudgetRepository
+import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.di.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 class SplashViewModel @Inject constructor(
         private val credentialsProvider: CredentialsProvider,
-        private val accountRepository: AccountRepository
+        private val budgetRepository: BudgetRepository
 ) : ViewModel() {
-    val isLoading: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun checkForExistingCredentials(): Single<Boolean> = Single.create { subscriber ->
-        login(credentialsProvider.username(), credentialsProvider.password()).subscribe { _, err ->
-            subscriber.onSuccess(err == null)
+    suspend fun checkForExistingCredentials(): User? {
+        return try {
+            login(credentialsProvider.username, credentialsProvider.password)
+        } catch (ignored: Exception) {
+            null
         }
     }
 
-    fun login(username: String, password: String): Single<Boolean> = Single.create { subscriber ->
-        isLoading.onNext(true)
+    suspend fun login(username: String, password: String): User {
+        isLoading.value = true
         credentialsProvider.saveCredentials(username, password)
-        accountRepository.findAll().subscribe { _, err ->
-            isLoading.onNext(false)
-            if (err != null) {
-                subscriber.onError(err)
-            } else {
-                subscriber.onSuccess(true)
-            }
+        return try {
+            budgetRepository.login(username, password)
+        } catch (e: java.lang.Exception) {
+            isLoading.value = false
+            throw e
         }
     }
 }

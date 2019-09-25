@@ -1,20 +1,19 @@
 package com.wbrawner.budget.ui.transactions
 
 import androidx.lifecycle.ViewModel
-import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.di.ViewModelKey
+import com.wbrawner.budget.ui.base.LoadingViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import io.reactivex.Single
 import javax.inject.Inject
 
 class TransactionListViewModel @Inject constructor(private val transactionRepo: TransactionRepository) :
-        ViewModel
-        () {
-    fun getTransactions(accountId: Long): Single<Collection<Transaction>> =
-            transactionRepo.findAll(accountId)
+        LoadingViewModel() {
+    suspend fun getTransactions(budgetId: Long? = null, categoryId: Long? = null) = showLoader {
+        transactionRepo.findAll(budgetId = budgetId, categoryId = categoryId)
+    }
 }
 
 @Module

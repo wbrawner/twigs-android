@@ -3,11 +3,11 @@ package com.wbrawner.budget.lib.network
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.wbrawner.budget.auth.CredentialsProvider
-import com.wbrawner.budget.common.account.AccountRepository
+import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.common.user.UserRepository
-import com.wbrawner.budget.lib.repository.NetworkAccountRepository
+import com.wbrawner.budget.lib.repository.NetworkBudgetRepository
 import com.wbrawner.budget.lib.repository.NetworkCategoryRepository
 import com.wbrawner.budget.lib.repository.NetworkTransactionRepository
 import com.wbrawner.budget.lib.repository.NetworkUserRepository
@@ -16,7 +16,6 @@ import dagger.Provides
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.*
 import javax.inject.Named
@@ -34,8 +33,8 @@ class NetworkModule {
                 if (it.request().headers().get("Authorization") != null)
                     return@addInterceptor it.proceed(it.request())
                 val credentials = Credentials.basic(
-                        credentialsProvider.username(),
-                        credentialsProvider.password()
+                        credentialsProvider.username,
+                        credentialsProvider.password
                 )
                 val newHeaders = it.request()
                         .headers()
@@ -57,7 +56,6 @@ class NetworkModule {
             client: OkHttpClient
     ): Retrofit = Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .baseUrl(baseUrl)
             .client(client)
             .build()
@@ -67,8 +65,8 @@ class NetworkModule {
             retrofit.create(BudgetApiService::class.java)
 
     @Provides
-    fun provideAccountRepository(apiService: BudgetApiService): AccountRepository =
-            NetworkAccountRepository(apiService)
+    fun provideAccountRepository(apiService: BudgetApiService): BudgetRepository =
+            NetworkBudgetRepository(apiService)
 
     @Provides
     fun provideCategoryRepository(apiService: BudgetApiService): CategoryRepository =

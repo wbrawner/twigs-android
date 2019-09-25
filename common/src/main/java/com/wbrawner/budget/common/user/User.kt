@@ -6,3 +6,8 @@ data class User(
         val email: String? = null,
         val avatar: String? = null
 )
+
+data class LoginRequest(
+        val username: String,
+        val password: String
+)

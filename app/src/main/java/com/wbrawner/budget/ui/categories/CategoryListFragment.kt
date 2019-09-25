@@ -1,79 +1,97 @@
 package com.wbrawner.budget.ui.categories
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.emoji.widget.EmojiTextView
-import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.common.account.Account
-import com.wbrawner.budget.di.BudgetViewModelFactory
-import com.wbrawner.budget.ui.autoDispose
-import com.wbrawner.budget.ui.categories.AddEditCategoryActivity.Companion.EXTRA_ACCOUNT_ID
-import com.wbrawner.budget.ui.hideFabOnScroll
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
+import com.wbrawner.budget.common.category.Category
+import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
+import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
+import com.wbrawner.budget.ui.base.BindableAdapter
+import com.wbrawner.budget.ui.base.BindableState
+import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
+import kotlinx.coroutines.launch
 
-class CategoryListFragment : androidx.fragment.app.Fragment() {
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
-    lateinit var viewModel: CategoryViewModel
-    lateinit var account: Account
-    private val disposables = CompositeDisposable()
-    var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
-    var noDataView: EmojiTextView? = null
+class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel>() {
+    override val noItemsStringRes: Int = R.string.categories_no_data
+    override val viewModelClass: Class<CategoryViewModel> = CategoryViewModel::class.java
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_transaction_list, container, false)
-        recyclerView = view.findViewById(R.id.list_transactions)
-        val fab = view.findViewById<FloatingActionButton>(R.id.fab_add_transaction)
-        recyclerView?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
-        (activity!!.application as AllowanceApplication).appComponent.inject(this)
-        viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(CategoryViewModel::class.java)
-        noDataView = view.findViewById(R.id.transaction_list_no_data)
-        recyclerView?.hideFabOnScroll(fab)
-        fab.setOnClickListener {
-            startActivity(Intent(activity, AddEditCategoryActivity::class.java).apply {
-                putExtra(EXTRA_ACCOUNT_ID, account.id)
-            })
+    override fun onCreate(savedInstanceState: Bundle?) {
+        (requireActivity().application as AllowanceApplication).appComponent.inject(this)
+        super.onCreate(savedInstanceState)
+    }
+
+    override suspend fun loadItems(): Pair<List<BindableState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<in BindableState>>> {
+        val budgetId = arguments?.getLong(EXTRA_BUDGET_ID)
+        if (budgetId == null) {
+            findNavController().navigateUp()
+            return Pair(emptyList(), emptyMap())
         }
-        return view
+        val budget = viewModel.getBudget(budgetId)
+        activity?.title = budget.name
+        return Pair(
+                viewModel.getCategories(budgetId).map { CategoryState(it) },
+                mapOf(CATEGORY_VIEW to { v ->
+                    CategoryViewHolder(v, viewModel, findNavController()) as BindableAdapter.BindableViewHolder<in BindableState>
+                })
+        )
     }
 
-    override fun onDestroyView() {
-        disposables.dispose()
-        super.onDestroyView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getCategories(account.id!!)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { data ->
-                    if (data.isEmpty()) {
-                        recyclerView?.adapter = null
-                        noDataView?.setText(R.string.categories_no_data)
-                        recyclerView?.visibility = View.GONE
-                        noDataView?.visibility = View.VISIBLE
-                    } else {
-                        recyclerView?.adapter = CategoryAdapter(activity!!, account, data.toList(),
-                                viewModel)
-                        recyclerView?.visibility = View.VISIBLE
-                        noDataView?.visibility = View.GONE
-                    }
-                }
-                .autoDispose(disposables)
+    override fun addItem() {
+        startActivity(Intent(activity, AddEditCategoryActivity::class.java))
     }
 
     companion object {
         const val TAG_FRAGMENT = "categories"
-        const val TITLE_FRAGMENT = R.string.title_categories
+    }
+}
+
+const val CATEGORY_VIEW = R.layout.list_item_category
+
+class CategoryState(val category: Category) : BindableState {
+    override val viewType: Int = CATEGORY_VIEW
+}
+
+class CategoryViewHolder(
+        itemView: View,
+        private val viewModel: CategoryViewModel,
+        private val navController: NavController
+) : BindableAdapter.CoroutineViewHolder<CategoryState>(itemView) {
+    private val name: TextView = itemView.findViewById(R.id.category_title)
+    private val amount: TextView = itemView.findViewById(R.id.category_amount)
+    private val progressBar: ProgressBar = itemView.findViewById(R.id.category_progress)
+
+    @SuppressLint("NewApi")
+    override fun onBind(item: CategoryState) {
+        with(item) {
+            name.text = category.title
+            // TODO: Format according to budget's currency
+            amount.text = String.format("${'$'}%.02f", category.amount / 100.0f)
+            progressBar.max = category.amount.toInt()
+            launch {
+                val balance = viewModel.getBalance(category.id!!)
+                progressBar.isIndeterminate = false
+                progressBar.setProgress(
+                        (-1 * balance).toInt(),
+                        true
+                )
+                amount.text = itemView.context.getString(
+                        R.string.balance_remaning,
+                        (category.amount + balance) / 100.0f
+                )
+            }
+            itemView.setOnClickListener {
+                val bundle = Bundle().apply {
+                    putLong(EXTRA_CATEGORY_ID, category.id ?: -1)
+                }
+                navController.navigate(R.id.categoryFragment, bundle)
+            }
+        }
     }
 }

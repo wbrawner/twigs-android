@@ -1,8 +1,8 @@
 package com.wbrawner.budget.common.user
 
 import com.wbrawner.budget.common.Repository
-import io.reactivex.Single
 
 interface UserRepository : Repository<User, Long> {
-    fun findAll(accountId: Long): Single<Collection<User>>
+    suspend fun findAll(accountId: Long? = null): Collection<User>
+    suspend fun findAllByNameLike(query: String): Collection<User>
 }

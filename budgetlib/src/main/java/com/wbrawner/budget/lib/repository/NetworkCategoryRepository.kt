@@ -3,45 +3,22 @@ package com.wbrawner.budget.lib.repository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.lib.network.BudgetApiService
-import io.reactivex.Single
 import javax.inject.Inject
 class NetworkCategoryRepository @Inject constructor(private val apiService: BudgetApiService) : CategoryRepository {
-    override fun create(newItem: Category): Single<Category> = apiService.newCategory(newItem)
+    override suspend fun create(newItem: Category): Category = apiService.newCategory(newItem)
 
-    override fun findAll(accountId: Long): Single<Collection<Category>> = Single.create { subscriber ->
-        apiService.getCategories(accountId).subscribe { categories, error ->
-            if (error != null) {
-                subscriber.onError(error)
-            } else {
-                subscriber.onSuccess(categories.sortedBy { it.title })
-            }
-        }
+    override suspend fun findAll(accountId: Long?): Collection<Category> = apiService.getCategories(accountId).sortedBy { it.title }
 
-    }
+    override suspend fun findAll(): Collection<Category> = findAll(null)
 
-    /**
-     * This will only return an empty list, since an accountId is required to get categories.
-     * Pass a [Long] as the first (and only) parameter to denote the
-     * [account ID][com.wbrawner.budget.common.account.Account.id] instead
-     */
-    override fun findAll(): Single<Collection<Category>> = Single.just(ArrayList())
+    override suspend fun findById(id: Long): Category = apiService.getCategory(id)
 
-    override fun findById(id: Long): Single<Category> = apiService.getCategory(id)
-
-    override fun update(updatedItem: Category): Single<Category> =
+    override suspend fun update(updatedItem: Category): Category =
             apiService.updateCategory(updatedItem.id!!, updatedItem)
 
-    override fun delete(id: Long): Single<Void> = apiService.deleteCategory(id)
+    override suspend fun delete(id: Long) = apiService.deleteCategory(id)
 
     // TODO: Implement this method server-side and then here
-    override fun getBalance(id: Long): Single<Long> = Single.create { subscriber ->
-        apiService.getCategoryBalance(id).subscribe { res, err ->
-            if (err != null) {
-                subscriber.onError(err)
-            } else {
-                subscriber.onSuccess(res.balance)
-            }
-        }
-    }
+    override suspend fun getBalance(id: Long): Long = apiService.getCategoryBalance(id).balance
 }
 
