@@ -1,8 +1,8 @@
 package com.wbrawner.budget.di
 
 import android.content.Context
-import com.wbrawner.budget.auth.AuthModule
 import com.wbrawner.budget.lib.network.NetworkModule
+import com.wbrawner.budget.storage.StorageModule
 import com.wbrawner.budget.ui.MainActivity
 import com.wbrawner.budget.ui.SplashActivity
 import com.wbrawner.budget.ui.SplashViewModelMapper
@@ -29,7 +29,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AuthModule::class, AppModule::class, NetworkModule::class])
+@Component(modules = [StorageModule::class, AppModule::class, NetworkModule::class])
 interface AppComponent {
     fun inject(fragment: OverviewFragment)
     fun inject(fragment: LoginFragment)

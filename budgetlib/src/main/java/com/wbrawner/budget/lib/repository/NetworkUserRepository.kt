@@ -1,11 +1,18 @@
 package com.wbrawner.budget.lib.repository
 
+import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
 import com.wbrawner.budget.lib.network.BudgetApiService
 import javax.inject.Inject
 
 class NetworkUserRepository @Inject constructor(private val apiService: BudgetApiService) : UserRepository {
+
+    override suspend fun login(username: String, password: String): User =
+            apiService.login(LoginRequest(username, password))
+
+    override suspend fun getProfile(): User = apiService.getProfile()
+
     override suspend fun create(newItem: User): User = apiService.newUser(newItem)
 
     override suspend fun findAll(accountId: Long?): Collection<User> = apiService.getUsers(accountId)

@@ -1,8 +1,9 @@
 package com.wbrawner.budget.lib.network
 
+import android.content.SharedPreferences
+import android.util.Base64
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.wbrawner.budget.auth.CredentialsProvider
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.transaction.TransactionRepository
@@ -13,10 +14,13 @@ import com.wbrawner.budget.lib.repository.NetworkTransactionRepository
 import com.wbrawner.budget.lib.repository.NetworkUserRepository
 import dagger.Module
 import dagger.Provides
-import okhttp3.Credentials
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Named
 
@@ -28,25 +32,39 @@ class NetworkModule {
             .build()
 
     @Provides
-    fun provideOkHttpClient(credentialsProvider: CredentialsProvider): OkHttpClient = OkHttpClient.Builder()
-            .addInterceptor {
-                if (it.request().headers().get("Authorization") != null)
-                    return@addInterceptor it.proceed(it.request())
-                val credentials = Credentials.basic(
-                        credentialsProvider.username,
-                        credentialsProvider.password
-                )
-                val newHeaders = it.request()
-                        .headers()
-                        .newBuilder()
-                        .add("Authorization: $credentials")
-                        .build()
-                val newRequest = it.request()
-                        .newBuilder()
-                        .headers(newHeaders)
-                        .build()
-                it.proceed(newRequest)
+    fun provideCookieJar(sharedPreferences: SharedPreferences): CookieJar {
+        return object : CookieJar {
+            override fun saveFromResponse(url: HttpUrl, cookies: MutableList<Cookie>) {
+                sharedPreferences.edit()
+                        .putString(
+                                url.host(),
+                                cookies.joinToString(separator = ",") {
+                                    Base64.encode(it.toString().toByteArray(), 0)
+                                            .toString(charset = Charset.forName("UTF-8"))
+                                }
+                        )
+                        .apply()
             }
+
+            override fun loadForRequest(url: HttpUrl): MutableList<Cookie> {
+                return sharedPreferences.getString(url.host(), "")
+                        ?.split(",")
+                        ?.mapNotNull {
+                            Cookie.parse(
+                                    url,
+                                    Base64.decode(it, 0).toString(Charset.forName("UTF-8"))
+                            )
+                        }
+                        ?.toMutableList()
+                        ?: mutableListOf()
+            }
+        }
+    }
+
+    @Provides
+    fun provideOkHttpClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
+            .cookieJar(cookieJar)
+            // TODO: Add Gander interceptor
             .build()
 
     @Provides

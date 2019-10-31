@@ -1,4 +1,4 @@
-package com.wbrawner.budget.auth
+package com.wbrawner.budget.storage
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,12 +10,7 @@ import javax.inject.Singleton
 const val ENCRYPTED_SHARED_PREFS_FILE_NAME = "shared-prefs.encrypted"
 
 @Module
-class AuthModule {
-    @Singleton
-    @Provides
-    fun provideCredentialsProvider(sharedPreferences: SharedPreferences): CredentialsProvider =
-            SharedPreferencesCredentialsProvider(sharedPreferences)
-
+class StorageModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(context: Context): SharedPreferences =

@@ -95,6 +95,9 @@ interface BudgetApiService {
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): User
 
+    @GET("users/me")
+    suspend fun getProfile(): User
+
     @GET("users/search")
     suspend fun searchUsers(@Query("query") query: String): List<User>
 

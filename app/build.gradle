@@ -20,8 +20,9 @@ android {
             useSupportLibrary = true
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "API_URL", "\"http://192.168.86.92:8080/\""
+//        buildConfigField "String", "API_URL", "\"http://192.168.86.92:8080/\""
 //        buildConfigField "String", "API_URL", "\"http://10.0.2.2:8080/\""
+        buildConfigField "String", "API_URL", "\"https://budget-api.intra.wbrawner.com/\""
     }
     buildTypes {
         release {
@@ -38,7 +39,7 @@ android {
 dependencies {
     implementation project(':common')
     implementation project(':budgetlib')
-    implementation project(':auth')
+    implementation project(':storage')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

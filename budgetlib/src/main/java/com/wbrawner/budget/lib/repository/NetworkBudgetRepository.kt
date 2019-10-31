@@ -2,8 +2,6 @@ package com.wbrawner.budget.lib.repository
 
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
-import com.wbrawner.budget.common.user.LoginRequest
-import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.lib.network.BudgetApiService
 import javax.inject.Inject
 
@@ -20,9 +18,6 @@ class NetworkBudgetRepository @Inject constructor(private val apiService: Budget
             apiService.updateBudget(updatedItem.id!!, updatedItem)
 
     override suspend fun delete(id: Long) = apiService.deleteBudget(id)
-
-    override suspend fun login(username: String, password: String): User =
-            apiService.login(LoginRequest(username, password))
 
     override suspend fun getBalance(id: Long): Long = apiService.getBudgetBalance(id).balance
 }
