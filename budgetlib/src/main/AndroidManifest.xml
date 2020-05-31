@@ -1,1 +1,5 @@
-<manifest package="com.wbrawner.budgetlib" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wbrawner.budgetlib">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
