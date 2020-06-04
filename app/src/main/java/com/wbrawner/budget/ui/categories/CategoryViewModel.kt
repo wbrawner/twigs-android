@@ -35,7 +35,7 @@ class CategoryViewModel @Inject constructor(
     }
 
     suspend fun getCategories(budgetId: Long? = null): Collection<Category> = showLoader {
-        categoryRepo.findAll(budgetId)
+        categoryRepo.findAll(budgetId?.let { arrayOf(it) })
     }
 
     suspend fun saveCategory(category: Category) = showLoader {

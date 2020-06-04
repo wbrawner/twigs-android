@@ -21,7 +21,7 @@ import com.wbrawner.budget.ui.transactions.TransactionViewHolder
 /**
  * A simple [Fragment] subclass.
  */
-class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel>() {
+class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel, TransactionState>() {
     override val noItemsStringRes: Int = R.string.transactions_no_data
     override val viewModelClass: Class<CategoryViewModel> = CategoryViewModel::class.java
 
@@ -31,7 +31,7 @@ class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel>() {
         setHasOptionsMenu(true)
     }
 
-    override suspend fun loadItems(): Pair<List<BindableState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<in BindableState>>> {
+    override suspend fun loadItems(): Pair<List<TransactionState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<TransactionState>>> {
         val categoryId = arguments?.getLong(EXTRA_CATEGORY_ID)
         if (categoryId == null) {
             findNavController().navigateUp()
@@ -40,12 +40,12 @@ class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel>() {
         val category = viewModel.getCategory(categoryId)
         activity?.title = category.title
         // TODO: Add category details here as well
-        val items = ArrayList<BindableState>()
+        val items = ArrayList<TransactionState>()
         items.addAll(viewModel.getTransactions(categoryId).map { TransactionState(it) })
         return Pair(
                 items,
                 mapOf(TRANSACTION_VIEW to { v ->
-                    TransactionViewHolder(v, findNavController()) as BindableAdapter.BindableViewHolder<in BindableState>
+                    TransactionViewHolder(v, findNavController())
                 })
         )
     }

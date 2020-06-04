@@ -17,7 +17,7 @@ class CategoryListViewModel @Inject constructor(
     suspend fun getCategory(id: Long): Category = categoryRepo.findById(id)
 
     suspend fun getCategories(budgetId: Long? = null): Collection<Category> =
-            categoryRepo.findAll(budgetId)
+            categoryRepo.findAll(budgetId?.let { arrayOf(it) })
 
     suspend fun saveCategory(category: Category) = if (category.id == null) categoryRepo.create(category)
     else categoryRepo.update(category)

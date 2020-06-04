@@ -37,7 +37,7 @@ interface BudgetApiService {
     // Categories
     @GET("categories")
     suspend fun getCategories(
-            @Query("budgetId") budgetId: Long? = null,
+            @Query("budgetIds") budgetIds: Array<Long>? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
     ): Collection<Category>
@@ -65,6 +65,8 @@ interface BudgetApiService {
     suspend fun getTransactions(
             @Query("budgetId") budgetId: Long? = null,
             @Query("categoryId") categoryId: Long? = null,
+            @Query("from") from: String? = null,
+            @Query("to") to: String? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
     ): Collection<Transaction>

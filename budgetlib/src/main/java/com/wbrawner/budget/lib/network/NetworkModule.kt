@@ -12,12 +12,14 @@ import com.wbrawner.budget.lib.repository.NetworkBudgetRepository
 import com.wbrawner.budget.lib.repository.NetworkCategoryRepository
 import com.wbrawner.budget.lib.repository.NetworkTransactionRepository
 import com.wbrawner.budget.lib.repository.NetworkUserRepository
+import com.wbrawner.budgetlib.BuildConfig
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.nio.charset.Charset
@@ -34,10 +36,10 @@ class NetworkModule {
     @Provides
     fun provideCookieJar(sharedPreferences: SharedPreferences): CookieJar {
         return object : CookieJar {
-            override fun saveFromResponse(url: HttpUrl, cookies: MutableList<Cookie>) {
+            override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
                 sharedPreferences.edit()
                         .putString(
-                                url.host(),
+                                url.host,
                                 cookies.joinToString(separator = ",") {
                                     Base64.encode(it.toString().toByteArray(), 0)
                                             .toString(charset = Charset.forName("UTF-8"))
@@ -47,7 +49,7 @@ class NetworkModule {
             }
 
             override fun loadForRequest(url: HttpUrl): MutableList<Cookie> {
-                return sharedPreferences.getString(url.host(), "")
+                return sharedPreferences.getString(url.host, "")
                         ?.split(",")
                         ?.mapNotNull {
                             Cookie.parse(
@@ -64,7 +66,13 @@ class NetworkModule {
     @Provides
     fun provideOkHttpClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
-            // TODO: Add Gander interceptor
+            .apply {
+                if (BuildConfig.DEBUG)
+                        this.addInterceptor(
+                                HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT)
+                                        .setLevel(HttpLoggingInterceptor.Level.BODY)
+                        )
+            }
             .build()
 
     @Provides

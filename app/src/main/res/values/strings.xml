@@ -40,7 +40,6 @@
     <string name="action_login">Login</string>
     <string name="title_register">Register</string>
     <string name="title_forgot_password">Forgot password?</string>
-    <string name="prompt_account">Account</string>
     <string name="prompt_account_name">Name</string>
     <string name="prompt_account_description">Description</string>
     <string name="prompt_share_with">Share with...</string>
@@ -50,4 +49,8 @@
     <string name="title_edit_budget">Edit Budget</string>
     <string name="title_edit">Edit</string>
     <string name="description_logo">Twigs Logo</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="prompt_month">Month</string>
+    <string name="prompt_year">Year</string>
 </resources>

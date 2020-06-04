@@ -1,7 +1,6 @@
 package com.wbrawner.budget.ui.auth
 
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.di.BudgetViewModelFactory
-import com.wbrawner.budget.ui.MainActivity
 import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.ensureNotEmpty
 import com.wbrawner.budget.ui.show
@@ -49,7 +48,7 @@ class LoginFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.isLoading.observe(this, Observer { isLoading ->
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             formPrompt.show(!isLoading)
             usernameContainer.show(!isLoading)
             passwordContainer.show(!isLoading)
@@ -69,7 +68,8 @@ class LoginFragment : Fragment(), CoroutineScope {
                 try {
                     val user = viewModel.login(username.text.toString(), password.text.toString())
                     (requireActivity().application as AllowanceApplication).currentUser = user
-                    startActivity(Intent(requireContext().applicationContext, MainActivity::class.java))
+                    findNavController().navigate(R.id.mainActivity)
+                    activity?.finish()
                 } catch (e: Exception) {
                     username.error = "Invalid username/password"
                     password.error = "Invalid username/password"

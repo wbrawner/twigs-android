@@ -7,12 +7,18 @@ import com.wbrawner.budget.ui.base.LoadingViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
+import java.util.*
 import javax.inject.Inject
 
 class TransactionListViewModel @Inject constructor(private val transactionRepo: TransactionRepository) :
         LoadingViewModel() {
-    suspend fun getTransactions(budgetId: Long? = null, categoryId: Long? = null) = showLoader {
-        transactionRepo.findAll(budgetId = budgetId, categoryId = categoryId)
+    suspend fun getTransactions(
+            budgetId: Long? = null,
+            categoryId: Long? = null,
+            start: Calendar? = null,
+            end: Calendar? = null
+    ) = showLoader {
+        transactionRepo.findAll(budgetId, categoryId, start, end)
     }
 }
 

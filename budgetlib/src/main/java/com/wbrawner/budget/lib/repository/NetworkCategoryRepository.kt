@@ -7,7 +7,7 @@ import javax.inject.Inject
 class NetworkCategoryRepository @Inject constructor(private val apiService: BudgetApiService) : CategoryRepository {
     override suspend fun create(newItem: Category): Category = apiService.newCategory(newItem)
 
-    override suspend fun findAll(accountId: Long?): Collection<Category> = apiService.getCategories(accountId).sortedBy { it.title }
+    override suspend fun findAll(budgetIds: Array<Long>?): Collection<Category> = apiService.getCategories(budgetIds).sortedBy { it.title }
 
     override suspend fun findAll(): Collection<Category> = findAll(null)
 

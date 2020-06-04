@@ -46,6 +46,7 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                 R.id.loginFragment
             }
             navController.navigate(navId)
+            if (navId == R.id.mainActivity) finish()
         }
     }
 }

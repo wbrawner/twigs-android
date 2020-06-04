@@ -22,18 +22,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_category_name"
                 style="@style/AppTheme.EditText.Container"
-                android:hint="@string/prompt_category_name"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:hint="@string/prompt_category_name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_category_name"
@@ -44,10 +42,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_category_amount"
                 style="@style/AppTheme.EditText.Container"
-                android:hint="@string/prompt_category_amount"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/container_edit_category_name">
+                android:hint="@string/prompt_category_amount">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_category_amount"
@@ -60,15 +55,12 @@
                 style="@style/TextAppearance.MaterialComponents.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/prompt_account"
-                app:layout_constraintTop_toBottomOf="@+id/container_edit_category_amount"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:text="@string/prompt_budget" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/budgetSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/budgetHint" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

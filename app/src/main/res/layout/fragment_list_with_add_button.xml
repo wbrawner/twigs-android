@@ -36,6 +36,7 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:focusable="true"
+        app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/ic_add_white_24dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

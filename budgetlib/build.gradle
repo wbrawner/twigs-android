@@ -29,7 +29,8 @@ dependencies {
     // Retrofit
     api "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$rootProject.ext.retrofit"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
+    implementation("com.squareup.okhttp3:logging-interceptor:4.7.2")
     api "com.squareup.moshi:moshi:$rootProject.ext.moshi"
     implementation "com.squareup.moshi:moshi-adapters:$rootProject.ext.moshi"
     // Dagger

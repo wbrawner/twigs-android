@@ -15,7 +15,7 @@ import com.wbrawner.budget.ui.base.BindableState
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
 import kotlinx.coroutines.CoroutineScope
 
-class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel>(), CoroutineScope {
+class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetState>(), CoroutineScope {
     override val noItemsStringRes: Int = R.string.overview_no_data
     override val viewModelClass: Class<BudgetViewModel> = BudgetViewModel::class.java
 
@@ -24,12 +24,19 @@ class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel>(), Corouti
         super.onCreate(savedInstanceState)
     }
 
-    override suspend fun loadItems(): Pair<List<BindableState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<in BindableState>>> {
+    override suspend fun loadItems(): Pair<List<BudgetState>, Map<Int, (view: View) -> BudgetViewHolder>> {
         val budgetItems = viewModel.getBudgets().map { BudgetState(it) }
-        val navController = findNavController()
+
         return Pair(
                 budgetItems,
-                mapOf(BUDGET_VIEW to { v -> BudgetViewHolder(v, navController) as BindableAdapter.BindableViewHolder<in BindableState> })
+                mapOf(BUDGET_VIEW to { v ->
+                    BudgetViewHolder(v) { _, budget ->
+                        val bundle = Bundle().apply {
+                            putLong(EXTRA_BUDGET_ID, budget.id!!)
+                        }
+                        findNavController().navigate(R.id.categoryListFragment, bundle)
+                    }
+                })
         )
     }
 
@@ -46,7 +53,7 @@ class BudgetState(val budget: Budget) : BindableState {
 
 class BudgetViewHolder(
         itemView: View,
-        private val navController: NavController
+        private val budgetClickListener: (View, Budget) -> Unit
 ) : BindableAdapter.BindableViewHolder<BudgetState>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.budgetName)
     private val description: TextView = itemView.findViewById(R.id.budgetDescription)
@@ -62,10 +69,7 @@ class BudgetViewHolder(
                 description.text = budget.description
             }
             itemView.setOnClickListener {
-                val bundle = Bundle().apply {
-                    putLong(EXTRA_BUDGET_ID, budget.id!!)
-                }
-                navController.navigate(R.id.categoryListFragment, bundle)
+                budgetClickListener(it, budget)
             }
         }
     }

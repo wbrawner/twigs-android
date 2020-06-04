@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-abstract class ListWithAddButtonFragment<T : LoadingViewModel> : Fragment(), CoroutineScope {
+abstract class ListWithAddButtonFragment<T : LoadingViewModel, State: BindableState> : Fragment(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
     @Inject
     lateinit var viewModelFactory: BudgetViewModelFactory
@@ -30,7 +30,7 @@ abstract class ListWithAddButtonFragment<T : LoadingViewModel> : Fragment(), Cor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(viewModelClass)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +40,7 @@ abstract class ListWithAddButtonFragment<T : LoadingViewModel> : Fragment(), Cor
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.isLoading.observe(this, Observer {
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             view.findViewById<ProgressBar?>(R.id.progressBar)?.show(it)
         })
         recyclerView.layoutManager = LinearLayoutManager(view.context)
@@ -61,14 +61,14 @@ abstract class ListWithAddButtonFragment<T : LoadingViewModel> : Fragment(), Cor
             if (view == null) return@launch
             val (items, constructors) = loadItems()
             if (items.isEmpty()) {
-                recyclerView.adapter = null
-                recyclerView.visibility = View.GONE
-                noItemsTextView.setText(noItemsStringRes)
-                noItemsTextView.visibility = View.VISIBLE
+                recyclerView?.adapter = null
+                recyclerView?.visibility = View.GONE
+                noItemsTextView?.setText(noItemsStringRes)
+                noItemsTextView?.visibility = View.VISIBLE
             } else {
-                recyclerView.adapter = BindableAdapter(items, constructors)
-                recyclerView.visibility = View.VISIBLE
-                noItemsTextView.visibility = View.GONE
+                recyclerView?.adapter = BindableAdapter(items, constructors)
+                recyclerView?.visibility = View.VISIBLE
+                noItemsTextView?.visibility = View.GONE
             }
         }
     }
@@ -88,7 +88,7 @@ abstract class ListWithAddButtonFragment<T : LoadingViewModel> : Fragment(), Cor
 
     abstract fun addItem()
 
-    abstract suspend fun loadItems(): Pair<List<BindableState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<in BindableState>>>
+    abstract suspend fun loadItems(): Pair<List<State>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<State>>>
 }
 
 abstract class LoadingViewModel : ViewModel() {

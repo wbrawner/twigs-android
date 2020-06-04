@@ -16,7 +16,7 @@ class AddEditTransactionViewModel @Inject constructor(
         private val categoryRepository: CategoryRepository,
         private val transactionRepository: TransactionRepository
 ) : ViewModel() {
-    suspend fun getCategories(accountId: Long) = categoryRepository.findAll(accountId)
+    suspend fun getCategories(budgetId: Long) = categoryRepository.findAll(arrayOf(budgetId))
 
     suspend fun getTransaction(id: Long) = transactionRepository.findById(id)
 

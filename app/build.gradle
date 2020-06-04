@@ -21,7 +21,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        buildConfigField "String", "API_URL", "\"http://192.168.86.163:8080/\""
 //        buildConfigField "String", "API_URL", "\"http://10.0.2.2:8080/\""
-        buildConfigField "String", "API_URL", "\"https://budget-api.intra.wbrawner.com/\""
+        buildConfigField "String", "API_URL", "\"https://api.twigs.brawner.dev/\""
     }
     buildTypes {
         release {

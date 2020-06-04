@@ -18,7 +18,7 @@ import com.wbrawner.budget.ui.base.BindableState
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
 import kotlinx.coroutines.launch
 
-class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel>() {
+class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, CategoryState>() {
     override val noItemsStringRes: Int = R.string.categories_no_data
     override val viewModelClass: Class<CategoryViewModel> = CategoryViewModel::class.java
 
@@ -27,7 +27,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel>() {
         super.onCreate(savedInstanceState)
     }
 
-    override suspend fun loadItems(): Pair<List<BindableState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<in BindableState>>> {
+    override suspend fun loadItems(): Pair<List<CategoryState>, Map<Int, (view: View) -> CategoryViewHolder>> {
         val budgetId = arguments?.getLong(EXTRA_BUDGET_ID)
         if (budgetId == null) {
             findNavController().navigateUp()
@@ -38,7 +38,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel>() {
         return Pair(
                 viewModel.getCategories(budgetId).map { CategoryState(it) },
                 mapOf(CATEGORY_VIEW to { v ->
-                    CategoryViewHolder(v, viewModel, findNavController()) as BindableAdapter.BindableViewHolder<in BindableState>
+                    CategoryViewHolder(v, viewModel, findNavController())
                 })
         )
     }

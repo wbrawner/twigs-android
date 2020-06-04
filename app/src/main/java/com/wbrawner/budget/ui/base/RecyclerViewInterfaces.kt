@@ -10,12 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
-class BindableAdapter(
-        private val items: List<BindableState>,
-        private val constructors: Map<Int, (view: View) -> BindableViewHolder<in BindableState>>
-) : RecyclerView.Adapter<BindableAdapter.BindableViewHolder<in BindableState>>() {
+class BindableAdapter<T : BindableState>(
+        private val items: List<T>,
+        private val constructors: Map<Int, (view: View) -> BindableViewHolder<T>>
+) : RecyclerView.Adapter<BindableAdapter.BindableViewHolder<T>>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
-            : BindableViewHolder<in BindableState> = constructors[viewType]
+            : BindableViewHolder<T> = constructors[viewType]
             ?.invoke(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
             ?: throw IllegalStateException("Attempted to create ViewHolder without proper constructor provided")
 
@@ -23,11 +23,11 @@ class BindableAdapter(
 
     override fun getItemViewType(position: Int): Int = items[position].viewType
 
-    override fun onBindViewHolder(holder: BindableViewHolder<in BindableState>, position: Int) {
+    override fun onBindViewHolder(holder: BindableViewHolder<T>, position: Int) {
         holder.onBind(items[position])
     }
 
-    override fun onViewRecycled(holder: BindableViewHolder<in BindableState>) {
+    override fun onViewRecycled(holder: BindableViewHolder<T>) {
         holder.onUnbind()
     }
 
