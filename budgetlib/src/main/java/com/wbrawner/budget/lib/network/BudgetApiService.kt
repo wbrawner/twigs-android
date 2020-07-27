@@ -63,8 +63,8 @@ interface BudgetApiService {
     // Transactions
     @GET("transactions")
     suspend fun getTransactions(
-            @Query("budgetId") budgetId: Long? = null,
-            @Query("categoryId") categoryId: Long? = null,
+            @Query("budgetIds") budgetIds: List<Long>? = null,
+            @Query("categoryIds") categoryIds: List<Long>? = null,
             @Query("from") from: String? = null,
             @Query("to") to: String? = null,
             @Query("count") count: Int? = null,

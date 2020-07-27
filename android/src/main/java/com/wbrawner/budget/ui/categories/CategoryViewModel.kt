@@ -27,7 +27,7 @@ class CategoryViewModel @Inject constructor(
     }
 
     suspend fun getTransactions(categoryId: Long) = showLoader {
-        transactionRepo.findAll(categoryId = categoryId)
+        transactionRepo.findAll(categoryIds = listOf(categoryId))
     }
 
     suspend fun getCategory(id: Long): Category = showLoader {

@@ -5,8 +5,8 @@ import java.util.*
 
 interface TransactionRepository : Repository<Transaction, Long> {
     suspend fun findAll(
-            budgetId: Long? = null,
-            categoryId: Long? = null,
+            budgetIds: List<Long>? = null,
+            categoryIds: List<Long>? = null,
             start: Calendar? = null,
             end: Calendar? = null
     ): Collection<Transaction>

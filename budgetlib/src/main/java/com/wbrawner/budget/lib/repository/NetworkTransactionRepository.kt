@@ -4,7 +4,6 @@ import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.lib.network.BudgetApiService
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -14,13 +13,13 @@ class NetworkTransactionRepository @Inject constructor(private val apiService: B
     override suspend fun create(newItem: Transaction): Transaction = apiService.newTransaction(newItem)
 
     override suspend fun findAll(
-            budgetId: Long?,
-            categoryId: Long?,
+            budgetIds: List<Long>?,
+            categoryIds: List<Long>?,
             start: Calendar?,
             end: Calendar?
     ): Collection<Transaction> = apiService.getTransactions(
-            budgetId,
-            categoryId,
+            budgetIds,
+            categoryIds,
             start?.let {
                 it.timeZone = TimeZone.getTimeZone("UTC")
                 dateFormatter.format(it.time)

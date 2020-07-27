@@ -18,7 +18,9 @@ class TransactionListViewModel @Inject constructor(private val transactionRepo: 
             start: Calendar? = null,
             end: Calendar? = null
     ) = showLoader {
-        transactionRepo.findAll(budgetId, categoryId, start, end)
+        val budgets = budgetId?.let { listOf(it) }
+        val categories = categoryId?.let { listOf(it) }
+        transactionRepo.findAll(budgets, categories, start, end)
     }
 }
 
