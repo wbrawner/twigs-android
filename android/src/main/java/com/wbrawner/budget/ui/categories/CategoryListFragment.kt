@@ -73,17 +73,23 @@ class CategoryViewHolder(
             name.text = category.title
             // TODO: Format according to budget's currency
             amount.text = String.format("${'$'}%.02f", category.amount / 100.0f)
+            val tintColor = if (category.expense) R.color.colorTextRed else R.color.colorTextGreen
+            val colorStateList = with(itemView.context) {
+                android.content.res.ColorStateList.valueOf(getColor(tintColor))
+            }
+            progressBar.progressTintList = colorStateList
+            progressBar.indeterminateTintList = colorStateList
             progressBar.max = category.amount.toInt()
             launch {
-                val balance = viewModel.getBalance(category.id!!)
+                val balance = viewModel.getBalance(category)
                 progressBar.isIndeterminate = false
                 progressBar.setProgress(
-                        (-1 * balance).toInt(),
+                        balance,
                         true
                 )
                 amount.text = itemView.context.getString(
                         R.string.balance_remaning,
-                        (category.amount + balance) / 100.0f
+                        (category.amount - balance) / 100.0f
                 )
             }
             itemView.setOnClickListener {

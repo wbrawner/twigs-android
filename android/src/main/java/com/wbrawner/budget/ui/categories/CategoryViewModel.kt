@@ -49,8 +49,10 @@ class CategoryViewModel @Inject constructor(
         categoryRepo.delete(id)
     }
 
-    suspend fun getBalance(id: Long) = showLoader {
-        categoryRepo.getBalance(id)
+    suspend fun getBalance(category: Category) = showLoader {
+        val balance = categoryRepo.getBalance(category.id!!)
+        val multiplier = if (category.expense) -1 else 1
+        return@showLoader (balance * multiplier).toInt()
     }
 }
 

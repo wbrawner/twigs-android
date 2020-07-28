@@ -5,7 +5,9 @@ data class Category(
         val id: Long? = null,
         val title: String,
         val description: String? = null,
-        val amount: Long
+        val amount: Long,
+        val expense: Boolean = true,
+        val archived: Boolean = false
 ) {
     override fun toString(): String {
         return title

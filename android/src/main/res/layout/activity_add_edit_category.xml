@@ -50,6 +50,32 @@
                     android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <RadioGroup
+                android:id="@+id/categoryExpenseContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/expense"
+                    android:text="@string/type_expense"
+                    android:checked="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton
+                    android:id="@+id/income"
+                    android:text="@string/type_income"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+
+            <CheckBox
+                android:id="@+id/archived"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/archived" />
+
             <TextView
                 android:id="@+id/budgetHint"
                 style="@style/TextAppearance.MaterialComponents.Caption"

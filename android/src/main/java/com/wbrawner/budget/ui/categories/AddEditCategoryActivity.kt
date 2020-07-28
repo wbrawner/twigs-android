@@ -67,6 +67,9 @@ class AddEditCategoryActivity : AppCompatActivity(), CoroutineScope {
             menu?.findItem(R.id.action_delete)?.isVisible = true
             edit_category_name.setText(category.title)
             edit_category_amount.setText(String.format("%.02f", category.amount / 100.0f))
+            expense.isChecked = category.expense
+            income.isChecked = !category.expense
+            archived.isChecked = category.archived
         }
     }
 
@@ -103,7 +106,9 @@ class AddEditCategoryActivity : AppCompatActivity(), CoroutineScope {
                             id = id,
                             title = edit_category_name.text.toString(),
                             amount = edit_category_amount.text.toLong(),
-                            budgetId = (budgetSpinner.selectedItem as Budget).id!!
+                            budgetId = (budgetSpinner.selectedItem as Budget).id!!,
+                            expense = expense.isChecked,
+                            archived = archived.isChecked
                     ))
                     finish()
                 }
