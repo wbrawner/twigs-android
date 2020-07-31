@@ -22,7 +22,7 @@ interface BudgetApiService {
     @GET("budgets/{id}/balance")
     suspend fun getBudgetBalance(@Path("id") id: Long): BudgetBalanceResponse
 
-    @POST("budgets/new")
+    @POST("budgets")
     suspend fun newBudget(@Body budget: NewBudgetRequest): Budget
 
     @PUT("budgets/{id}")
@@ -48,7 +48,7 @@ interface BudgetApiService {
     @GET("categories/{id}/balance")
     suspend fun getCategoryBalance(@Path("id") id: Long): CategoryBalanceResponse
 
-    @POST("categories/new")
+    @POST("categories")
     suspend fun newCategory(@Body category: Category): Category
 
     @PUT("categories/{id}")
@@ -74,7 +74,7 @@ interface BudgetApiService {
     @GET("transactions/{id}")
     suspend fun getTransaction(@Path("id") id: Long): Transaction
 
-    @POST("transactions/new")
+    @POST("transactions")
     suspend fun newTransaction(@Body transaction: Transaction): Transaction
 
     @PUT("transactions/{id}")
@@ -106,7 +106,7 @@ interface BudgetApiService {
     @GET("users/{id}")
     suspend fun getUser(@Path("id") id: Long): User
 
-    @POST("users/new")
+    @POST("users")
     suspend fun newUser(@Body user: User): User
 
     @PUT("users/{id}")
