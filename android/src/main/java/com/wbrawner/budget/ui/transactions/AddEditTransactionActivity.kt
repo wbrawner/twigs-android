@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_add_edit_transaction.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -186,7 +187,7 @@ class AddEditTransactionActivity : AppCompatActivity(), CoroutineScope {
                             title = edit_transaction_title.text.toString(),
                             date = date,
                             description = edit_transaction_description.text.toString(),
-                            amount = edit_transaction_amount.text.toLong(),
+                            amount = (BigDecimal(edit_transaction_amount.text.toString()) * 100.toBigDecimal()).toLong(),
                             expense = edit_transaction_type_expense.isChecked,
                             categoryId = categoryId,
                             createdBy = (application as AllowanceApplication).currentUser!!.id!!
