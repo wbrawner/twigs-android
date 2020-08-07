@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.category.Category
-import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
 import com.wbrawner.budget.ui.base.BindableData
@@ -23,7 +22,7 @@ class CategoryListFragment : ListWithAddButtonFragment<Category, CategoryListVie
     override val noItemsStringRes: Int = R.string.categories_no_data
     override val viewModel: CategoryListViewModel by viewModels()
     override fun reloadItems() {
-        viewModel.getCategories(arguments?.getLong(EXTRA_BUDGET_ID))
+        viewModel.getCategories()
     }
 
     override fun bindData(data: Category): BindableData<Category> = BindableData(data, CATEGORY_VIEW)

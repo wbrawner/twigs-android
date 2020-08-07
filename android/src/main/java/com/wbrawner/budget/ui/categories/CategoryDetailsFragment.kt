@@ -2,6 +2,7 @@ package com.wbrawner.budget.ui.categories
 
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -14,6 +15,7 @@ import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
+import com.wbrawner.budget.ui.toAmountSpannable
 import com.wbrawner.budget.ui.transactions.TransactionListFragment
 import kotlinx.android.synthetic.main.fragment_category_details.*
 
@@ -48,7 +50,29 @@ class CategoryDetailsFragment : Fragment() {
                     progressBar.visibility = View.GONE
                     val category = state.data.category
                     activity?.title = category.title
-                    categoryDescription.text = category.description
+                    val tintColor = if (category.expense) R.color.colorTextRed else R.color.colorTextGreen
+                    val colorStateList = with(view.context) {
+                        android.content.res.ColorStateList.valueOf(getColor(tintColor))
+                    }
+                    categoryProgress.progressTintList = colorStateList
+                    categoryProgress.max = category.amount.toInt()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        categoryProgress.setProgress(
+                                state.data.balance.toInt(),
+                                true
+                        )
+                    } else {
+                        categoryProgress.progress = state.data.balance.toInt()
+                    }
+                    total.text = category.amount.toAmountSpannable()
+                    balance.text = state.data.balance.toAmountSpannable()
+                    remaining.text = state.data.remaining.toAmountSpannable()
+                    if (category.description.isNullOrBlank()) {
+                        categoryDescription.visibility = View.GONE
+                    } else {
+                        categoryDescription.visibility = View.VISIBLE
+                        categoryDescription.text = category.description
+                    }
                     childFragmentManager.fragments.firstOrNull()?.let {
                         if (it !is TransactionListFragment) return@let
                         it.reloadItems()

@@ -9,9 +9,9 @@
         android:icon="@drawable/ic_attach_money_black_24dp"
         android:title="@string/title_transactions" />
     <item
-        android:id="@+id/budgetsFragment"
+        android:id="@+id/categoryListFragment"
         android:icon="@drawable/ic_baseline_category_24px"
-        android:title="@string/title_budgets" />
+        android:title="@string/title_categories" />
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_person_black_24dp"

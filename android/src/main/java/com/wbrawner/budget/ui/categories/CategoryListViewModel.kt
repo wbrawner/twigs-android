@@ -19,7 +19,8 @@ class CategoryListViewModel : ViewModel(), AsyncViewModel<List<Category>> {
     @Inject
     lateinit var categoryRepo: CategoryRepository
 
-    fun getCategories(budgetId: Long? = null) {
+    fun getCategories() {
+        val budgetId = budgetRepo.currentBudget?.id
         if (budgetId == null) {
             state.postValue(AsyncState.Error("Invalid budget ID"))
             return

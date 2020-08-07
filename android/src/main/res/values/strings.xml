@@ -55,4 +55,7 @@
     <string name="prompt_year">Year</string>
     <string name="archived">Archived</string>
     <string name="title_overview">Overview</string>
+    <string name="label_total">Total</string>
+    <string name="label_balance">Balance</string>
+    <string name="label_remaining">Remaining</string>
 </resources>

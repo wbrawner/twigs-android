@@ -23,10 +23,11 @@ class CategoryDetailsViewModel : ViewModel(), AsyncViewModel<CategoryDetails> {
         launch {
             val category = categoryRepo.findById(id)
             val multiplier = if (category.expense) -1 else 1
-            val balance = categoryRepo.getBalance(category.id!!).toInt() * multiplier
+            val balance = categoryRepo.getBalance(category.id!!) * multiplier
             CategoryDetails(
                     category,
-                    balance
+                    balance,
+                    category.amount - balance
             )
         }
     }
@@ -34,5 +35,6 @@ class CategoryDetailsViewModel : ViewModel(), AsyncViewModel<CategoryDetails> {
 
 data class CategoryDetails(
         val category: Category,
-        val balance: Int
+        val balance: Long,
+        val remaining: Long
 )

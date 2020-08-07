@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.title_overview) -> false
                 getString(R.string.title_transactions) -> false
                 getString(R.string.title_profile) -> false
-                getString(R.string.title_budgets) -> false
+                getString(R.string.title_categories) -> false
                 else -> true
             }
             supportActionBar?.setDisplayHomeAsUpEnabled(showHomeAsUp)
