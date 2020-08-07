@@ -9,5 +9,5 @@ interface TransactionRepository : Repository<Transaction, Long> {
             categoryIds: List<Long>? = null,
             start: Calendar? = null,
             end: Calendar? = null
-    ): Collection<Transaction>
+    ): List<Transaction>
 }

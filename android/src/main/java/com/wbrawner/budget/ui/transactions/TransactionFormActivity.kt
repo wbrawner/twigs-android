@@ -38,6 +38,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
     var menu: Menu? = null
     var transaction: Transaction? = null
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_transaction)
@@ -45,7 +46,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.title_add_transaction)
         edit_transaction_type_expense.isChecked = true
-        (application as AllowanceApplication).appComponent.inject(this)
+        (application as AllowanceApplication).appComponent.inject(viewModel)
         launch {
             val accounts = viewModel.getAccounts().toTypedArray()
             setCategories()
@@ -69,7 +70,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             loadTransaction()
             transactionDate.setOnClickListener {
                 val currentDate = DateFormat.getDateFormat(this@TransactionFormActivity)
-                        .parse(transactionDate.text.toString())
+                        .parse(transactionDate.text.toString()) ?: Date()
                 DatePickerDialog(
                         this@TransactionFormActivity,
                         { _, year, month, dayOfMonth ->
@@ -83,7 +84,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             }
             transactionTime.setOnClickListener {
                 val currentDate = DateFormat.getTimeFormat(this@TransactionFormActivity)
-                        .parse(transactionTime.text.toString())
+                        .parse(transactionTime.text.toString()) ?: Date()
                 TimePickerDialog(
                         this@TransactionFormActivity,
                         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
@@ -135,7 +136,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun setCategories(categories: Collection<Category> = emptyList()) {
+    private fun setCategories(categories: List<Category> = emptyList()) {
         val adapter = ArrayAdapter<Category>(
                 this@TransactionFormActivity,
                 android.R.layout.simple_list_item_1
@@ -191,7 +192,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                             id = id,
                             budgetId = (budgetSpinner.selectedItem as Budget).id!!,
                             title = edit_transaction_title.text.toString(),
-                            date = date,
+                            date = date.time,
                             description = edit_transaction_description.text.toString(),
                             amount = (BigDecimal(edit_transaction_amount.text.toString()) * 100.toBigDecimal()).toLong(),
                             expense = edit_transaction_type_expense.isChecked,

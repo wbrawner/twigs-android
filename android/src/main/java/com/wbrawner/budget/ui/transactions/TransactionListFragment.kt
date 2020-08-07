@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -36,12 +35,11 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
         viewModel.getTransactions(arguments?.getLong(EXTRA_BUDGET_ID), arguments?.getLong(EXTRA_CATEGORY_ID))
     }
 
-    override fun bindData(data: Transaction): BindableData<Transaction> = TransactionData(data)
+    override fun bindData(data: Transaction): BindableData<Transaction> = BindableData(data, TRANSACTION_VIEW)
 
     override fun onAttach(context: Context) {
         (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
         super.onAttach(context)
-        viewModel.getTransactions()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,9 +54,6 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId != R.id.filter) {
             return super.onOptionsItemSelected(item)
-        }
-        val dialogView = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
         }
         // TODO: Launch a Google Drive-style search/filter screen
         AlertDialog.Builder(requireContext())
@@ -85,14 +80,7 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
 
 const val TRANSACTION_VIEW = R.layout.list_item_transaction
 
-class TransactionData(override val data: Transaction) : BindableData<Transaction> {
-    override val viewType: Int = TRANSACTION_VIEW
-}
-
-class TransactionViewHolder(
-        itemView: View,
-        private val navController: NavController
-) : BindableAdapter.CoroutineViewHolder<Transaction>(itemView) {
+class TransactionViewHolder(itemView: View, val navController: NavController) : BindableAdapter.CoroutineViewHolder<Transaction>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.transaction_title)
     private val date: TextView = itemView.findViewById(R.id.transaction_date)
     private val amount: TextView = itemView.findViewById(R.id.transaction_amount)

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/categoryListFragment">
+    app:startDestination="@id/overviewFragment">
     <fragment
         android:id="@+id/categoryListFragment"
         android:name="com.wbrawner.budget.ui.categories.CategoryListFragment"
@@ -47,7 +47,7 @@
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.wbrawner.budget.ui.categories.CategoryFragment"
+        android:name="com.wbrawner.budget.ui.categories.CategoryDetailsFragment"
         android:label="fragment_category"
         tools:layout="@layout/fragment_list_with_add_button" />
     <activity

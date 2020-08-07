@@ -15,7 +15,10 @@ class OverviewViewModel : ViewModel() {
     lateinit var budgetRepo: BudgetRepository
 
     fun loadOverview(id: Long? = null) {
-        if (id == null) return // TODO: Handle this or make it non-null
+        if (id == null) {
+            state.postValue(AsyncState.Error("Invalid Budget ID"))
+            return
+        }
         viewModelScope.launch {
             state.postValue(AsyncState.Loading)
             try {

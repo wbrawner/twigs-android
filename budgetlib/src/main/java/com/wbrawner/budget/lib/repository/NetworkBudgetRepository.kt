@@ -10,7 +10,7 @@ class NetworkBudgetRepository @Inject constructor(private val apiService: Budget
     override suspend fun create(newItem: Budget): Budget =
             apiService.newBudget(NewBudgetRequest(newItem))
 
-    override suspend fun findAll(): Collection<Budget> = apiService.getBudgets().sortedBy { it.name }
+    override suspend fun findAll(): List<Budget> = apiService.getBudgets().sortedBy { it.name }
 
     override suspend fun findById(id: Long): Budget = apiService.getBudget(id)
 

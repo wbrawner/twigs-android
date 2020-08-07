@@ -7,7 +7,6 @@ import androidx.emoji.text.EmojiCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.wbrawner.budget.R
-import com.wbrawner.budget.ui.categories.CategoryListFragment
 import kotlinx.android.synthetic.main.activity_transaction_list.*
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             title = destination.label
             val showHomeAsUp = when (destination.label) {
+                getString(R.string.title_overview) -> false
                 getString(R.string.title_transactions) -> false
                 getString(R.string.title_profile) -> false
                 getString(R.string.title_budgets) -> false
@@ -28,15 +28,10 @@ class MainActivity : AppCompatActivity() {
             }
             supportActionBar?.setDisplayHomeAsUpEnabled(showHomeAsUp)
         }
-        val openFragmentId = when (intent?.getStringExtra(EXTRA_OPEN_FRAGMENT)) {
-            CategoryListFragment.TAG_FRAGMENT -> R.id.categoryListFragment
-            else -> R.id.transactionListFragment
-        }
-        menu_main.selectedItemId = openFragmentId
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
             findNavController(R.id.content_container).navigateUp()
             return true
         }

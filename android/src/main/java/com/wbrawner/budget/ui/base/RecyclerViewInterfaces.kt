@@ -29,6 +29,8 @@ class BindableAdapter<Data>(
         holder.onUnbind()
     }
 
+    override fun getItemViewType(position: Int): Int = getItem(position).viewType
+
     abstract class BindableViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView), Bindable<BindableData<T>>
 
     abstract class CoroutineViewHolder<T>(itemView: View) : BindableViewHolder<T>(itemView), CoroutineScope {
@@ -46,8 +48,8 @@ interface Bindable<T> {
     fun onUnbind() {}
 }
 
-interface BindableData<T> {
-    val data: T
-    @get:LayoutRes
-    val viewType: Int
-}
+data class BindableData<T>(
+        val data: T,
+        @get:LayoutRes
+        val viewType: Int
+)

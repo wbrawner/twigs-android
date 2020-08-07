@@ -2,25 +2,22 @@ package com.wbrawner.budget.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
-import com.wbrawner.budget.di.BudgetViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 class SplashActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
-    private lateinit var viewModel: SplashViewModel
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
+    private val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as AllowanceApplication).appComponent.inject(viewModel)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         window.decorView.apply {
@@ -30,8 +27,6 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     )
         }
-        (application as AllowanceApplication).appComponent.inject(this)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(SplashViewModel::class.java)
         val navController = findNavController(R.id.auth_content)
         launch {
             val navId = try {

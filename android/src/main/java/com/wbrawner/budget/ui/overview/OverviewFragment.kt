@@ -21,7 +21,6 @@ class OverviewFragment : Fragment() {
     override fun onAttach(context: Context) {
         (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
         super.onAttach(context)
-        viewModel.loadOverview(arguments?.getLong(EXTRA_BUDGET_ID))
     }
 
     override fun onCreateView(
@@ -52,6 +51,11 @@ class OverviewFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadOverview(arguments?.getLong(EXTRA_BUDGET_ID))
     }
 
     companion object {

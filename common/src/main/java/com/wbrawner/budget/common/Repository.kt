@@ -8,7 +8,7 @@ package com.wbrawner.budget.common
  */
 interface Repository<T, K> {
     suspend fun create(newItem: T): T
-    suspend fun findAll(): Collection<T>
+    suspend fun findAll(): List<T>
     suspend fun findById(id: K): T
     suspend fun update(updatedItem: T): T
     suspend fun delete(id: K)

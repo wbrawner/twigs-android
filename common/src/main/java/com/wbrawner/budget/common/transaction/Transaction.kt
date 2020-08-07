@@ -6,7 +6,7 @@ import java.util.*
 data class Transaction(
         override val id: Long? = null,
         val title: String,
-        val date: Calendar,
+        val date: Date,
         val description: String,
         val amount: Long,
         val categoryId: Long? = null,

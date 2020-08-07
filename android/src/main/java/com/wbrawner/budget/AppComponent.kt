@@ -5,8 +5,10 @@ import com.wbrawner.budget.lib.network.NetworkModule
 import com.wbrawner.budget.storage.StorageModule
 import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.budgets.BudgetFormViewModel
-import com.wbrawner.budget.ui.budgets.BudgetViewModel
-import com.wbrawner.budget.ui.categories.CategoryViewModel
+import com.wbrawner.budget.ui.budgets.BudgetListViewModel
+import com.wbrawner.budget.ui.categories.CategoryDetailsViewModel
+import com.wbrawner.budget.ui.categories.CategoryFormViewModel
+import com.wbrawner.budget.ui.categories.CategoryListViewModel
 import com.wbrawner.budget.ui.overview.OverviewViewModel
 import com.wbrawner.budget.ui.transactions.TransactionFormViewModel
 import com.wbrawner.budget.ui.transactions.TransactionListViewModel
@@ -20,9 +22,11 @@ import javax.inject.Singleton
 interface AppComponent {
     fun inject(viewModel: OverviewViewModel)
     fun inject(viewModel: SplashViewModel)
-    fun inject(viewMode: BudgetViewModel)
+    fun inject(viewMode: BudgetListViewModel)
     fun inject(viewModel: BudgetFormViewModel)
-    fun inject(viewModel: CategoryViewModel)
+    fun inject(viewModel: CategoryListViewModel)
+    fun inject(viewModel: CategoryDetailsViewModel)
+    fun inject(viewModel: CategoryFormViewModel)
     fun inject(viewModel: TransactionListViewModel)
     fun inject(viewModel: TransactionFormViewModel)
 

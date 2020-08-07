@@ -4,26 +4,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
+import androidx.lifecycle.Observer
 import com.wbrawner.budget.AllowanceApplication
+import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
-import com.wbrawner.budget.di.BudgetViewModelFactory
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.transactions.toLong
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-class CategoryFormActivity : AppCompatActivity(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
-    lateinit var viewModel: CategoryViewModel
+class CategoryFormActivity : AppCompatActivity() {
+    lateinit var viewModel: CategoryFormViewModel
     var id: Long? = null
     var menu: Menu? = null
 
@@ -32,40 +30,41 @@ class CategoryFormActivity : AppCompatActivity(), CoroutineScope {
         setContentView(R.layout.activity_add_edit_category)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (application as AllowanceApplication).appComponent.inject(this)
-        launch {
-            val budgets = viewModel.getBudgets().toTypedArray()
-            budgetSpinner.adapter = ArrayAdapter<Budget>(
-                    this@CategoryFormActivity,
-                    android.R.layout.simple_list_item_1,
-                    budgets
-            )
-            loadCategory()
-        }
-    }
-
-    private fun loadCategory() {
-        val categoryId = intent?.extras?.getLong(EXTRA_CATEGORY_ID)
-        if (categoryId == null) {
-            setTitle(R.string.title_add_category)
-            return
-        }
-        launch {
-            val category = try {
-                viewModel.getCategory(categoryId)
-            } catch (e: Exception) {
-                menu?.findItem(R.id.action_delete)?.isVisible = false
-                null
-            } ?: return@launch
-            id = category.id
-            setTitle(R.string.title_edit_category)
-            menu?.findItem(R.id.action_delete)?.isVisible = true
-            edit_category_name.setText(category.title)
-            edit_category_amount.setText(String.format("%.02f", category.amount / 100.0f))
-            expense.isChecked = category.expense
-            income.isChecked = !category.expense
-            archived.isChecked = category.archived
-        }
+        (application as AllowanceApplication).appComponent.inject(viewModel)
+        viewModel.state.observe(this, Observer { state ->
+            when (state) {
+                is AsyncState.Loading -> {
+                    categoryForm.visibility = View.GONE
+                    progressBar.visibility = View.VISIBLE
+                }
+                is AsyncState.Success -> {
+                    categoryForm.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
+                    val category = state.data.category
+                    id = category.id
+                    setTitle(state.data.titleRes)
+                    menu?.findItem(R.id.action_delete)?.isVisible = state.data.showDeleteButton
+                    edit_category_name.setText(category.title)
+                    edit_category_amount.setText(String.format("%.02f", (category.amount.toBigDecimal() / 100.toBigDecimal()).toFloat()))
+                    expense.isChecked = category.expense
+                    income.isChecked = !category.expense
+                    archived.isChecked = category.archived
+                    budgetSpinner.adapter = ArrayAdapter<Budget>(
+                            this@CategoryFormActivity,
+                            android.R.layout.simple_list_item_1,
+                            state.data.budgets
+                    )
+                }
+                is AsyncState.Error -> {
+                    // TODO: Show error message
+                    categoryForm.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(this, "Failed to save Category", Toast.LENGTH_SHORT).show()
+                }
+                is AsyncState.Exit -> finish()
+            }
+        })
+        viewModel.loadCategory(intent?.extras?.getLong(EXTRA_CATEGORY_ID))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,23 +95,17 @@ class CategoryFormActivity : AppCompatActivity(), CoroutineScope {
             }
             R.id.action_save -> {
                 if (!validateFields()) return true
-                launch {
-                    viewModel.saveCategory(Category(
-                            id = id,
-                            title = edit_category_name.text.toString(),
-                            amount = edit_category_amount.text.toLong(),
-                            budgetId = (budgetSpinner.selectedItem as Budget).id!!,
-                            expense = expense.isChecked,
-                            archived = archived.isChecked
-                    ))
-                    finish()
-                }
+                viewModel.saveCategory(Category(
+                        id = id,
+                        title = edit_category_name.text.toString(),
+                        amount = edit_category_amount.text.toLong(),
+                        budgetId = (budgetSpinner.selectedItem as Budget).id!!,
+                        expense = expense.isChecked,
+                        archived = archived.isChecked
+                ))
             }
             R.id.action_delete -> {
-                launch {
-                    viewModel.deleteCategoryById(this@CategoryFormActivity.id!!)
-                    finish()
-                }
+                viewModel.deleteCategoryById(this@CategoryFormActivity.id!!)
             }
         }
         return true

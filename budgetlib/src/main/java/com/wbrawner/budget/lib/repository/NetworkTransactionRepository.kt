@@ -17,7 +17,7 @@ class NetworkTransactionRepository @Inject constructor(private val apiService: B
             categoryIds: List<Long>?,
             start: Calendar?,
             end: Calendar?
-    ): Collection<Transaction> = apiService.getTransactions(
+    ): List<Transaction> = apiService.getTransactions(
             budgetIds,
             categoryIds,
             start?.let {
@@ -30,7 +30,7 @@ class NetworkTransactionRepository @Inject constructor(private val apiService: B
             }
     )
 
-    override suspend fun findAll(): Collection<Transaction> = findAll(null)
+    override suspend fun findAll(): List<Transaction> = findAll(null)
 
     override suspend fun findById(id: Long): Transaction = apiService.getTransaction(id)
 

@@ -1,5 +1,6 @@
 package com.wbrawner.budget
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,11 @@ import kotlinx.coroutines.launch
 sealed class AsyncState<out T> {
     object Loading : AsyncState<Nothing>()
     class Success<T>(val data: T) : AsyncState<T>()
-    class Error(val exception: Exception) : AsyncState<Nothing>()
+    class Error(val exception: Exception) : AsyncState<Nothing>() {
+        constructor(message: String) : this(RuntimeException(message))
+    }
+
+    object Exit : AsyncState<Nothing>()
 }
 
 interface AsyncViewModel<T> {
@@ -22,6 +27,7 @@ fun <VM, T> VM.launch(block: suspend () -> T): Job where VM : ViewModel, VM : As
         state.postValue(AsyncState.Success(block()))
     } catch (e: Exception) {
         state.postValue(AsyncState.Error(e))
+        Log.e("AsyncViewModel", "Failed to load data", e)
     }
 }
 

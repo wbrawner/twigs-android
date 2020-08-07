@@ -14,7 +14,7 @@ interface BudgetApiService {
     suspend fun getBudgets(
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Collection<Budget>
+    ): List<Budget>
 
     @GET("budgets/{id}")
     suspend fun getBudget(@Path("id") id: Long): Budget
@@ -40,7 +40,7 @@ interface BudgetApiService {
             @Query("budgetIds") budgetIds: Array<Long>? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Collection<Category>
+    ): List<Category>
 
     @GET("categories/{id}")
     suspend fun getCategory(@Path("id") id: Long): Category
@@ -69,7 +69,7 @@ interface BudgetApiService {
             @Query("to") to: String? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Collection<Transaction>
+    ): List<Transaction>
 
     @GET("transactions/{id}")
     suspend fun getTransaction(@Path("id") id: Long): Transaction
@@ -92,7 +92,7 @@ interface BudgetApiService {
             @Query("budgetId") budgetId: Long? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
-    ): Collection<User>
+    ): List<User>
 
     @POST("users/login")
     suspend fun login(@Body request: LoginRequest): User

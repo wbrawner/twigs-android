@@ -29,7 +29,8 @@ abstract class ListWithAddButtonFragment<Data : Identifiable, ViewModel : AsyncV
         super.onViewCreated(view, savedInstanceState)
         recyclerView.layoutManager = LinearLayoutManager(view.context)
         recyclerView.hideFabOnScroll(addFab)
-        val adapter = BindableAdapter<Data>(constructors, diffUtilItemCallback)
+        val adapter = BindableAdapter(constructors, diffUtilItemCallback)
+        recyclerView.adapter = adapter
         addFab.setOnClickListener {
             addItem()
         }

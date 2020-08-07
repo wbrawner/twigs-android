@@ -15,13 +15,13 @@ class NetworkUserRepository @Inject constructor(private val apiService: BudgetAp
 
     override suspend fun create(newItem: User): User = apiService.newUser(newItem)
 
-    override suspend fun findAll(accountId: Long?): Collection<User> = apiService.getUsers(accountId)
+    override suspend fun findAll(accountId: Long?): List<User> = apiService.getUsers(accountId)
 
-    override suspend fun findAll(): Collection<User> = findAll(null)
+    override suspend fun findAll(): List<User> = findAll(null)
 
     override suspend fun findById(id: Long): User = apiService.getUser(id)
 
-    override suspend fun findAllByNameLike(query: String): Collection<User> =
+    override suspend fun findAllByNameLike(query: String): List<User> =
             apiService.searchUsers(query)
 
     override suspend fun update(updatedItem: User): User =

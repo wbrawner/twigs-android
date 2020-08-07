@@ -1,9 +1,12 @@
 package com.wbrawner.budget.ui.budgets
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
@@ -12,32 +15,25 @@ import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
 import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
-import kotlinx.coroutines.CoroutineScope
 
-class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetData>(), CoroutineScope {
+class BudgetListFragment : ListWithAddButtonFragment<Budget, BudgetListViewModel>() {
     override val noItemsStringRes: Int = R.string.overview_no_data
-    override val viewModelClass: Class<BudgetViewModel> = BudgetViewModel::class.java
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        (requireActivity().application as AllowanceApplication).appComponent.inject(this)
-        super.onCreate(savedInstanceState)
+    override fun onAttach(context: Context) {
+        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
+        super.onAttach(context)
     }
 
-    override suspend fun loadItems(): Pair<List<BudgetData>, Map<Int, (view: View) -> BudgetViewHolder>> {
-        val budgetItems = viewModel.getBudgets().map { BudgetData(it) }
+    override val viewModel: BudgetListViewModel by viewModels()
 
-        return Pair(
-                budgetItems,
-                mapOf(BUDGET_VIEW to { v ->
-                    BudgetViewHolder(v) { _, budget ->
-                        val bundle = Bundle().apply {
-                            putLong(EXTRA_BUDGET_ID, budget.id!!)
-                        }
-                        findNavController().navigate(R.id.categoryListFragment, bundle)
-                    }
-                })
-        )
+    override fun reloadItems() {
+        viewModel.getBudgets()
     }
+
+    override fun bindData(data: Budget): BindableData<Budget> = BindableData(data, BUDGET_VIEW)
+
+    override val constructors: Map<Int, (View) -> BindableAdapter.BindableViewHolder<Budget>>
+        get() = mapOf(BUDGET_VIEW to { v -> BudgetViewHolder(v, findNavController()) })
 
     override fun addItem() {
         findNavController().navigate(R.id.addEditBudget)
@@ -46,30 +42,25 @@ class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetData
 
 const val BUDGET_VIEW = R.layout.list_item_budget
 
-class BudgetData(val budget: Budget) : BindableData {
-    override val viewType: Int = BUDGET_VIEW
-}
-
-class BudgetViewHolder(
-        itemView: View,
-        private val budgetClickListener: (View, Budget) -> Unit
-) : BindableAdapter.BindableViewHolder<BudgetData>(itemView) {
+class BudgetViewHolder(itemView: View, val navController: NavController) : BindableAdapter.BindableViewHolder<Budget>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.budgetName)
     private val description: TextView = itemView.findViewById(R.id.budgetDescription)
 //    private val balance: TextView = itemView.findViewById(R.id.budgetBalance)
 
-    override fun onBind(item: BudgetData) {
-        with(item) {
-            name.text = budget.name
-            if (budget.description.isNullOrBlank()) {
-                description.visibility = View.GONE
-            } else {
-                description.visibility = View.VISIBLE
-                description.text = budget.description
+    override fun onBind(item: BindableData<Budget>) {
+        val budget = item.data
+        name.text = budget.name
+        if (budget.description.isNullOrBlank()) {
+            description.visibility = View.GONE
+        } else {
+            description.visibility = View.VISIBLE
+            description.text = budget.description
+        }
+        itemView.setOnClickListener {
+            val bundle = Bundle().apply {
+                putLong(EXTRA_BUDGET_ID, budget.id!!)
             }
-            itemView.setOnClickListener {
-                budgetClickListener(it, budget)
-            }
+            navController.navigate(R.id.categoryListFragment, bundle)
         }
     }
 }

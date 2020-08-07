@@ -1,24 +1,36 @@
 package com.wbrawner.budget.ui.categories
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
+import com.wbrawner.budget.launch
 import javax.inject.Inject
 
-class CategoryListViewModel : ViewModel() {
-    @Inject lateinit var budgetRepo: BudgetRepository
-    @Inject lateinit var categoryRepo: CategoryRepository
+class CategoryListViewModel : ViewModel(), AsyncViewModel<List<Category>> {
+    override val state: MutableLiveData<AsyncState<List<Category>>> = MutableLiveData(AsyncState.Loading)
 
-    suspend fun getCategory(id: Long): Category = categoryRepo.findById(id)
+    @Inject
+    lateinit var budgetRepo: BudgetRepository
 
-    suspend fun getCategories(budgetId: Long? = null): Collection<Category> =
-            categoryRepo.findAll(budgetId?.let { arrayOf(it) })
+    @Inject
+    lateinit var categoryRepo: CategoryRepository
 
-    suspend fun saveCategory(category: Category) = if (category.id == null) categoryRepo.create(category)
-    else categoryRepo.update(category)
+    fun getCategories(budgetId: Long? = null) {
+        if (budgetId == null) {
+            state.postValue(AsyncState.Error("Invalid budget ID"))
+            return
+        }
+        launch {
+            categoryRepo.findAll(arrayOf(budgetId)).toList()
+        }
+    }
 
-    suspend fun deleteCategoryById(id: Long) = categoryRepo.delete(id)
-
-    suspend fun getBalance(id: Long) = categoryRepo.getBalance(id)
+    suspend fun getBalance(category: Category): Long {
+        val multiplier = if (category.expense) -1 else 1
+        return categoryRepo.getBalance(category.id!!) * multiplier
+    }
 }
