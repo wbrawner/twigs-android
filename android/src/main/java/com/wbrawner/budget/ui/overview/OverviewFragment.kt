@@ -55,7 +55,7 @@ class OverviewFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.loadOverview(arguments?.getLong(EXTRA_BUDGET_ID))
+        viewModel.loadOverview()
     }
 
     companion object {

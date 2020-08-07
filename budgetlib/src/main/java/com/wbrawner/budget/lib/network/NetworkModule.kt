@@ -25,6 +25,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.nio.charset.Charset
 import java.util.*
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 class NetworkModule {
@@ -63,15 +64,16 @@ class NetworkModule {
         }
     }
 
+    @Singleton
     @Provides
     fun provideOkHttpClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .apply {
                 if (BuildConfig.DEBUG)
-                        this.addInterceptor(
-                                HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT)
-                                        .setLevel(HttpLoggingInterceptor.Level.BODY)
-                        )
+                    this.addInterceptor(
+                            HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT)
+                                    .setLevel(HttpLoggingInterceptor.Level.BODY)
+                    )
             }
             .build()
 
@@ -86,22 +88,27 @@ class NetworkModule {
             .client(client)
             .build()
 
+    @Singleton
     @Provides
     fun provideApiService(retrofit: Retrofit): BudgetApiService =
             retrofit.create(BudgetApiService::class.java)
 
+    @Singleton
     @Provides
-    fun provideAccountRepository(apiService: BudgetApiService): BudgetRepository =
-            NetworkBudgetRepository(apiService)
+    fun provideBudgetRepository(apiService: BudgetApiService, sharedPreferences: SharedPreferences): BudgetRepository =
+            NetworkBudgetRepository(apiService, sharedPreferences)
 
+    @Singleton
     @Provides
     fun provideCategoryRepository(apiService: BudgetApiService): CategoryRepository =
             NetworkCategoryRepository(apiService)
 
+    @Singleton
     @Provides
     fun provideTransactionRepository(apiService: BudgetApiService): TransactionRepository =
             NetworkTransactionRepository(apiService)
 
+    @Singleton
     @Provides
     fun provideUserRepository(apiService: BudgetApiService): UserRepository =
             NetworkUserRepository(apiService)

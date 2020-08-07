@@ -32,7 +32,7 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
         get() = mapOf(TRANSACTION_VIEW to { v -> TransactionViewHolder(v, findNavController()) })
 
     override fun reloadItems() {
-        viewModel.getTransactions(arguments?.getLong(EXTRA_BUDGET_ID), arguments?.getLong(EXTRA_CATEGORY_ID))
+        viewModel.getTransactions(arguments?.getLong(EXTRA_CATEGORY_ID))
     }
 
     override fun bindData(data: Transaction): BindableData<Transaction> = BindableData(data, TRANSACTION_VIEW)

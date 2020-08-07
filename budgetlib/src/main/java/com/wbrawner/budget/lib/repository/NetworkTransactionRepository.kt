@@ -21,11 +21,9 @@ class NetworkTransactionRepository @Inject constructor(private val apiService: B
             budgetIds,
             categoryIds,
             start?.let {
-                it.timeZone = TimeZone.getTimeZone("UTC")
                 dateFormatter.format(it.time)
             },
             end?.let {
-                it.timeZone = TimeZone.getTimeZone("UTC")
                 dateFormatter.format(it.time)
             }
     )
