@@ -10,7 +10,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.wbrawner.budget"
-            android:targetClass="com.wbrawner.budget.ui.transactions.AddEditTransactionActivity">
+            android:targetClass="com.wbrawner.budget.ui.transactions.TransactionFormActivity">
         </intent>
     </shortcut>
 </shortcuts>

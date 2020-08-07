@@ -4,18 +4,17 @@ package com.wbrawner.budget.ui.budgets
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
-import com.wbrawner.budget.ui.base.BindableState
+import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
 import kotlinx.coroutines.CoroutineScope
 
-class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetState>(), CoroutineScope {
+class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetData>(), CoroutineScope {
     override val noItemsStringRes: Int = R.string.overview_no_data
     override val viewModelClass: Class<BudgetViewModel> = BudgetViewModel::class.java
 
@@ -24,8 +23,8 @@ class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetStat
         super.onCreate(savedInstanceState)
     }
 
-    override suspend fun loadItems(): Pair<List<BudgetState>, Map<Int, (view: View) -> BudgetViewHolder>> {
-        val budgetItems = viewModel.getBudgets().map { BudgetState(it) }
+    override suspend fun loadItems(): Pair<List<BudgetData>, Map<Int, (view: View) -> BudgetViewHolder>> {
+        val budgetItems = viewModel.getBudgets().map { BudgetData(it) }
 
         return Pair(
                 budgetItems,
@@ -47,19 +46,19 @@ class BudgetListFragment : ListWithAddButtonFragment<BudgetViewModel, BudgetStat
 
 const val BUDGET_VIEW = R.layout.list_item_budget
 
-class BudgetState(val budget: Budget) : BindableState {
+class BudgetData(val budget: Budget) : BindableData {
     override val viewType: Int = BUDGET_VIEW
 }
 
 class BudgetViewHolder(
         itemView: View,
         private val budgetClickListener: (View, Budget) -> Unit
-) : BindableAdapter.BindableViewHolder<BudgetState>(itemView) {
+) : BindableAdapter.BindableViewHolder<BudgetData>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.budgetName)
     private val description: TextView = itemView.findViewById(R.id.budgetDescription)
 //    private val balance: TextView = itemView.findViewById(R.id.budgetBalance)
 
-    override fun onBind(item: BudgetState) {
+    override fun onBind(item: BudgetData) {
         with(item) {
             name.text = budget.name
             if (budget.description.isNullOrBlank()) {

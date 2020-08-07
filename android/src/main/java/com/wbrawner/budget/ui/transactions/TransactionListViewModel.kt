@@ -1,34 +1,29 @@
 package com.wbrawner.budget.ui.transactions
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.AsyncViewModel
+import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.transaction.TransactionRepository
-import com.wbrawner.budget.di.ViewModelKey
-import com.wbrawner.budget.ui.base.LoadingViewModel
-import dagger.Binds
-import dagger.Module
-import dagger.multibindings.IntoMap
+import com.wbrawner.budget.launch
 import java.util.*
 import javax.inject.Inject
 
-class TransactionListViewModel @Inject constructor(private val transactionRepo: TransactionRepository) :
-        LoadingViewModel() {
-    suspend fun getTransactions(
+class TransactionListViewModel : ViewModel(), AsyncViewModel<List<Transaction>> {
+    @Inject lateinit var transactionRepo: TransactionRepository
+    override val state: MutableLiveData<AsyncState<List<Transaction>>> = MutableLiveData(AsyncState.Loading)
+
+    fun getTransactions(
             budgetId: Long? = null,
             categoryId: Long? = null,
             start: Calendar? = null,
             end: Calendar? = null
-    ) = showLoader {
+    ) {
         val budgets = budgetId?.let { listOf(it) }
         val categories = categoryId?.let { listOf(it) }
-        transactionRepo.findAll(budgets, categories, start, end)
+        launch {
+            transactionRepo.findAll(budgets, categories, start, end).toList()
+        }
     }
-}
-
-@Module
-abstract class TransactionListViewModelMapper {
-    @Binds
-    @IntoMap
-    @ViewModelKey(TransactionListViewModel::class)
-    abstract fun bindTransactionListViewModel(transactionListViewModel:
-                                              TransactionListViewModel): ViewModel
 }

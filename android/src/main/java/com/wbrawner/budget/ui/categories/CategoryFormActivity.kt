@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.ViewModelProviders
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.budget.Budget
@@ -20,13 +19,10 @@ import kotlinx.android.synthetic.main.activity_add_edit_category.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class AddEditCategoryActivity : AppCompatActivity(), CoroutineScope {
+class CategoryFormActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
     lateinit var viewModel: CategoryViewModel
     var id: Long? = null
     var menu: Menu? = null
@@ -37,11 +33,10 @@ class AddEditCategoryActivity : AppCompatActivity(), CoroutineScope {
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (application as AllowanceApplication).appComponent.inject(this)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(CategoryViewModel::class.java)
         launch {
             val budgets = viewModel.getBudgets().toTypedArray()
             budgetSpinner.adapter = ArrayAdapter<Budget>(
-                    this@AddEditCategoryActivity,
+                    this@CategoryFormActivity,
                     android.R.layout.simple_list_item_1,
                     budgets
             )
@@ -115,7 +110,7 @@ class AddEditCategoryActivity : AppCompatActivity(), CoroutineScope {
             }
             R.id.action_delete -> {
                 launch {
-                    viewModel.deleteCategoryById(this@AddEditCategoryActivity.id!!)
+                    viewModel.deleteCategoryById(this@CategoryFormActivity.id!!)
                     finish()
                 }
             }

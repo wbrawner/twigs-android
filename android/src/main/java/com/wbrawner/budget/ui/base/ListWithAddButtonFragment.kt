@@ -1,54 +1,60 @@
 package com.wbrawner.budget.ui.base
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.R
-import com.wbrawner.budget.di.BudgetViewModelFactory
+import com.wbrawner.budget.common.Identifiable
 import com.wbrawner.budget.ui.hideFabOnScroll
-import com.wbrawner.budget.ui.show
 import kotlinx.android.synthetic.main.fragment_list_with_add_button.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
-abstract class ListWithAddButtonFragment<T : LoadingViewModel, State: BindableState> : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
-    lateinit var viewModel: T
-    private var viewCreated = false
+abstract class ListWithAddButtonFragment<Data : Identifiable, ViewModel : AsyncViewModel<List<Data>>> : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_list_with_add_button, container, false)
-    }
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_list_with_add_button, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            view.findViewById<ProgressBar?>(R.id.progressBar)?.show(it)
-        })
         recyclerView.layoutManager = LinearLayoutManager(view.context)
         recyclerView.hideFabOnScroll(addFab)
+        val adapter = BindableAdapter<Data>(constructors, diffUtilItemCallback)
         addFab.setOnClickListener {
             addItem()
         }
-        reloadItems()
+        noItemsTextView.setText(noItemsStringRes)
+        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                is AsyncState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    listContainer.visibility = View.GONE
+                    noItemsTextView.visibility = View.GONE
+                }
+                is AsyncState.Success -> {
+                    progressBar.visibility = View.GONE
+                    listContainer.visibility = View.VISIBLE
+                    noItemsTextView.visibility = View.GONE
+                    adapter.submitList(state.data.map { bindData(it) })
+                }
+                is AsyncState.Error -> {
+                    // TODO: Show an error message
+                    progressBar.visibility = View.GONE
+                    listContainer.visibility = View.GONE
+                    noItemsTextView.visibility = View.VISIBLE
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -56,47 +62,21 @@ abstract class ListWithAddButtonFragment<T : LoadingViewModel, State: BindableSt
         reloadItems()
     }
 
-    private fun reloadItems() {
-        launch {
-            if (view == null) return@launch
-            val (items, constructors) = loadItems()
-            if (items.isEmpty()) {
-                recyclerView?.adapter = null
-                recyclerView?.visibility = View.GONE
-                noItemsTextView?.setText(noItemsStringRes)
-                noItemsTextView?.visibility = View.VISIBLE
-            } else {
-                recyclerView?.adapter = BindableAdapter(items, constructors)
-                recyclerView?.visibility = View.VISIBLE
-                noItemsTextView?.visibility = View.GONE
-            }
-        }
-    }
-
-    override fun onDestroyView() {
-        try {
-            coroutineContext.cancel()
-        } catch (ignored: Exception) {
-        }
-        super.onDestroyView()
-    }
-
-    abstract val viewModelClass: Class<T>
-
+    abstract val viewModel: ViewModel
+    abstract fun reloadItems()
     @get:StringRes
     abstract val noItemsStringRes: Int
-
     abstract fun addItem()
+    abstract fun bindData(data: Data): BindableData<Data>
+    abstract val constructors: Map<Int, (View) -> BindableAdapter.BindableViewHolder<Data>>
+    open val diffUtilItemCallback: DiffUtil.ItemCallback<BindableData<Data>> = object: DiffUtil.ItemCallback<BindableData<Data>>() {
+        override fun areItemsTheSame(oldItem: BindableData<Data>, newItem: BindableData<Data>): Boolean {
+            return oldItem.data.id === newItem.data.id
+        }
 
-    abstract suspend fun loadItems(): Pair<List<State>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<State>>>
-}
-
-abstract class LoadingViewModel : ViewModel() {
-    val isLoading: LiveData<Boolean> = MutableLiveData(true)
-    suspend fun <T> showLoader(block: suspend () -> T): T {
-        (isLoading as MutableLiveData).postValue(true)
-        val result = block.invoke()
-        isLoading.postValue(false)
-        return result
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(oldItem: BindableData<Data>, newItem: BindableData<Data>): Boolean {
+            return oldItem.data == newItem.data
+        }
     }
 }

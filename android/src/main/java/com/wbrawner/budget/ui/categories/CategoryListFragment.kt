@@ -14,11 +14,11 @@ import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
-import com.wbrawner.budget.ui.base.BindableState
+import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
 import kotlinx.coroutines.launch
 
-class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, CategoryState>() {
+class CategoryListFragment : ListWithAddButtonFragment<Category, CategoryViewModel>() {
     override val noItemsStringRes: Int = R.string.categories_no_data
     override val viewModelClass: Class<CategoryViewModel> = CategoryViewModel::class.java
 
@@ -27,7 +27,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, Catego
         super.onCreate(savedInstanceState)
     }
 
-    override suspend fun loadItems(): Pair<List<CategoryState>, Map<Int, (view: View) -> CategoryViewHolder>> {
+    override suspend fun loadItems(): Pair<List<CategoryData>, Map<Int, (view: View) -> CategoryViewHolder>> {
         val budgetId = arguments?.getLong(EXTRA_BUDGET_ID)
         if (budgetId == null) {
             findNavController().navigateUp()
@@ -36,7 +36,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, Catego
         val budget = viewModel.getBudget(budgetId)
         activity?.title = budget.name
         return Pair(
-                viewModel.getCategories(budgetId).map { CategoryState(it) },
+                viewModel.getCategories(budgetId).map { CategoryData(it) },
                 mapOf(CATEGORY_VIEW to { v ->
                     CategoryViewHolder(v, viewModel, findNavController())
                 })
@@ -44,7 +44,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, Catego
     }
 
     override fun addItem() {
-        startActivity(Intent(activity, AddEditCategoryActivity::class.java))
+        startActivity(Intent(activity, CategoryFormActivity::class.java))
     }
 
     companion object {
@@ -54,7 +54,7 @@ class CategoryListFragment : ListWithAddButtonFragment<CategoryViewModel, Catego
 
 const val CATEGORY_VIEW = R.layout.list_item_category
 
-class CategoryState(val category: Category) : BindableState {
+class CategoryData(val category: Category) : BindableData {
     override val viewType: Int = CATEGORY_VIEW
 }
 
@@ -62,13 +62,13 @@ class CategoryViewHolder(
         itemView: View,
         private val viewModel: CategoryViewModel,
         private val navController: NavController
-) : BindableAdapter.CoroutineViewHolder<CategoryState>(itemView) {
+) : BindableAdapter.CoroutineViewHolder<CategoryData>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.category_title)
     private val amount: TextView = itemView.findViewById(R.id.category_amount)
     private val progressBar: ProgressBar = itemView.findViewById(R.id.category_progress)
 
     @SuppressLint("NewApi")
-    override fun onBind(item: CategoryState) {
+    override fun onBind(item: CategoryData) {
         with(item) {
             name.text = category.title
             // TODO: Format according to budget's currency

@@ -1,61 +1,60 @@
 package com.wbrawner.budget.ui.overview
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.wbrawner.budget.AllowanceApplication
+import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import com.wbrawner.budget.common.budget.Budget
-import com.wbrawner.budget.di.BudgetViewModelFactory
 import com.wbrawner.budget.ui.toAmountSpannable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
+import kotlinx.android.synthetic.main.fragment_overview.*
 
-class OverviewFragment : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
-    lateinit var viewModel: AccountOverviewViewModel
-    lateinit var budget: Budget
-    private var inflatedView: View? = null
+class OverviewFragment : Fragment() {
+    val viewModel: OverviewViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_overview, container, false)
-        (activity!!.application as AllowanceApplication).appComponent.inject(this)
-        viewModel = ViewModelProviders.of(activity!!, viewModelFactory)
-                .get(AccountOverviewViewModel::class.java)
-        inflatedView = view
-        return view
+    override fun onAttach(context: Context) {
+        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
+        super.onAttach(context)
+        viewModel.loadOverview(arguments?.getLong(EXTRA_BUDGET_ID))
     }
 
-    override fun onStart() {
-        super.onStart()
-        launch {
-            val balance = viewModel.getBalance(budget.id!!)
-            view?.findViewById<TextView>(R.id.overview_current_balance)
-                    ?.text = balance.toAmountSpannable(view?.context)
-            showData(inflatedView, true)
-        }
-    }
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_overview, container, false)
 
-    private fun showData(view: View?, show: Boolean) {
-        if (view == null) return
-        val dataVisibility = if (show) View.VISIBLE else View.GONE
-        val noDataVisibility = if (show) View.GONE else View.VISIBLE
-        view.findViewById<TextView>(R.id.overview_current_balance_label).visibility = dataVisibility
-        view.findViewById<TextView>(R.id.overview_current_balance).visibility = dataVisibility
-        view.findViewById<TextView>(R.id.overview_no_data).visibility = noDataVisibility
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                is AsyncState.Loading -> {
+                    overviewContent.visibility = View.GONE
+                    noData.visibility = View.GONE
+                    progressBar.visibility = View.VISIBLE
+                }
+                is AsyncState.Success -> {
+                    overviewContent.visibility = View.VISIBLE
+                    noData.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    balance.text = state.data.toAmountSpannable(view.context)
+                }
+                is AsyncState.Error -> {
+                    overviewContent.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    noData.visibility = View.VISIBLE
+                    Log.e("OverviewFragment", "Failed to load overview", state.exception)
+                }
+            }
+        })
     }
 
     companion object {
-        const val TAG_FRAGMENT = "overview"
-        const val TITLE_FRAGMENT = R.string.app_name
+        const val EXTRA_BUDGET_ID = "budgetId"
     }
 }

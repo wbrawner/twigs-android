@@ -4,15 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
-import com.wbrawner.budget.di.ViewModelKey
-import dagger.Binds
-import dagger.Module
-import dagger.multibindings.IntoMap
 import javax.inject.Inject
 
-class SplashViewModel @Inject constructor(
-        private val userRepository: UserRepository
-) : ViewModel() {
+class SplashViewModel : ViewModel() {
+
+    @Inject lateinit var userRepository: UserRepository
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
     suspend fun checkForExistingCredentials(): User? {
@@ -32,12 +28,4 @@ class SplashViewModel @Inject constructor(
             throw e
         }
     }
-}
-
-@Module
-abstract class SplashViewModelMapper {
-    @Binds
-    @IntoMap
-    @ViewModelKey(SplashViewModel::class)
-    abstract fun bindViewModel(viewModel: SplashViewModel): ViewModel
 }

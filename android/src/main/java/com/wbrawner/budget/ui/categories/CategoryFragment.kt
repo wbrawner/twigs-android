@@ -7,31 +7,41 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DiffUtil
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
-import com.wbrawner.budget.ui.base.BindableState
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
 import com.wbrawner.budget.ui.transactions.TRANSACTION_VIEW
-import com.wbrawner.budget.ui.transactions.TransactionState
+import com.wbrawner.budget.ui.transactions.TransactionData
 import com.wbrawner.budget.ui.transactions.TransactionViewHolder
 
 /**
  * A simple [Fragment] subclass.
  */
-class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel, TransactionState>() {
+class CategoryFragment : ListWithAddButtonFragment<Category, CategoryViewModel>() {
+    override val viewModel: CategoryViewModel by viewModels()
     override val noItemsStringRes: Int = R.string.transactions_no_data
-    override val viewModelClass: Class<CategoryViewModel> = CategoryViewModel::class.java
+
+    override fun reloadItems() {
+
+    }
+
+    override val constructors: Map<Int, (View) -> BindableAdapter.BindableViewHolder<Category>>
+        get() = TODO("Not yet implemented")
+    override val diffUtilItemCallback: DiffUtil.ItemCallback<Category>
+        get() = TODO("Not yet implemented")
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (requireActivity().application as AllowanceApplication).appComponent.inject(this)
+        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override suspend fun loadItems(): Pair<List<TransactionState>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<TransactionState>>> {
+    override suspend fun loadItems(): Pair<List<TransactionData>, Map<Int, (view: View) -> BindableAdapter.BindableViewHolder<TransactionData>>> {
         val categoryId = arguments?.getLong(EXTRA_CATEGORY_ID)
         if (categoryId == null) {
             findNavController().navigateUp()
@@ -40,8 +50,8 @@ class CategoryFragment : ListWithAddButtonFragment<CategoryViewModel, Transactio
         val category = viewModel.getCategory(categoryId)
         activity?.title = category.title
         // TODO: Add category details here as well
-        val items = ArrayList<TransactionState>()
-        items.addAll(viewModel.getTransactions(categoryId).map { TransactionState(it) })
+        val items = ArrayList<TransactionData>()
+        items.addAll(viewModel.getTransactions(categoryId).map { TransactionData(it) })
         return Pair(
                 items,
                 mapOf(TRANSACTION_VIEW to { v ->

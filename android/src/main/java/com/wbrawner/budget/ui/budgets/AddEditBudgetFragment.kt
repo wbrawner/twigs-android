@@ -1,42 +1,45 @@
 package com.wbrawner.budget.ui.budgets
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.budget.Budget
-import com.wbrawner.budget.di.BudgetViewModelFactory
+import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import kotlinx.android.synthetic.main.fragment_add_edit_budget.*
-import kotlinx.coroutines.CoroutineScope
-import javax.inject.Inject
 
 class AddEditBudgetFragment : Fragment() {
-    lateinit var viewModel: AddEditBudgetViewModel
-    @Inject
-    lateinit var viewModelFactory: BudgetViewModelFactory
+    private val viewModel: BudgetFormViewModel by viewModels()
+
     var id: Long? = null
     var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as AllowanceApplication)
-                .appComponent
-                .inject(this)
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory)
-                .get(AddEditBudgetViewModel::class.java)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_edit_budget, container, false)
+    override fun onAttach(context: Context) {
+        (requireActivity().application as AllowanceApplication)
+                .appComponent
+                .inject(viewModel)
+        super.onAttach(context)
+        viewModel.getBudget(arguments?.getLong(EXTRA_BUDGET_ID))
     }
+
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_add_edit_budget, container, false)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_add_edit, menu)
@@ -47,47 +50,53 @@ class AddEditBudgetFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        usersSearch.setAdapter(viewModel.suggestionsAdapter)
-        launch {
-            val budget = try {
-                viewModel.getBudget(arguments!!.getLong(EXTRA_BUDGET_ID))
-            } catch (e: Exception) {
-                return@launch
+        val suggestionsAdapter = ArrayAdapter<User>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                mutableListOf()
+        )
+        usersSearch.setAdapter(suggestionsAdapter)
+        viewModel.userSuggestions.observe(viewLifecycleOwner, Observer {
+            suggestionsAdapter.clear()
+            suggestionsAdapter.addAll(it)
+        })
+        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                is BudgetFormState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    budgetForm.visibility = View.GONE
+                }
+                is BudgetFormState.Success -> {
+                    budgetForm.visibility = View.VISIBLE
+                    progressBar.visibility = View.GONE
+                    activity?.setTitle(state.titleRes)
+                    menu?.findItem(R.id.action_delete)?.isVisible = state.showDeleteButton
+                    id = state.budget.id
+                    name.setText(state.budget.name)
+                    description.setText(state.budget.description)
+                }
+                is BudgetFormState.Exit -> {
+                    findNavController().navigateUp()
+                }
             }
-            activity?.setTitle(R.string.title_edit_budget)
-            menu?.findItem(R.id.action_delete)?.isVisible = true
-            id = budget.id
-            name.setText(budget.name)
-            description.setText(budget.description)
-            budget.users.forEach {
-                viewModel.addUser(it)
-            }
-        }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> findNavController().navigateUp()
             R.id.action_save -> {
-                launch {
-                    viewModel.saveBudget(Budget(
-                            id = id,
-                            name = name.text.toString(),
-                            description = description.text.toString(),
-                            users = viewModel.users.value ?: emptyList()
-                    ))
-                    findNavController().navigateUp()
-                }
+                viewModel.saveBudget(Budget(
+                        id = id,
+                        name = name.text.toString(),
+                        description = description.text.toString(),
+                        users = viewModel.users.value ?: emptyList()
+                ))
             }
             R.id.action_delete -> {
-                launch {
-                    viewModel.deleteBudget(this@AddEditBudgetFragment.id!!)
-                    findNavController().navigateUp()
-                }
+                viewModel.deleteBudget(this@AddEditBudgetFragment.id!!)
             }
         }
         return true
     }
 }
-
-fun AddEditBudgetFragment.launch(block: suspend CoroutineScope.() -> Unit) = viewModel.launch(block)

@@ -2,7 +2,6 @@ package com.wbrawner.budget
 
 import android.app.Application
 import com.wbrawner.budget.common.user.User
-import com.wbrawner.budget.di.AppComponent
 import com.wbrawner.budget.di.DaggerAppComponent
 
 class AllowanceApplication : Application() {

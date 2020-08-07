@@ -13,3 +13,7 @@ interface Repository<T, K> {
     suspend fun update(updatedItem: T): T
     suspend fun delete(id: K)
 }
+
+interface Identifiable {
+    val id: Long?
+}

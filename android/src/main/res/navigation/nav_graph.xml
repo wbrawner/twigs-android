@@ -36,6 +36,11 @@
         android:label="@string/title_add_budget"
         tools:layout="@layout/fragment_add_edit_budget" />
     <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.wbrawner.budget.ui.overview.OverviewFragment"
+        android:label="@string/title_overview"
+        tools:layout="@layout/fragment_overview" />
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.wbrawner.budget.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
@@ -47,10 +52,10 @@
         tools:layout="@layout/fragment_list_with_add_button" />
     <activity
         android:id="@+id/addEditTransactionActivity"
-        android:name="com.wbrawner.budget.ui.transactions.AddEditTransactionActivity"
+        android:name="com.wbrawner.budget.ui.transactions.TransactionFormActivity"
         android:label="AddEditTransactionActivity" />
     <activity
         android:id="@+id/addEditCategoryActivity"
-        android:name="com.wbrawner.budget.ui.categories.AddEditCategoryActivity"
+        android:name="com.wbrawner.budget.ui.categories.CategoryFormActivity"
         android:label="@string/title_add_category" />
 </navigation>

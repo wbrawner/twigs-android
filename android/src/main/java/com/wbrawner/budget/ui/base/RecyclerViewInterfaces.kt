@@ -4,44 +4,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
-class BindableAdapter<T : BindableState>(
-        private val items: List<T>,
-        private val constructors: Map<Int, (view: View) -> BindableViewHolder<T>>
-) : RecyclerView.Adapter<BindableAdapter.BindableViewHolder<T>>() {
+class BindableAdapter<Data>(
+        private val constructors: Map<Int, (view: View) -> BindableViewHolder<Data>>,
+        diffUtilItemCallback: DiffUtil.ItemCallback<BindableData<Data>>
+) : ListAdapter<BindableData<Data>, BindableAdapter.BindableViewHolder<Data>>(diffUtilItemCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
-            : BindableViewHolder<T> = constructors[viewType]
+            : BindableViewHolder<Data> = constructors[viewType]
             ?.invoke(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
             ?: throw IllegalStateException("Attempted to create ViewHolder without proper constructor provided")
 
-    override fun getItemCount(): Int = items.size
-
-    override fun getItemViewType(position: Int): Int = items[position].viewType
-
-    override fun onBindViewHolder(holder: BindableViewHolder<T>, position: Int) {
-        holder.onBind(items[position])
+    override fun onBindViewHolder(holder: BindableViewHolder<Data>, position: Int) {
+        holder.onBind(getItem(position))
     }
 
-    override fun onViewRecycled(holder: BindableViewHolder<T>) {
+    override fun onViewRecycled(holder: BindableViewHolder<Data>) {
         holder.onUnbind()
     }
 
-    abstract class BindableViewHolder<T>(itemView: View)
-        : RecyclerView.ViewHolder(itemView), Bindable<T>
+    abstract class BindableViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView), Bindable<BindableData<T>>
 
     abstract class CoroutineViewHolder<T>(itemView: View) : BindableViewHolder<T>(itemView), CoroutineScope {
         override val coroutineContext: CoroutineContext = Dispatchers.Main
 
         override fun onUnbind() {
-            try {
-                coroutineContext.cancel()
-            } catch (ignored: Exception) {
-            }
+            coroutineContext[Job]?.cancel()
             super.onUnbind()
         }
     }
@@ -52,7 +46,8 @@ interface Bindable<T> {
     fun onUnbind() {}
 }
 
-interface BindableState {
+interface BindableData<T> {
+    val data: T
     @get:LayoutRes
     val viewType: Int
 }

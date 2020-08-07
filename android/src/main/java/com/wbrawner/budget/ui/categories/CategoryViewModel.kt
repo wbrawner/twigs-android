@@ -1,24 +1,24 @@
 package com.wbrawner.budget.ui.categories
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.transaction.TransactionRepository
-import com.wbrawner.budget.di.ViewModelKey
-import com.wbrawner.budget.ui.base.LoadingViewModel
-import dagger.Binds
-import dagger.Module
-import dagger.multibindings.IntoMap
 import javax.inject.Inject
 
-class CategoryViewModel @Inject constructor(
-        private val transactionRepo: TransactionRepository,
-        private val categoryRepo: CategoryRepository,
-        private val budgetRepo: BudgetRepository
-) : LoadingViewModel() {
-    suspend fun getBudget(budgetId: Long): Budget = showLoader {
+class CategoryViewModel : ViewModel(), AsyncViewModel<List<Category>> {
+    override val state: MutableLiveData<AsyncState<List<Category>>> = MutableLiveData(AsyncState.Loading)
+
+    @Inject lateinit var transactionRepo: TransactionRepository
+    @Inject lateinit var categoryRepo: CategoryRepository
+    @Inject lateinit var budgetRepo: BudgetRepository
+
+    fun getBudget(budgetId: Long): Budget {
         budgetRepo.findById(budgetId)
     }
 
@@ -54,12 +54,4 @@ class CategoryViewModel @Inject constructor(
         val multiplier = if (category.expense) -1 else 1
         return@showLoader (balance * multiplier).toInt()
     }
-}
-
-@Module
-abstract class CategoryViewModelMapper {
-    @Binds
-    @IntoMap
-    @ViewModelKey(CategoryViewModel::class)
-    abstract fun bindCategoryViewModel(categoryViewModel: CategoryViewModel): ViewModel
 }

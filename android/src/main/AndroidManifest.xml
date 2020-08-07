@@ -31,14 +31,14 @@
         <activity android:name=".ui.MainActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ui.transactions.AddEditTransactionActivity"
+            android:name=".ui.transactions.TransactionFormActivity"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.categories.AddEditCategoryActivity"
+            android:name=".ui.categories.CategoryFormActivity"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
