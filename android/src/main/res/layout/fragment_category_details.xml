@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -58,9 +59,12 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:textAlignment="center"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/balance"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/totalLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/totalLabel"
+            tools:text="$60.00" />
 
         <TextView
             android:id="@+id/balance"
@@ -68,9 +72,12 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:textAlignment="center"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/remaining"
             app:layout_constraintStart_toEndOf="@+id/total"
-            app:layout_constraintTop_toBottomOf="@+id/balanceLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/balanceLabel"
+            tools:text="$40.00" />
 
         <TextView
             android:id="@+id/remaining"
@@ -78,16 +85,20 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:textAlignment="center"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/balance"
-            app:layout_constraintTop_toBottomOf="@+id/remainingLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/remainingLabel"
+            tools:text="$20.00" />
 
         <ProgressBar
             android:id="@+id/categoryProgress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/total" />
+            app:layout_constraintTop_toBottomOf="@+id/total"
+            tools:progress="40" />
 
         <FrameLayout
             android:id="@+id/transactionsFragmentContainer"

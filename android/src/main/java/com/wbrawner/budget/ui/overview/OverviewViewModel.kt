@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class OverviewViewModel : ViewModel() {
-    val state = MutableLiveData<AsyncState<Long>>(AsyncState.Loading)
+    val state = MutableLiveData<AsyncState<OverviewState>>(AsyncState.Loading)
 
     @Inject
     lateinit var budgetRepo: BudgetRepository
@@ -38,10 +39,18 @@ class OverviewViewModel : ViewModel() {
                         balance += it.amount
                     }
                 }
-                state.postValue(AsyncState.Success(balance))
+                state.postValue(AsyncState.Success(OverviewState(
+                        budget,
+                        balance
+                )))
             } catch (e: Exception) {
                 state.postValue(AsyncState.Error(e))
             }
         }
     }
 }
+
+data class OverviewState(
+        val budget: Budget,
+        val balance: Long
+)

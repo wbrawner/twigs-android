@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.wbrawner.budget.R
+import java.text.NumberFormat
+import java.util.*
 
 fun RecyclerView.hideFabOnScroll(fab: FloatingActionButton) {
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -38,8 +40,10 @@ fun EditText.ensureNotEmpty(): Boolean {
 }
 
 fun Long.toAmountSpannable(context: Context? = null): Spannable {
-    val spannableStringBuilder = SpannableStringBuilder()
-    spannableStringBuilder.append(String.format("${'$'}%.02f", this / 100.0f))
+    val currency = NumberFormat.getCurrencyInstance().apply {
+        currency = Currency.getInstance(Locale.getDefault())
+    }.format(this / 100.0f)
+    val spannableStringBuilder = SpannableStringBuilder(currency)
     if (context == null) {
         return spannableStringBuilder
     }

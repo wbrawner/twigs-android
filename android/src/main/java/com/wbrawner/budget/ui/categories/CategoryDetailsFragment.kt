@@ -15,6 +15,7 @@ import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
+import com.wbrawner.budget.ui.EXTRA_CATEGORY_NAME
 import com.wbrawner.budget.ui.toAmountSpannable
 import com.wbrawner.budget.ui.transactions.TransactionListFragment
 import kotlinx.android.synthetic.main.fragment_category_details.*
@@ -39,6 +40,7 @@ class CategoryDetailsFragment : Fragment() {
             inflater.inflate(R.layout.fragment_category_details, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        activity?.title = arguments?.getString(EXTRA_CATEGORY_NAME)
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             when (state) {
                 is AsyncState.Loading -> {

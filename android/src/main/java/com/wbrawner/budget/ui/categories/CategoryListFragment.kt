@@ -13,6 +13,7 @@ import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
+import com.wbrawner.budget.ui.EXTRA_CATEGORY_NAME
 import com.wbrawner.budget.ui.base.BindableAdapter
 import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
@@ -82,6 +83,7 @@ class CategoryViewHolder(
         itemView.setOnClickListener {
             val bundle = Bundle().apply {
                 putLong(EXTRA_CATEGORY_ID, category.id ?: -1)
+                putString(EXTRA_CATEGORY_NAME, category.title)
             }
             navController.navigate(R.id.categoryFragment, bundle)
         }

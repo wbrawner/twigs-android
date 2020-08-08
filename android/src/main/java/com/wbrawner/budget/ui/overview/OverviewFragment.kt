@@ -41,7 +41,8 @@ class OverviewFragment : Fragment() {
                     overviewContent.visibility = View.VISIBLE
                     noData.visibility = View.GONE
                     progressBar.visibility = View.GONE
-                    balance.text = state.data.toAmountSpannable(view.context)
+                    activity?.title = state.data.budget.name
+                    balance.text = state.data.balance.toAmountSpannable(view.context)
                 }
                 is AsyncState.Error -> {
                     overviewContent.visibility = View.GONE
