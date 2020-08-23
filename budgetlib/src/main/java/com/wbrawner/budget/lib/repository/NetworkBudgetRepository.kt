@@ -1,12 +1,15 @@
 package com.wbrawner.budget.lib.repository
 
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.lib.network.BudgetApiService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.concurrent.atomic.AtomicReference
 
 const val KEY_DEFAULT_BUDGET = "defaultBudget"
 
@@ -16,18 +19,38 @@ class NetworkBudgetRepository(
 ) : BudgetRepository {
     private val mutex = Mutex()
     private val budgets: MutableSet<Budget> = mutableSetOf()
-    private val currentBudgetRef = AtomicReference<Budget>()
-    override var currentBudget: Budget?
-        get() = currentBudgetRef.get()
-        set(value) {
-            currentBudgetRef.set(value)
+    override val currentBudget: LiveData<Budget?> = MutableLiveData()
+
+    init {
+        currentBudget.observeForever { budget ->
             sharedPreferences.edit().apply {
-                value?.id?.let {
+                budget?.id?.let {
                     putLong(KEY_DEFAULT_BUDGET, it)
                 } ?: remove(KEY_DEFAULT_BUDGET)
                 apply()
             }
         }
+        GlobalScope.launch {
+            prefetchData()
+        }
+    }
+
+    override suspend fun prefetchData() {
+        val budgets = try {
+            findAll()
+        } catch (e: Exception) {
+            emptyList<Budget>()
+        }
+        if (budgets.isEmpty()) return
+        val budgetId = sharedPreferences.getLong(KEY_DEFAULT_BUDGET, budgets.first().id!!)
+        val budget = try {
+            findById(budgetId)
+        } catch (e: Exception) {
+            // For some reason we can't find the default budget id, so fallback to the first budget
+            budgets.first()
+        }
+        (currentBudget as MutableLiveData).postValue(budget)
+    }
 
     override suspend fun create(newItem: Budget): Budget =
             apiService.newBudget(NewBudgetRequest(newItem)).apply {
@@ -44,11 +67,15 @@ class NetworkBudgetRepository(
         }
     }
 
-    override suspend fun findById(id: Long): Budget = mutex.withLock {
+    override suspend fun findById(id: Long, setCurrent: Boolean): Budget = (mutex.withLock {
         budgets.firstOrNull { it.id == id }
     } ?: apiService.getBudget(id).apply {
         mutex.withLock {
             budgets.add(this)
+        }
+    }).apply {
+        if (setCurrent) {
+            (currentBudget as MutableLiveData).postValue(this)
         }
     }
 

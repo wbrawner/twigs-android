@@ -56,7 +56,7 @@ class OverviewFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.loadOverview()
+        viewModel.loadOverview(viewLifecycleOwner)
     }
 
     companion object {

@@ -23,7 +23,7 @@ class CategoryListFragment : ListWithAddButtonFragment<Category, CategoryListVie
     override val noItemsStringRes: Int = R.string.categories_no_data
     override val viewModel: CategoryListViewModel by viewModels()
     override fun reloadItems() {
-        viewModel.getCategories()
+        viewModel.getCategories(viewLifecycleOwner)
     }
 
     override fun bindData(data: Category): BindableData<Category> = BindableData(data, CATEGORY_VIEW)

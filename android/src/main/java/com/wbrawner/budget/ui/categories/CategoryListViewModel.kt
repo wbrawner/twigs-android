@@ -1,6 +1,8 @@
 package com.wbrawner.budget.ui.categories
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.AsyncViewModel
@@ -19,15 +21,17 @@ class CategoryListViewModel : ViewModel(), AsyncViewModel<List<Category>> {
     @Inject
     lateinit var categoryRepo: CategoryRepository
 
-    fun getCategories() {
-        val budgetId = budgetRepo.currentBudget?.id
-        if (budgetId == null) {
-            state.postValue(AsyncState.Error("Invalid budget ID"))
-            return
-        }
-        launch {
-            categoryRepo.findAll(arrayOf(budgetId)).toList()
-        }
+    fun getCategories(lifecycleOwner: LifecycleOwner) {
+        budgetRepo.currentBudget.observe(lifecycleOwner, Observer {
+            val budgetId = budgetRepo.currentBudget.value?.id
+            if (budgetId == null) {
+                state.postValue(AsyncState.Error("Invalid budget ID"))
+                return@Observer
+            }
+            launch {
+                categoryRepo.findAll(arrayOf(budgetId)).toList()
+            }
+        })
     }
 
     suspend fun getBalance(category: Category): Long {
