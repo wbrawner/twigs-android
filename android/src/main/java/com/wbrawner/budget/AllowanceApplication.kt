@@ -14,5 +14,6 @@ class AllowanceApplication : Application() {
                 .baseUrl(BuildConfig.API_URL)
                 .context(this)
                 .build()
+        appComponent.errorHandler.init(this)
     }
 }

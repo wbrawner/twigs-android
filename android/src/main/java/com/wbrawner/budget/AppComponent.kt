@@ -1,6 +1,7 @@
 package com.wbrawner.budget
 
 import android.content.Context
+import com.wbrawner.budget.common.util.ErrorHandler
 import com.wbrawner.budget.lib.network.NetworkModule
 import com.wbrawner.budget.storage.StorageModule
 import com.wbrawner.budget.ui.SplashViewModel
@@ -18,7 +19,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [StorageModule::class, NetworkModule::class])
+@Component(modules = [AppModule::class, StorageModule::class, NetworkModule::class])
 interface AppComponent {
     fun inject(viewModel: OverviewViewModel)
     fun inject(viewModel: SplashViewModel)
@@ -29,6 +30,9 @@ interface AppComponent {
     fun inject(viewModel: CategoryFormViewModel)
     fun inject(viewModel: TransactionListViewModel)
     fun inject(viewModel: TransactionFormViewModel)
+
+    @Singleton
+    val errorHandler: ErrorHandler
 
     @Component.Builder
     interface Builder {
