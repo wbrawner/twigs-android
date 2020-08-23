@@ -8,11 +8,16 @@ import com.wbrawner.budget.common.transaction.TransactionRepository
 import javax.inject.Inject
 
 class TransactionFormViewModel : ViewModel() {
-    @Inject lateinit var budgetRepository: BudgetRepository
-    @Inject lateinit var categoryRepository: CategoryRepository
-    @Inject lateinit var transactionRepository: TransactionRepository
+    @Inject
+    lateinit var budgetRepository: BudgetRepository
+    @Inject
+    lateinit var categoryRepository: CategoryRepository
+    @Inject
+    lateinit var transactionRepository: TransactionRepository
 
-    suspend fun getCategories(budgetId: Long) = categoryRepository.findAll(arrayOf(budgetId))
+    suspend fun getCategories(budgetId: Long, expense: Boolean) = categoryRepository.findAll(arrayOf(budgetId)).filter {
+        it.expense == expense
+    }
 
     suspend fun getTransaction(id: Long) = transactionRepository.findById(id)
 

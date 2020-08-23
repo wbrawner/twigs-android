@@ -55,15 +55,20 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                     android.R.layout.simple_list_item_1,
                     accounts
             )
-
+            container_edit_transaction_type.setOnCheckedChangeListener { _, _ ->
+                this@TransactionFormActivity.launch {
+                    val budget = budgetSpinner.selectedItem as Budget
+                    setCategories(viewModel.getCategories(budget.id!!, edit_transaction_type_expense.isChecked))
+                }
+            }
             budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     this@TransactionFormActivity.launch {
-                        val account = budgetSpinner.selectedItem as Budget
-                        setCategories(viewModel.getCategories(account.id!!))
+                        val budget = budgetSpinner.selectedItem as Budget
+                        setCategories(viewModel.getCategories(budget.id!!, edit_transaction_type_expense.isChecked))
                     }
                 }
             }
