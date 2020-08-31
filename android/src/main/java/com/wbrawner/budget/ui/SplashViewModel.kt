@@ -2,38 +2,35 @@ package com.wbrawner.budget.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.wbrawner.budget.AsyncState
+import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.common.budget.BudgetRepository
-import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
+import com.wbrawner.budget.launch
 import javax.inject.Inject
 
-class SplashViewModel : ViewModel() {
+class SplashViewModel : ViewModel(), AsyncViewModel<AuthenticationState> {
+    override val state: MutableLiveData<AsyncState<AuthenticationState>> = MutableLiveData(AsyncState.Loading)
+
     @Inject
     lateinit var budgetRepository: BudgetRepository
 
     @Inject
     lateinit var userRepository: UserRepository
-    val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    suspend fun checkForExistingCredentials(): User? {
-        return try {
-            val user = userRepository.getProfile()
-            loadBudgetData()
-            user
+    suspend fun checkForExistingCredentials() {
+        state.postValue(AsyncState.Success(AuthenticationState.Splash))
+        val authState = try {
+            AuthenticationState.Authenticated
         } catch (ignored: Exception) {
-            null
+            AuthenticationState.Unauthenticated
         }
+        state.postValue(AsyncState.Success(authState))
     }
 
-    suspend fun login(username: String, password: String): User {
-        isLoading.value = true
-        return try {
-            val user = userRepository.login(username, password)
+    fun login(username: String, password: String) = launch {
+        AuthenticationState.Authenticated.also {
             loadBudgetData()
-            user
-        } catch (e: java.lang.Exception) {
-            isLoading.value = false
-            throw e
         }
     }
 
@@ -42,3 +39,8 @@ class SplashViewModel : ViewModel() {
     }
 }
 
+sealed class AuthenticationState {
+    object Splash : AuthenticationState()
+    object Unauthenticated : AuthenticationState()
+    object Authenticated : AuthenticationState()
+}

@@ -1,17 +1,36 @@
 package com.wbrawner.budget.lib.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
 import com.wbrawner.budget.lib.network.BudgetApiService
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NetworkUserRepository @Inject constructor(private val apiService: BudgetApiService) : UserRepository {
 
-    override suspend fun login(username: String, password: String): User =
-            apiService.login(LoginRequest(username, password))
+    override val currentUser: LiveData<User?> = MutableLiveData()
 
-    override suspend fun getProfile(): User = apiService.getProfile()
+    init {
+        GlobalScope.launch {
+            try {
+                getProfile()
+            } catch (ignored: Exception) {
+            }
+        }
+    }
+
+    override suspend fun login(username: String, password: String): User =
+            apiService.login(LoginRequest(username, password)).also {
+                (currentUser as MutableLiveData).postValue(it)
+            }
+
+    override suspend fun getProfile(): User = apiService.getProfile().also {
+        (currentUser as MutableLiveData).postValue(it)
+    }
 
     override suspend fun create(newItem: User): User = apiService.newUser(newItem)
 

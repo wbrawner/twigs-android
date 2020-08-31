@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.wbrawner.budget.AllowanceApplication
+import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,20 +30,23 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                     )
         }
         val navController = findNavController(R.id.auth_content)
-        launch {
-            val navId = try {
-                val user = viewModel.checkForExistingCredentials()
-                if (user != null) {
-                    (application as AllowanceApplication).currentUser = user
-                    R.id.mainActivity
-                } else {
-                    R.id.loginFragment
+        viewModel.state.observe(this, Observer { state ->
+            when (state) {
+                is AsyncState.Success -> {
+                    when (state.data) {
+                        is AuthenticationState.Authenticated -> {
+                            navController.navigate(R.id.mainActivity)
+                            finish()
+                        }
+                        is AuthenticationState.Unauthenticated -> {
+                            navController.navigate(R.id.loginFragment)
+                        }
+                    }
                 }
-            } catch (e: Exception) {
-                R.id.loginFragment
             }
-            navController.navigate(navId)
-            if (navId == R.id.mainActivity) finish()
+        })
+        launch {
+            viewModel.checkForExistingCredentials()
         }
     }
 }

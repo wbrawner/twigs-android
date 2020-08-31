@@ -8,23 +8,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import com.wbrawner.budget.AllowanceApplication
+import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.ensureNotEmpty
 import com.wbrawner.budget.ui.show
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 /**
  * A simple [Fragment] subclass.
  */
-class LoginFragment : Fragment(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
+class LoginFragment : Fragment() {
     private val viewModel: SplashViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -35,14 +29,18 @@ class LoginFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            formPrompt.show(!isLoading)
-            usernameContainer.show(!isLoading)
-            passwordContainer.show(!isLoading)
-            submit.show(!isLoading)
-            registerButton.show(!isLoading)
-            forgotPasswordLink.show(!isLoading)
-            progressBar.show(isLoading)
+        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+            when (state) {
+                is AsyncState.Loading -> {
+                    handleLoading(true)
+                }
+                is AsyncState.Error -> {
+                    handleLoading(false)
+                    username.error = "Invalid username/password"
+                    password.error = "Invalid username/password"
+                    state.exception.printStackTrace()
+                }
+            }
         })
         password.setOnEditorActionListener { _, _, _ ->
             submit.performClick()
@@ -51,18 +49,7 @@ class LoginFragment : Fragment(), CoroutineScope {
             if (!username.ensureNotEmpty() || !password.ensureNotEmpty()) {
                 return@setOnClickListener
             }
-            launch {
-                try {
-                    val user = viewModel.login(username.text.toString(), password.text.toString())
-                    (requireActivity().application as AllowanceApplication).currentUser = user
-                    findNavController().navigate(R.id.mainActivity)
-                    activity?.finish()
-                } catch (e: Exception) {
-                    username.error = "Invalid username/password"
-                    password.error = "Invalid username/password"
-                    e.printStackTrace()
-                }
-            }
+            viewModel.login(username.text.toString(), password.text.toString())
         }
         val usernameString = arguments?.getString(EXTRA_USERNAME)
         val passwordString = arguments?.getString(EXTRA_PASSWORD)
@@ -71,6 +58,16 @@ class LoginFragment : Fragment(), CoroutineScope {
             password.setText(passwordString)
             submit.performClick()
         }
+    }
+
+    private fun handleLoading(isLoading: Boolean) {
+        formPrompt.show(!isLoading)
+        usernameContainer.show(!isLoading)
+        passwordContainer.show(!isLoading)
+        submit.show(!isLoading)
+        registerButton.show(!isLoading)
+        forgotPasswordLink.show(!isLoading)
+        progressBar.show(isLoading)
     }
 
     companion object {
