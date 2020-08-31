@@ -10,11 +10,16 @@
         <item name="android:statusBarColor">?android:attr/windowBackground</item>
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
         <item name="android:navigationBarColor">@color/colorBackgroundPrimary</item>
-        <item name="android:timePickerDialogTheme">
-            @style/Theme.MaterialComponents.DayNight.Dialog.Alert
-        </item>
-        <item name="android:datePickerDialogTheme">
-            @style/Theme.MaterialComponents.DayNight.Dialog.Alert
+        <item name="android:timePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
+        <item name="android:datePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
+    </style>
+
+    <style name="DateTimePickerDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:buttonBarButtonStyle">
+            @style/Widget.MaterialComponents.Button.TextButton
         </item>
     </style>
 
@@ -40,10 +45,5 @@
     </style>
 
     <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint">
-    </style>
-
-    <style name="AppTheme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:background">@drawable/bg_rounded</item>
-        <item name="android:gravity">bottom</item>
     </style>
 </resources>

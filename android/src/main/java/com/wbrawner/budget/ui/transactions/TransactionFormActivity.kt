@@ -85,7 +85,8 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                         currentDate.year + 1900,
                         currentDate.month,
                         currentDate.date
-                ).show()
+                )
+                        .show()
             }
             transactionTime.setOnClickListener {
                 val currentDate = DateFormat.getTimeFormat(this@TransactionFormActivity)
