@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
@@ -21,7 +22,7 @@ import com.wbrawner.budget.ui.transactions.toLong
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
 
 class CategoryFormActivity : AppCompatActivity() {
-    lateinit var viewModel: CategoryFormViewModel
+    val viewModel: CategoryFormViewModel by viewModels()
     var id: Long? = null
     var menu: Menu? = null
 
