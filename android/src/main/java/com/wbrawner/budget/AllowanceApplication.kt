@@ -1,10 +1,8 @@
 package com.wbrawner.budget
 
 import android.app.Application
-import com.wbrawner.budget.common.user.User
 
 class AllowanceApplication : Application() {
-    var currentUser: User? = null
     lateinit var appComponent: AppComponent
         private set
 

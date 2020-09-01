@@ -20,15 +20,17 @@ class TransactionListViewModel : ViewModel(), AsyncViewModel<List<Transaction>> 
     override val state: MutableLiveData<AsyncState<List<Transaction>>> = MutableLiveData(AsyncState.Loading)
 
     fun getTransactions(
-            budgetId: Long? = budgetRepository.currentBudget.value?.id,
             categoryId: Long? = null,
             start: Calendar? = null,
             end: Calendar? = null
     ) {
-        val budgets = budgetId?.let { listOf(it) }
-        val categories = categoryId?.let { listOf(it) }
-        launch {
-            transactionRepo.findAll(budgets, categories, start, end).toList()
+        budgetRepository.currentBudget.observeForever { budget ->
+            val budgets = budget?.id?.let { listOf(it) }
+            val categories = categoryId?.let { listOf(it) }
+            launch {
+                transactionRepo.findAll(budgets, categories, start, end).toList()
+            }
         }
+
     }
 }

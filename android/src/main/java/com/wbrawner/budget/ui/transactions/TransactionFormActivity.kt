@@ -93,7 +93,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                         .parse(transactionTime.text.toString()) ?: Date()
                 TimePickerDialog(
                         this@TransactionFormActivity,
-                        TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                        { _, hourOfDay, minute ->
                             val newTime = Date().apply {
                                 hours = hourOfDay
                                 minutes = minute
@@ -203,7 +203,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                             amount = (BigDecimal(edit_transaction_amount.text.toString()) * 100.toBigDecimal()).toLong(),
                             expense = edit_transaction_type_expense.isChecked,
                             categoryId = categoryId,
-                            createdBy = (application as AllowanceApplication).currentUser!!.id!!
+                            createdBy = viewModel.currentUserId!!
                     ))
                     onNavigateUp()
                 }
