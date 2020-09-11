@@ -20,10 +20,12 @@ class TransactionFormViewModel : ViewModel() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
     var currentUserId: Long? = null
         private set
 
-    init {
+    //TODO: Find a better way to handle this
+    fun init() {
         userRepository.currentUser.observeForever {
             currentUserId = it?.id
         }

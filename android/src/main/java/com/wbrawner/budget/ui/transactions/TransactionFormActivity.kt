@@ -47,6 +47,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         setTitle(R.string.title_add_transaction)
         edit_transaction_type_expense.isChecked = true
         (application as AllowanceApplication).appComponent.inject(viewModel)
+        viewModel.init()
         launch {
             val accounts = viewModel.getAccounts().toTypedArray()
             setCategories()
