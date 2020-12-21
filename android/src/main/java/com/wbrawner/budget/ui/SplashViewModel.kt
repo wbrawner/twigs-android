@@ -21,6 +21,7 @@ class SplashViewModel : ViewModel(), AsyncViewModel<AuthenticationState> {
     suspend fun checkForExistingCredentials() {
         state.postValue(AsyncState.Success(AuthenticationState.Splash))
         val authState = try {
+            userRepository.getProfile()
             AuthenticationState.Authenticated
         } catch (ignored: Exception) {
             AuthenticationState.Unauthenticated
@@ -29,8 +30,14 @@ class SplashViewModel : ViewModel(), AsyncViewModel<AuthenticationState> {
     }
 
     fun login(username: String, password: String) = launch {
-        AuthenticationState.Authenticated.also {
-            loadBudgetData()
+        try {
+            userRepository.login(username, password).also {
+                loadBudgetData()
+            }
+            AuthenticationState.Authenticated
+        } catch (ignored: Exception) {
+            // TODO: Return error message here
+            AuthenticationState.Unauthenticated
         }
     }
 
