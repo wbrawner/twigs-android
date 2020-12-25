@@ -1,1 +1,1 @@
-include ':android', ':budgetlib', ':common', ':storage'
+include ':android', ':budgetlib', ':common', ':storage', ':shared'
