@@ -28,5 +28,5 @@
         android:id="@+id/mainActivity"
         android:name="com.wbrawner.budget.ui.MainActivity"
         android:label="activity_transaction_list"
-        tools:layout="@layout/activity_transaction_list" />
+        tools:layout="@layout/activity_main" />
 </navigation>

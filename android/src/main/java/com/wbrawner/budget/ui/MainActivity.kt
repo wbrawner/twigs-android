@@ -7,13 +7,13 @@ import androidx.emoji.text.EmojiCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.wbrawner.budget.R
-import kotlinx.android.synthetic.main.activity_transaction_list.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EmojiCompat.init(androidx.emoji.bundled.BundledEmojiCompatConfig(this))
-        setContentView(R.layout.activity_transaction_list)
+        setContentView(R.layout.activity_main)
         setSupportActionBar(action_bar)
         val navController = findNavController(R.id.content_container)
         menu_main.setupWithNavController(navController)
