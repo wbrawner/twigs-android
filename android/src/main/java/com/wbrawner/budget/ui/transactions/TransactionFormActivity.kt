@@ -171,8 +171,8 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> onNavigateUp()
             R.id.action_save -> {
                 val date = GregorianCalendar.getInstance().apply {
