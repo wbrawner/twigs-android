@@ -4,6 +4,7 @@ import android.content.Context
 import com.wbrawner.budget.common.util.ErrorHandler
 import com.wbrawner.budget.lib.network.NetworkModule
 import com.wbrawner.budget.storage.StorageModule
+import com.wbrawner.budget.ui.MainViewModel
 import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.budgets.BudgetFormViewModel
 import com.wbrawner.budget.ui.budgets.BudgetListViewModel
@@ -15,7 +16,6 @@ import com.wbrawner.budget.ui.transactions.TransactionFormViewModel
 import com.wbrawner.budget.ui.transactions.TransactionListViewModel
 import dagger.BindsInstance
 import dagger.Component
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
@@ -23,6 +23,7 @@ import javax.inject.Singleton
 interface AppComponent {
     fun inject(viewModel: OverviewViewModel)
     fun inject(viewModel: SplashViewModel)
+    fun inject(viewModel: MainViewModel)
     fun inject(viewMode: BudgetListViewModel)
     fun inject(viewModel: BudgetFormViewModel)
     fun inject(viewModel: CategoryListViewModel)

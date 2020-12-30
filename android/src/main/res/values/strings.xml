@@ -59,4 +59,6 @@
     <string name="label_balance">Balance</string>
     <string name="label_remaining">Remaining</string>
     <string name="prompt_server">Server</string>
+    <string name="action_open">Open</string>
+    <string name="action_close">Close</string>
 </resources>
