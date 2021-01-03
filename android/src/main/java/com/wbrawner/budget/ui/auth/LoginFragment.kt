@@ -46,14 +46,16 @@ class LoginFragment : Fragment() {
             submit.performClick()
         }
         submit.setOnClickListener {
-            if (!username.ensureNotEmpty() || !password.ensureNotEmpty()) {
+            if (!server.ensureNotEmpty() || !username.ensureNotEmpty() || !password.ensureNotEmpty()) {
                 return@setOnClickListener
             }
-            viewModel.login(username.text.toString(), password.text.toString())
+            viewModel.login(server.text.toString(), username.text.toString(), password.text.toString())
         }
+        val serverString = arguments?.getString(EXTRA_SERVER)
         val usernameString = arguments?.getString(EXTRA_USERNAME)
         val passwordString = arguments?.getString(EXTRA_PASSWORD)
-        if (!usernameString.isNullOrBlank() && !passwordString.isNullOrBlank()) {
+        if (!serverString.isNullOrBlank() && !usernameString.isNullOrBlank() && !passwordString.isNullOrBlank()) {
+            server.setText(serverString)
             username.setText(usernameString)
             password.setText(passwordString)
             submit.performClick()
@@ -62,6 +64,7 @@ class LoginFragment : Fragment() {
 
     private fun handleLoading(isLoading: Boolean) {
         formPrompt.show(!isLoading)
+        serverContainer.show(!isLoading)
         usernameContainer.show(!isLoading)
         passwordContainer.show(!isLoading)
         submit.show(!isLoading)
@@ -71,6 +74,7 @@ class LoginFragment : Fragment() {
     }
 
     companion object {
+        const val EXTRA_SERVER = "server"
         const val EXTRA_USERNAME = "username"
         const val EXTRA_PASSWORD = "password"
     }

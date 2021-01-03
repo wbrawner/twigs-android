@@ -30,7 +30,7 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                     )
         }
         val navController = findNavController(R.id.auth_content)
-        viewModel.state.observe(this, Observer { state ->
+        viewModel.state.observe(this, { state ->
             when (state) {
                 is AsyncState.Success -> {
                     when (state.data) {

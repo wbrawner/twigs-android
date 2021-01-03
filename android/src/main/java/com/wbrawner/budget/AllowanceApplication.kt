@@ -9,7 +9,6 @@ class AllowanceApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         appComponent = DaggerAppComponent.builder()
-                .baseUrl(BuildConfig.API_URL)
                 .context(this)
                 .build()
         appComponent.errorHandler.init(this)

@@ -27,6 +27,8 @@ import java.util.*
 import javax.inject.Named
 import javax.inject.Singleton
 
+const val PREF_KEY_BASE_URL = "baseUrl"
+
 @Module
 class NetworkModule {
     @Provides
@@ -66,8 +68,17 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
+    fun provideBaseUrlHelper(sharedPreferences: SharedPreferences) = BaseUrlHelper().apply {
+        sharedPreferences.getString(PREF_KEY_BASE_URL, null)?.let {
+            url = it
+        }
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(baseUrlHelper: BaseUrlHelper, cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
+            .addInterceptor(baseUrlHelper.interceptor)
             .apply {
                 if (BuildConfig.DEBUG)
                     this.addInterceptor(
@@ -79,12 +90,11 @@ class NetworkModule {
 
     @Provides
     fun provideRetrofit(
-            @Named("baseUrl") baseUrl: String,
             moshi: Moshi,
             client: OkHttpClient
     ): Retrofit = Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl(baseUrl)
+            .baseUrl(DEFAULT_URL)
             .client(client)
             .build()
 

@@ -33,9 +33,6 @@ android {
             useSupportLibrary = true
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//        buildConfigField "String", "API_URL", "\"http://192.168.86.163:8080/\""
-//        buildConfigField "String", "API_URL", "\"http://10.0.2.2:8080/\""
-        buildConfigField "String", "API_URL", "\"https://api.twigs.brawner.dev/\""
         buildConfigField "String", "ACRA_URL", "\"${acraProperties['url']}\""
         buildConfigField "String", "ACRA_USER", "\"${acraProperties['user']}\""
         buildConfigField "String", "ACRA_PASS", "\"${acraProperties['pass']}\""

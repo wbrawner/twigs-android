@@ -37,9 +37,6 @@ interface AppComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun baseUrl(@Named("baseUrl") baseUrl: String): Builder
-
-        @BindsInstance
         fun context(context: Context): Builder
         fun build(): AppComponent
     }
