@@ -21,6 +21,8 @@ interface AsyncViewModel<T> {
     val state: MutableLiveData<AsyncState<T>>
 }
 
+fun <T> MutableLiveData<AsyncState<T>>.postValue(value: T) = postValue(AsyncState.Success(value))
+
 fun <VM, T> VM.launch(block: suspend () -> T): Job where VM : ViewModel, VM : AsyncViewModel<T> = viewModelScope.launch {
     state.postValue(AsyncState.Loading)
     try {
