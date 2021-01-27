@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="fontFamily">@font/ubuntu</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">?android:attr/windowBackground</item>
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
@@ -52,5 +53,5 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
-    <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint"></style>
+    <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint" />
 </resources>
