@@ -56,7 +56,7 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
             return super.onOptionsItemSelected(item)
         }
         // TODO: Launch a Google Drive-style search/filter screen
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext(), R.style.DialogTheme)
                 .setTitle("Filter Transactions")
                 .setPositiveButton(R.string.action_submit) { _, _ ->
                     reloadItems()

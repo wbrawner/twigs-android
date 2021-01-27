@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.acra_version = '5.7.0'
     ext.dagger = '2.23.1'
     ext.hyperion = '0.9.27'
     ext.kotlin_version = '1.4.21'

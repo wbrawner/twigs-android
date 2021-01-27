@@ -1,6 +1,5 @@
 package com.wbrawner.budget.ui.transactions
 
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
 import com.wbrawner.budget.common.budget.Budget
@@ -77,17 +77,17 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             transactionDate.setOnClickListener {
                 val currentDate = DateFormat.getDateFormat(this@TransactionFormActivity)
                         .parse(transactionDate.text.toString()) ?: Date()
-                DatePickerDialog(
-                        this@TransactionFormActivity,
-                        { _, year, month, dayOfMonth ->
-                            transactionDate.text = DateFormat.getDateFormat(this@TransactionFormActivity)
-                                    .format(Date(year, month, dayOfMonth))
-                        },
-                        currentDate.year + 1900,
-                        currentDate.month,
-                        currentDate.date
-                )
-                        .show()
+                MaterialDatePicker.Builder.datePicker()
+                        .setSelection(currentDate.time)
+                        .setTheme(R.style.DateTimePickerDialogTheme)
+                        .build()
+                        .also { picker ->
+                            picker.addOnPositiveButtonClickListener {
+                                transactionDate.text = DateFormat.getDateFormat(this@TransactionFormActivity)
+                                        .format(Date(it))
+                            }
+                        }
+                        .show(supportFragmentManager, null)
             }
             transactionTime.setOnClickListener {
                 val currentDate = DateFormat.getTimeFormat(this@TransactionFormActivity)

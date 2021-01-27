@@ -1,12 +1,21 @@
 package com.wbrawner.budget
 
+import android.app.Application
+import android.util.Log
 import com.wbrawner.budget.common.util.ErrorHandler
-import com.wbrawner.budget.util.AcraErrorHandler
 import dagger.Module
 import dagger.Provides
 
 @Module
 class AppModule {
     @Provides
-    fun provideErrorHandler(): ErrorHandler = AcraErrorHandler()
+    fun provideErrorHandler(): ErrorHandler = object : ErrorHandler {
+        override fun init(application: Application) {
+            // no-op
+        }
+
+        override fun reportException(t: Throwable, message: String?) {
+            Log.e("ErrorHandler", "Report exception: $message", t)
+        }
+    }
 }
