@@ -12,24 +12,32 @@
         <item name="android:navigationBarColor">@color/colorBackgroundPrimary</item>
         <item name="android:timePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
         <item name="android:datePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
+        <item name="android:dialogTheme">@style/DialogTheme</item>
+        <item name="dialogTheme">@style/DialogTheme</item>
     </style>
 
-    <style name="DateTimePickerDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+    <style name="DialogTheme" parent="@style/ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
+    </style>
+
+    <style name="BaseDateTimePickerDialogTheme" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:buttonBarButtonStyle">
-            @style/Widget.MaterialComponents.Button.TextButton
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
+        <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
     </style>
 
     <style name="AppTheme" parent="BaseTheme" />
+
+    <style name="DateTimePickerDialogTheme" parent="BaseDateTimePickerDialogTheme" />
 
     <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <!--        <item name="android:windowBackground">@drawable/bg_splash</item>-->
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
@@ -44,6 +52,5 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
-    <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint">
-    </style>
+    <style name="AppTheme.EditText.Hint" parent="TextAppearance.Design.Hint"></style>
 </resources>

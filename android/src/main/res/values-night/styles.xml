@@ -4,4 +4,7 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <style name="DateTimePickerDialogTheme" parent="BaseDateTimePickerDialogTheme">
+        <item name="android:colorBackground">@color/colorBackgroundPrimary</item>
+    </style>
 </resources>
