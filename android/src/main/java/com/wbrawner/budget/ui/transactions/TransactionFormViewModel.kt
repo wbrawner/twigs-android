@@ -21,7 +21,7 @@ class TransactionFormViewModel : ViewModel() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    var currentUserId: Long? = null
+    var currentUserId: String? = null
         private set
 
     //TODO: Find a better way to handle this
@@ -31,18 +31,18 @@ class TransactionFormViewModel : ViewModel() {
         }
     }
 
-    suspend fun getCategories(budgetId: Long, expense: Boolean) = categoryRepository.findAll(arrayOf(budgetId)).filter {
+    suspend fun getCategories(budgetId: String, expense: Boolean) = categoryRepository.findAll(arrayOf(budgetId)).filter {
         it.expense == expense
     }
 
-    suspend fun getTransaction(id: Long) = transactionRepository.findById(id)
+    suspend fun getTransaction(id: String) = transactionRepository.findById(id)
 
     suspend fun saveTransaction(transaction: Transaction) = if (transaction.id == null)
         transactionRepository.create(transaction)
     else
         transactionRepository.update(transaction)
 
-    suspend fun deleteTransaction(id: Long) = transactionRepository.delete(id)
+    suspend fun deleteTransaction(id: String) = transactionRepository.delete(id)
 
     suspend fun getAccounts() = budgetRepository.findAll()
 }

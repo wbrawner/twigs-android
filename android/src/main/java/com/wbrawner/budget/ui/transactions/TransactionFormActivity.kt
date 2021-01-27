@@ -34,7 +34,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
 
     private val viewModel: TransactionFormViewModel by viewModels()
-    var id: Long? = null
+    var id: String? = null
     var menu: Menu? = null
     var transaction: Transaction? = null
 
@@ -112,7 +112,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
 
     private suspend fun loadTransaction() {
         transaction = try {
-            viewModel.getTransaction(intent!!.extras!!.getLong(EXTRA_TRANSACTION_ID))
+            viewModel.getTransaction(intent!!.extras!!.getString(EXTRA_TRANSACTION_ID)!!)
         } catch (e: Exception) {
             menu?.findItem(R.id.action_delete)?.isVisible = false
             val date = Date()
@@ -148,8 +148,8 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                 this@TransactionFormActivity,
                 android.R.layout.simple_list_item_1
         )
-        adapter.add(Category(id = 0, title = getString(R.string.uncategorized),
-                amount = 0, budgetId = 0))
+        adapter.add(Category(title = getString(R.string.uncategorized),
+                amount = 0, budgetId = ""))
         adapter.addAll(categories)
         edit_transaction_category.adapter = adapter
         transaction?.categoryId?.let {
@@ -190,10 +190,6 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                             }
                 }
                 val categoryId = (edit_transaction_category.selectedItem as? Category)?.id
-                        ?.let {
-                            if (it > 0) it
-                            else null
-                        }
                 launch {
                     viewModel.saveTransaction(Transaction(
                             id = id,

@@ -1,7 +1,6 @@
 package com.wbrawner.budget.lib.network
 
 import android.content.SharedPreferences
-import android.util.Base64
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.wbrawner.budget.common.budget.BudgetRepository
@@ -15,16 +14,11 @@ import com.wbrawner.budget.lib.repository.NetworkUserRepository
 import com.wbrawner.budgetlib.BuildConfig
 import dagger.Module
 import dagger.Provides
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.nio.charset.Charset
 import java.util.*
-import javax.inject.Named
 import javax.inject.Singleton
 
 const val PREF_KEY_BASE_URL = "baseUrl"
@@ -36,36 +30,6 @@ class NetworkModule {
             .add(Date::class.java, Rfc3339DateJsonAdapter())
             .build()
 
-    @Provides
-    fun provideCookieJar(sharedPreferences: SharedPreferences): CookieJar {
-        return object : CookieJar {
-            override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                sharedPreferences.edit()
-                        .putString(
-                                url.host,
-                                cookies.joinToString(separator = ",") {
-                                    Base64.encode(it.toString().toByteArray(), 0)
-                                            .toString(charset = Charset.forName("UTF-8"))
-                                }
-                        )
-                        .apply()
-            }
-
-            override fun loadForRequest(url: HttpUrl): MutableList<Cookie> {
-                return sharedPreferences.getString(url.host, "")
-                        ?.split(",")
-                        ?.mapNotNull {
-                            Cookie.parse(
-                                    url,
-                                    Base64.decode(it, 0).toString(Charset.forName("UTF-8"))
-                            )
-                        }
-                        ?.toMutableList()
-                        ?: mutableListOf()
-            }
-        }
-    }
-
     @Singleton
     @Provides
     fun provideBaseUrlHelper(sharedPreferences: SharedPreferences) = BaseUrlHelper().apply {
@@ -76,9 +40,9 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(baseUrlHelper: BaseUrlHelper, cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
-            .cookieJar(cookieJar)
+    fun provideOkHttpClient(baseUrlHelper: BaseUrlHelper, authHelper: AuthHelper): OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(baseUrlHelper.interceptor)
+            .addInterceptor(authHelper.interceptor)
             .apply {
                 if (BuildConfig.DEBUG)
                     this.addInterceptor(
@@ -100,26 +64,26 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideApiService(retrofit: Retrofit): BudgetApiService =
-            retrofit.create(BudgetApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): TwigsApiService =
+            retrofit.create(TwigsApiService::class.java)
 
     @Singleton
     @Provides
-    fun provideBudgetRepository(apiService: BudgetApiService, sharedPreferences: SharedPreferences): BudgetRepository =
+    fun provideBudgetRepository(apiService: TwigsApiService, sharedPreferences: SharedPreferences): BudgetRepository =
             NetworkBudgetRepository(apiService, sharedPreferences)
 
     @Singleton
     @Provides
-    fun provideCategoryRepository(apiService: BudgetApiService): CategoryRepository =
+    fun provideCategoryRepository(apiService: TwigsApiService): CategoryRepository =
             NetworkCategoryRepository(apiService)
 
     @Singleton
     @Provides
-    fun provideTransactionRepository(apiService: BudgetApiService): TransactionRepository =
+    fun provideTransactionRepository(apiService: TwigsApiService): TransactionRepository =
             NetworkTransactionRepository(apiService)
 
     @Singleton
     @Provides
-    fun provideUserRepository(apiService: BudgetApiService): UserRepository =
-            NetworkUserRepository(apiService)
+    fun provideUserRepository(apiService: TwigsApiService, sharedPreferences: SharedPreferences): UserRepository =
+            NetworkUserRepository(apiService, sharedPreferences)
 }

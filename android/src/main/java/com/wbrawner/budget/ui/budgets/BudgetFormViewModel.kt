@@ -9,8 +9,8 @@ import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
+import com.wbrawner.budget.common.util.randomId
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 class BudgetFormViewModel : ViewModel() {
@@ -25,13 +25,13 @@ class BudgetFormViewModel : ViewModel() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    fun getBudget(id: Long? = null) {
+    fun getBudget(id: String? = null) {
         viewModelScope.launch {
             state.postValue(BudgetFormState.Loading)
             try {
                 val budget = id?.let {
                     budgetRepository.findById(it)
-                }?: Budget(name = "")
+                } ?: Budget(name = "")
                 state.postValue(BudgetFormState.Success(budget))
             } catch (e: Exception) {
                 state.postValue(BudgetFormState.Failed(e))
@@ -46,7 +46,7 @@ class BudgetFormViewModel : ViewModel() {
                 if (budget.id != null) {
                     budgetRepository.update(budget)
                 } else {
-                    budgetRepository.create(budget)
+                    budgetRepository.create(budget.copy(id = randomId()))
                 }
                 state.postValue(BudgetFormState.Exit)
             } catch (e: Exception) {
@@ -55,11 +55,11 @@ class BudgetFormViewModel : ViewModel() {
         }
     }
 
-    fun deleteBudget(accountId: Long) {
+    fun deleteBudget(budgetId: String) {
         viewModelScope.launch {
             state.postValue(BudgetFormState.Loading)
             try {
-                budgetRepository.delete(accountId)
+                budgetRepository.delete(budgetId)
                 state.postValue(BudgetFormState.Exit)
             } catch (e: Exception) {
                 state.postValue(BudgetFormState.Failed(e))

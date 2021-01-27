@@ -1,15 +1,18 @@
 package com.wbrawner.budget.ui.auth
 
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
+import com.wbrawner.budget.ui.AuthenticationState
 import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.ensureNotEmpty
 import com.wbrawner.budget.ui.show
@@ -39,6 +42,20 @@ class LoginFragment : Fragment() {
                     username.error = "Invalid username/password"
                     password.error = "Invalid username/password"
                     state.exception.printStackTrace()
+                }
+                is AsyncState.Success -> {
+                    if (state.data is AuthenticationState.Unauthenticated) {
+                        server.setText(state.data.server ?: "")
+                        username.setText(state.data.username ?: "")
+                        password.setText(state.data.password ?: "")
+                        state.data.errorMessage?.let {
+                            AlertDialog.Builder(view.context)
+                                    .setTitle("Login Failed")
+                                    .setMessage(it)
+                                    .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int -> }
+                                    .show()
+                        }
+                    }
                 }
             }
         })

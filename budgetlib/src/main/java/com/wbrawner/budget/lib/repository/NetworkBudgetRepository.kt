@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
-import com.wbrawner.budget.lib.network.BudgetApiService
+import com.wbrawner.budget.lib.network.TwigsApiService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -14,7 +14,7 @@ import kotlinx.coroutines.sync.withLock
 const val KEY_DEFAULT_BUDGET = "defaultBudget"
 
 class NetworkBudgetRepository(
-        private val apiService: BudgetApiService,
+        private val apiService: TwigsApiService,
         private val sharedPreferences: SharedPreferences
 ) : BudgetRepository {
     private val mutex = Mutex()
@@ -25,7 +25,7 @@ class NetworkBudgetRepository(
         currentBudget.observeForever { budget ->
             sharedPreferences.edit().apply {
                 budget?.id?.let {
-                    putLong(KEY_DEFAULT_BUDGET, it)
+                    putString(KEY_DEFAULT_BUDGET, it)
                 } ?: remove(KEY_DEFAULT_BUDGET)
                 apply()
             }
@@ -42,7 +42,7 @@ class NetworkBudgetRepository(
             emptyList<Budget>()
         }
         if (budgets.isEmpty()) return
-        val budgetId = sharedPreferences.getLong(KEY_DEFAULT_BUDGET, budgets.first().id!!)
+        val budgetId = sharedPreferences.getString(KEY_DEFAULT_BUDGET, budgets.first().id)!!
         val budget = try {
             findById(budgetId)
         } catch (e: Exception) {
@@ -67,7 +67,7 @@ class NetworkBudgetRepository(
         }
     }
 
-    override suspend fun findById(id: Long, setCurrent: Boolean): Budget = (mutex.withLock {
+    override suspend fun findById(id: String, setCurrent: Boolean): Budget = (mutex.withLock {
         budgets.firstOrNull { it.id == id }
     } ?: apiService.getBudget(id).apply {
         mutex.withLock {
@@ -87,19 +87,19 @@ class NetworkBudgetRepository(
                 }
             }
 
-    override suspend fun delete(id: Long) = apiService.deleteBudget(id).apply {
+    override suspend fun delete(id: String) = apiService.deleteBudget(id).apply {
         mutex.withLock {
             budgets.removeAll { it.id == id }
         }
     }
 
-    override suspend fun getBalance(id: Long): Long = apiService.getBudgetBalance(id).balance
+    override suspend fun getBalance(id: String): Long = apiService.getBudgetBalance(id).balance
 }
 
 data class NewBudgetRequest(
         val name: String,
         val description: String? = null,
-        val userIds: List<Long>
+        val userIds: List<String>
 ) {
     constructor(budget: Budget) : this(budget.name, budget.description, budget.users.map { it.id!! })
 }

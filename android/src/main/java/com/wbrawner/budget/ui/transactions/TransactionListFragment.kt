@@ -32,7 +32,7 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
         get() = mapOf(TRANSACTION_VIEW to { v -> TransactionViewHolder(v, findNavController()) })
 
     override fun reloadItems() {
-        viewModel.getTransactions(categoryId = arguments?.getLong(EXTRA_CATEGORY_ID))
+        viewModel.getTransactions(categoryId = arguments?.getString(EXTRA_CATEGORY_ID))
     }
 
     override fun bindData(data: Transaction): BindableData<Transaction> = BindableData(data, TRANSACTION_VIEW)
@@ -96,8 +96,8 @@ class TransactionViewHolder(itemView: View, val navController: NavController) : 
         amount.setTextColor(ContextCompat.getColor(context, color))
         itemView.setOnClickListener {
             val bundle = Bundle().apply {
-                putLong(EXTRA_BUDGET_ID, transaction.budgetId)
-                putLong(EXTRA_TRANSACTION_ID, transaction.id ?: -1)
+                putString(EXTRA_BUDGET_ID, transaction.budgetId)
+                putString(EXTRA_TRANSACTION_ID, transaction.id)
             }
             navController.navigate(R.id.addEditTransactionActivity, bundle)
         }

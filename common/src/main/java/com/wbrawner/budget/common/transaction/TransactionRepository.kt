@@ -3,10 +3,10 @@ package com.wbrawner.budget.common.transaction
 import com.wbrawner.budget.common.Repository
 import java.util.*
 
-interface TransactionRepository : Repository<Transaction, Long> {
+interface TransactionRepository : Repository<Transaction, String> {
     suspend fun findAll(
-            budgetIds: List<Long>? = null,
-            categoryIds: List<Long>? = null,
+            budgetIds: List<String>? = null,
+            categoryIds: List<String>? = null,
             start: Calendar? = GregorianCalendar.getInstance().apply {
                 set(Calendar.DAY_OF_MONTH, 1)
                 set(Calendar.HOUR_OF_DAY, 0)

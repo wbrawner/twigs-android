@@ -81,8 +81,8 @@ class CategoryDetailsFragment : Fragment() {
                     } ?: run {
                         val transactionsFragment = TransactionListFragment().apply {
                             arguments = Bundle().apply {
-                                putLong(EXTRA_BUDGET_ID, category.budgetId)
-                                putLong(EXTRA_CATEGORY_ID, category.id!!)
+                                putString(EXTRA_BUDGET_ID, category.budgetId)
+                                putString(EXTRA_CATEGORY_ID, category.id)
                             }
                         }
                         childFragmentManager.beginTransaction()
@@ -100,7 +100,7 @@ class CategoryDetailsFragment : Fragment() {
                 }
             }
         })
-        viewModel.getCategory(arguments?.getLong(EXTRA_CATEGORY_ID))
+        viewModel.getCategory(arguments?.getString(EXTRA_CATEGORY_ID))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_add_edit_budget.*
 class AddEditBudgetFragment : Fragment() {
     private val viewModel: BudgetFormViewModel by viewModels()
 
-    var id: Long? = null
+    var id: String? = null
     var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +32,7 @@ class AddEditBudgetFragment : Fragment() {
                 .appComponent
                 .inject(viewModel)
         super.onAttach(context)
-        viewModel.getBudget(arguments?.getLong(EXTRA_BUDGET_ID))
+        viewModel.getBudget(arguments?.getString(EXTRA_BUDGET_ID))
     }
 
     override fun onCreateView(

@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_add_edit_category.*
 
 class CategoryFormActivity : AppCompatActivity() {
     val viewModel: CategoryFormViewModel by viewModels()
-    var id: Long? = null
+    var id: String? = null
     var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ class CategoryFormActivity : AppCompatActivity() {
                 is AsyncState.Exit -> finish()
             }
         })
-        viewModel.loadCategory(intent?.extras?.getLong(EXTRA_CATEGORY_ID))
+        viewModel.loadCategory(intent?.extras?.getString(EXTRA_CATEGORY_ID))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

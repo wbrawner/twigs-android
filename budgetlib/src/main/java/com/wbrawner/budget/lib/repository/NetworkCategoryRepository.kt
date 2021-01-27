@@ -2,23 +2,24 @@ package com.wbrawner.budget.lib.repository
 
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
-import com.wbrawner.budget.lib.network.BudgetApiService
+import com.wbrawner.budget.lib.network.TwigsApiService
 import javax.inject.Inject
-class NetworkCategoryRepository @Inject constructor(private val apiService: BudgetApiService) : CategoryRepository {
+
+class NetworkCategoryRepository @Inject constructor(private val apiService: TwigsApiService) : CategoryRepository {
     override suspend fun create(newItem: Category): Category = apiService.newCategory(newItem)
 
-    override suspend fun findAll(budgetIds: Array<Long>?): List<Category> = apiService.getCategories(budgetIds).sortedBy { it.title }
+    override suspend fun findAll(budgetIds: Array<String>?): List<Category> = apiService.getCategories(budgetIds).sortedBy { it.title }
 
     override suspend fun findAll(): List<Category> = findAll(null)
 
-    override suspend fun findById(id: Long): Category = apiService.getCategory(id)
+    override suspend fun findById(id: String): Category = apiService.getCategory(id)
 
     override suspend fun update(updatedItem: Category): Category =
             apiService.updateCategory(updatedItem.id!!, updatedItem)
 
-    override suspend fun delete(id: Long) = apiService.deleteCategory(id)
+    override suspend fun delete(id: String) = apiService.deleteCategory(id)
 
     // TODO: Implement this method server-side and then here
-    override suspend fun getBalance(id: Long): Long = apiService.getCategoryBalance(id).balance
+    override suspend fun getBalance(id: String): Long = apiService.getCategoryBalance(id).balance
 }
 

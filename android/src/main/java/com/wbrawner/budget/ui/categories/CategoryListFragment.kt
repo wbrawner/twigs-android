@@ -82,7 +82,7 @@ class CategoryViewHolder(
         }
         itemView.setOnClickListener {
             val bundle = Bundle().apply {
-                putLong(EXTRA_CATEGORY_ID, category.id ?: -1)
+                putString(EXTRA_CATEGORY_ID, category.id)
                 putString(EXTRA_CATEGORY_NAME, category.title)
             }
             navController.navigate(R.id.categoryFragment, bundle)

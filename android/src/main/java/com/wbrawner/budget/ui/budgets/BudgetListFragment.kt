@@ -58,7 +58,7 @@ class BudgetViewHolder(itemView: View, val navController: NavController) : Binda
         }
         itemView.setOnClickListener {
             val bundle = Bundle().apply {
-                putLong(EXTRA_BUDGET_ID, budget.id!!)
+                putString(EXTRA_BUDGET_ID, budget.id)
             }
             navController.navigate(R.id.categoryListFragment, bundle)
         }

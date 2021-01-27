@@ -20,7 +20,7 @@ class TransactionListViewModel : ViewModel(), AsyncViewModel<List<Transaction>> 
     override val state: MutableLiveData<AsyncState<List<Transaction>>> = MutableLiveData(AsyncState.Loading)
 
     fun getTransactions(
-            categoryId: Long? = null,
+            categoryId: String? = null,
             start: Calendar? = null,
             end: Calendar? = null
     ) {

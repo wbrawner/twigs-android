@@ -15,5 +15,5 @@ interface Repository<T, K> {
 }
 
 interface Identifiable {
-    val id: Long?
+    val id: String?
 }

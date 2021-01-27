@@ -11,24 +11,24 @@ import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
+import com.wbrawner.budget.common.util.randomId
 import com.wbrawner.budget.launch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
     override val state: MutableLiveData<AsyncState<CategoryFormState>> = MutableLiveData(AsyncState.Loading)
-
     @Inject
     lateinit var categoryRepository: CategoryRepository
 
     @Inject
     lateinit var budgetRepository: BudgetRepository
 
-    fun loadCategory(categoryId: Long? = null) {
+    fun loadCategory(categoryId: String? = null) {
         launch {
             val category = categoryId?.let {
                 categoryRepository.findById(it)
-            } ?: Category(-1, title = "", amount = 0)
+            } ?: Category("", title = "", amount = 0)
             CategoryFormState(
                     category,
                     budgetRepository.findAll().toList()
@@ -41,7 +41,7 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
             state.postValue(AsyncState.Loading)
             try {
                 if (category.id == null)
-                    categoryRepository.create(category)
+                    categoryRepository.create(category.copy(id = randomId()))
                 else
                     categoryRepository.update(category)
                 state.postValue(AsyncState.Exit)
@@ -51,7 +51,7 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
         }
     }
 
-    fun deleteCategoryById(id: Long) {
+    fun deleteCategoryById(id: String) {
         viewModelScope.launch {
             state.postValue(AsyncState.Loading)
             try {

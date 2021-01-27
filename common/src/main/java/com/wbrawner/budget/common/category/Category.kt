@@ -3,8 +3,8 @@ package com.wbrawner.budget.common.category
 import com.wbrawner.budget.common.Identifiable
 
 data class Category(
-        val budgetId: Long,
-        override val id: Long? = null,
+        val budgetId: String,
+        override val id: String? = null,
         val title: String,
         val description: String? = null,
         val amount: Long,

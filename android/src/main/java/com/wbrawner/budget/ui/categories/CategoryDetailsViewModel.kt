@@ -15,7 +15,7 @@ class CategoryDetailsViewModel : ViewModel(), AsyncViewModel<CategoryDetails> {
     @Inject
     lateinit var categoryRepo: CategoryRepository
 
-    fun getCategory(id: Long? = null) {
+    fun getCategory(id: String? = null) {
         if (id == null) {
             state.postValue(AsyncState.Error("Invalid category ID"))
             return
@@ -23,7 +23,7 @@ class CategoryDetailsViewModel : ViewModel(), AsyncViewModel<CategoryDetails> {
         launch {
             val category = categoryRepo.findById(id)
             val multiplier = if (category.expense) -1 else 1
-            val balance = categoryRepo.getBalance(category.id!!) * multiplier
+            val balance = categoryRepo.getBalance(id) * multiplier
             CategoryDetails(
                     category,
                     balance,
