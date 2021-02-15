@@ -1,6 +1,5 @@
 package com.wbrawner.budget.ui.overview
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.common.budget.Budget
@@ -28,18 +27,9 @@ class OverviewViewModel : ViewModel() {
                 state.postValue(AsyncState.Loading)
                 try {
                     // TODO: Load expected and actual income/expense amounts as well
-                    var balance = 0L
-                    transactionRepo.findAll(listOf(budget.id!!)).forEach {
-                        Log.d("OverviewViewModel", "${it.title} - ${it.amount}")
-                        if (it.expense) {
-                            balance -= it.amount
-                        } else {
-                            balance += it.amount
-                        }
-                    }
                     state.postValue(AsyncState.Success(OverviewState(
                             budget,
-                            balance
+                            budgetRepo.getBalance(budget.id!!)
                     )))
                 } catch (e: Exception) {
                     state.postValue(AsyncState.Error(e))
