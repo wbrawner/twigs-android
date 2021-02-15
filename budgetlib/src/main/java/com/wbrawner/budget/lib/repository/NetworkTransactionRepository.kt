@@ -8,7 +8,7 @@ import java.util.*
 import javax.inject.Inject
 
 class NetworkTransactionRepository @Inject constructor(private val apiService: TwigsApiService) : TransactionRepository {
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH)
+    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH)
 
     override suspend fun create(newItem: Transaction): Transaction = apiService.newTransaction(newItem)
 
