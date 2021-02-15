@@ -7,7 +7,7 @@ data class Transaction(
         override val id: String? = null,
         val title: String,
         val date: Date,
-        val description: String,
+        val description: String? = null,
         val amount: Long,
         val categoryId: String? = null,
         val budgetId: String,

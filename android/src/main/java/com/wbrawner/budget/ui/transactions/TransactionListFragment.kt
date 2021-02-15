@@ -82,6 +82,7 @@ const val TRANSACTION_VIEW = R.layout.list_item_transaction
 
 class TransactionViewHolder(itemView: View, val navController: NavController) : BindableAdapter.CoroutineViewHolder<Transaction>(itemView) {
     private val name: TextView = itemView.findViewById(R.id.transaction_title)
+    private val description: TextView = itemView.findViewById(R.id.transaction_description)
     private val date: TextView = itemView.findViewById(R.id.transaction_date)
     private val amount: TextView = itemView.findViewById(R.id.transaction_amount)
 
@@ -89,6 +90,12 @@ class TransactionViewHolder(itemView: View, val navController: NavController) : 
     override fun onBind(item: BindableData<Transaction>) {
         val transaction = item.data
         name.text = transaction.title
+        if (transaction.description.isNullOrBlank()) {
+            description.visibility = View.GONE
+        } else {
+            description.visibility = View.VISIBLE
+            description.text = transaction.description
+        }
         date.text = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT).format(transaction.date)
         amount.text = String.format("${'$'}%.02f", transaction.amount / 100.0f)
         val context = itemView.context
