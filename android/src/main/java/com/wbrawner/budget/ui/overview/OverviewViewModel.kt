@@ -23,7 +23,8 @@ class OverviewViewModel : ViewModel() {
 
     fun loadOverview(lifecycleOwner: LifecycleOwner) {
         budgetRepo.currentBudget.observe(lifecycleOwner, Observer { budget ->
-            if (budget == null) {
+            val budgetId = budget?.id
+            if (budgetId == null) {
                 state.postValue(AsyncState.Error("Invalid Budget ID"))
                 return@Observer
             }
@@ -35,8 +36,9 @@ class OverviewViewModel : ViewModel() {
                     var expectedIncome = 0L
                     var actualExpenses = 0L
                     var actualIncome = 0L
-                    categoryRepo.findAll(arrayOf(budget.id!!)).forEach { category ->
-                        val balance = categoryRepo.getBalance(category.id!!)
+                    categoryRepo.findAll(arrayOf(budgetId)).forEach { category ->
+                        val categoryId = category.id ?: return@forEach
+                        val balance = categoryRepo.getBalance(categoryId)
                         if (category.expense) {
                             expectedExpenses += category.amount
                             actualExpenses += (balance * -1)
@@ -47,7 +49,7 @@ class OverviewViewModel : ViewModel() {
                     }
                     state.postValue(AsyncState.Success(OverviewState(
                             budget,
-                            budgetRepo.getBalance(budget.id!!),
+                            budgetRepo.getBalance(budgetId),
                             expectedIncome,
                             expectedExpenses,
                             actualIncome,
