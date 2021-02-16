@@ -8,4 +8,5 @@
     <color name="colorTextGreen">#388e3c</color>
     <color name="colorTextRed">#d32f2f</color>
     <color name="colorTextPrimaryInverted">#FFDADADA</color>
+    <color name="colorSecondary">#888888</color>
 </resources>
