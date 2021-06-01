@@ -46,15 +46,24 @@ class CategoryFormActivity : AppCompatActivity() {
                     setTitle(state.data.titleRes)
                     menu?.findItem(R.id.action_delete)?.isVisible = state.data.showDeleteButton
                     edit_category_name.setText(category.title)
-                    edit_category_amount.setText(String.format("%.02f", (category.amount.toBigDecimal() / 100.toBigDecimal()).toFloat()))
+                    edit_category_amount.setText(
+                        String.format(
+                            "%.02f",
+                            (category.amount.toBigDecimal() / 100.toBigDecimal()).toFloat()
+                        )
+                    )
                     expense.isChecked = category.expense
                     income.isChecked = !category.expense
                     archived.isChecked = category.archived
-                    budgetSpinner.adapter = ArrayAdapter<Budget>(
-                            this@CategoryFormActivity,
-                            android.R.layout.simple_list_item_1,
-                            state.data.budgets
+                    budgetSpinner.adapter = ArrayAdapter(
+                        this@CategoryFormActivity,
+                        android.R.layout.simple_list_item_1,
+                        state.data.budgets
                     )
+                    val budget = state.data.budgets.firstOrNull { it.id == category.budgetId }
+                        ?: viewModel.budgetRepository.currentBudget.value
+                    budgetSpinner.setSelection(state.data.budgets.indexOf(budget))
+
                 }
                 is AsyncState.Error -> {
                     // TODO: Show error message
@@ -86,8 +95,8 @@ class CategoryFormActivity : AppCompatActivity() {
                     upIntent == null -> throw IllegalStateException("No Parent Activity Intent")
                     NavUtils.shouldUpRecreateTask(this, upIntent) || isTaskRoot -> {
                         TaskStackBuilder.create(this)
-                                .addNextIntentWithParentStack(upIntent)
-                                .startActivities()
+                            .addNextIntentWithParentStack(upIntent)
+                            .startActivities()
                     }
                     else -> {
                         NavUtils.navigateUpTo(this, upIntent)
@@ -96,14 +105,16 @@ class CategoryFormActivity : AppCompatActivity() {
             }
             R.id.action_save -> {
                 if (!validateFields()) return true
-                viewModel.saveCategory(Category(
+                viewModel.saveCategory(
+                    Category(
                         id = id,
                         title = edit_category_name.text.toString(),
                         amount = edit_category_amount.text.toLong(),
                         budgetId = (budgetSpinner.selectedItem as Budget).id!!,
                         expense = expense.isChecked,
                         archived = archived.isChecked
-                ))
+                    )
+                )
             }
             R.id.action_delete -> {
                 viewModel.deleteCategoryById(this@CategoryFormActivity.id!!)

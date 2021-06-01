@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.*
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
 
 class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
@@ -52,59 +53,82 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             val accounts = viewModel.getAccounts().toTypedArray()
             setCategories()
             budgetSpinner.adapter = ArrayAdapter<Budget>(
-                    this@TransactionFormActivity,
-                    android.R.layout.simple_list_item_1,
-                    accounts
+                this@TransactionFormActivity,
+                android.R.layout.simple_list_item_1,
+                accounts
             )
             container_edit_transaction_type.setOnCheckedChangeListener { _, _ ->
                 this@TransactionFormActivity.launch {
                     val budget = budgetSpinner.selectedItem as Budget
-                    setCategories(viewModel.getCategories(budget.id!!, edit_transaction_type_expense.isChecked))
+                    setCategories(
+                        viewModel.getCategories(
+                            budget.id!!,
+                            edit_transaction_type_expense.isChecked
+                        )
+                    )
                 }
             }
             budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
 
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     this@TransactionFormActivity.launch {
                         val budget = budgetSpinner.selectedItem as Budget
-                        setCategories(viewModel.getCategories(budget.id!!, edit_transaction_type_expense.isChecked))
+                        setCategories(
+                            viewModel.getCategories(
+                                budget.id!!,
+                                edit_transaction_type_expense.isChecked
+                            )
+                        )
                     }
                 }
             }
+            val budgetIndex = if (transaction?.budgetId != null) {
+                accounts.indexOfFirst { it.id == transaction?.budgetId }
+            } else {
+                accounts.indexOfFirst { it.id == viewModel.budgetRepository.currentBudget.value?.id }
+            }
+            budgetSpinner.setSelection(max(0, budgetIndex))
             loadTransaction()
             transactionDate.setOnClickListener {
                 val currentDate = DateFormat.getDateFormat(this@TransactionFormActivity)
-                        .parse(transactionDate.text.toString()) ?: Date()
+                    .parse(transactionDate.text.toString()) ?: Date()
                 MaterialDatePicker.Builder.datePicker()
-                        .setSelection(currentDate.time)
-                        .setTheme(R.style.DateTimePickerDialogTheme)
-                        .build()
-                        .also { picker ->
-                            picker.addOnPositiveButtonClickListener {
-                                transactionDate.text = DateFormat.getDateFormat(this@TransactionFormActivity)
-                                        .format(Date(it))
-                            }
+                    .setSelection(currentDate.time)
+                    .setTheme(R.style.DateTimePickerDialogTheme)
+                    .build()
+                    .also { picker ->
+                        picker.addOnPositiveButtonClickListener {
+                            transactionDate.text =
+                                DateFormat.getDateFormat(this@TransactionFormActivity)
+                                    .format(Date(it))
                         }
-                        .show(supportFragmentManager, null)
+                    }
+                    .show(supportFragmentManager, null)
             }
             transactionTime.setOnClickListener {
                 val currentDate = DateFormat.getTimeFormat(this@TransactionFormActivity)
-                        .parse(transactionTime.text.toString()) ?: Date()
+                    .parse(transactionTime.text.toString()) ?: Date()
                 TimePickerDialog(
-                        this@TransactionFormActivity,
-                        { _, hourOfDay, minute ->
-                            val newTime = Date().apply {
-                                hours = hourOfDay
-                                minutes = minute
-                            }
-                            transactionTime.text = DateFormat.getTimeFormat(this@TransactionFormActivity)
-                                    .format(newTime)
-                        },
-                        currentDate.hours,
-                        currentDate.minutes,
-                        DateFormat.is24HourFormat(this@TransactionFormActivity)
+                    this@TransactionFormActivity,
+                    { _, hourOfDay, minute ->
+                        val newTime = Date().apply {
+                            hours = hourOfDay
+                            minutes = minute
+                        }
+                        transactionTime.text =
+                            DateFormat.getTimeFormat(this@TransactionFormActivity)
+                                .format(newTime)
+                    },
+                    currentDate.hours,
+                    currentDate.minutes,
+                    DateFormat.is24HourFormat(this@TransactionFormActivity)
                 ).show()
             }
         }
@@ -145,11 +169,15 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
 
     private fun setCategories(categories: List<Category> = emptyList()) {
         val adapter = ArrayAdapter<Category>(
-                this@TransactionFormActivity,
-                android.R.layout.simple_list_item_1
+            this@TransactionFormActivity,
+            android.R.layout.simple_list_item_1
         )
-        adapter.add(Category(title = getString(R.string.uncategorized),
-                amount = 0, budgetId = ""))
+        adapter.add(
+            Category(
+                title = getString(R.string.uncategorized),
+                amount = 0, budgetId = ""
+            )
+        )
         adapter.addAll(categories)
         edit_transaction_category.adapter = adapter
         transaction?.categoryId?.let {
@@ -177,21 +205,22 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             R.id.action_save -> {
                 val date = GregorianCalendar.getInstance().apply {
                     DateFormat.getDateFormat(this@TransactionFormActivity)
-                            .parse(transactionDate.text.toString())
-                            ?.let {
-                                time = it
-                            }
+                        .parse(transactionDate.text.toString())
+                        ?.let {
+                            time = it
+                        }
                     DateFormat.getTimeFormat(this@TransactionFormActivity)
-                            .parse(transactionTime.text.toString())
-                            ?.let { GregorianCalendar.getInstance().apply { time = it } }
-                            ?.let {
-                                set(Calendar.HOUR_OF_DAY, it.get(Calendar.HOUR_OF_DAY))
-                                set(Calendar.MINUTE, it.get(Calendar.MINUTE))
-                            }
+                        .parse(transactionTime.text.toString())
+                        ?.let { GregorianCalendar.getInstance().apply { time = it } }
+                        ?.let {
+                            set(Calendar.HOUR_OF_DAY, it.get(Calendar.HOUR_OF_DAY))
+                            set(Calendar.MINUTE, it.get(Calendar.MINUTE))
+                        }
                 }
                 val categoryId = (edit_transaction_category.selectedItem as? Category)?.id
                 launch {
-                    viewModel.saveTransaction(Transaction(
+                    viewModel.saveTransaction(
+                        Transaction(
                             id = id,
                             budgetId = (budgetSpinner.selectedItem as Budget).id!!,
                             title = edit_transaction_title.text.toString(),
@@ -201,7 +230,8 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                             expense = edit_transaction_type_expense.isChecked,
                             categoryId = categoryId,
                             createdBy = viewModel.currentUserId!!
-                    ))
+                        )
+                    )
                     onNavigateUp()
                 }
             }
@@ -217,14 +247,14 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onNavigateUp(): Boolean {
         val upIntent: Intent = NavUtils.getParentActivityIntent(this)
-                ?: throw IllegalStateException("No Parent Activity Intent")
+            ?: throw IllegalStateException("No Parent Activity Intent")
 
         upIntent.putExtra(MainActivity.EXTRA_OPEN_FRAGMENT, TransactionListFragment.TAG_FRAGMENT)
         when {
             NavUtils.shouldUpRecreateTask(this, upIntent) || isTaskRoot -> {
                 TaskStackBuilder.create(this)
-                        .addNextIntentWithParentStack(upIntent)
-                        .startActivities()
+                    .addNextIntentWithParentStack(upIntent)
+                    .startActivities()
             }
             else -> {
                 finish()

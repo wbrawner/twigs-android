@@ -36,12 +36,16 @@ class CategoryDetailsFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_category_details, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
+        inflater.inflate(R.layout.fragment_category_details, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity?.title = arguments?.getString(EXTRA_CATEGORY_NAME)
-        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+        viewModel.state.observe(viewLifecycleOwner, { state ->
             when (state) {
                 is AsyncState.Loading -> {
                     categoryDetails.visibility = View.GONE
@@ -52,7 +56,8 @@ class CategoryDetailsFragment : Fragment() {
                     progressBar.visibility = View.GONE
                     val category = state.data.category
                     activity?.title = category.title
-                    val tintColor = if (category.expense) R.color.colorTextRed else R.color.colorTextGreen
+                    val tintColor =
+                        if (category.expense) R.color.colorTextRed else R.color.colorTextGreen
                     val colorStateList = with(view.context) {
                         android.content.res.ColorStateList.valueOf(getColor(tintColor))
                     }
@@ -60,8 +65,8 @@ class CategoryDetailsFragment : Fragment() {
                     categoryProgress.max = category.amount.toInt()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         categoryProgress.setProgress(
-                                state.data.balance.toInt(),
-                                true
+                            state.data.balance.toInt(),
+                            true
                         )
                     } else {
                         categoryProgress.progress = state.data.balance.toInt()
@@ -86,14 +91,15 @@ class CategoryDetailsFragment : Fragment() {
                             }
                         }
                         childFragmentManager.beginTransaction()
-                                .replace(R.id.transactionsFragmentContainer, transactionsFragment)
-                                .commit()
+                            .replace(R.id.transactionsFragmentContainer, transactionsFragment)
+                            .commit()
                     }
                 }
                 is AsyncState.Error -> {
                     categoryDetails.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
-                    Toast.makeText(view.context, "Failed to load context", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(view.context, "Failed to load context", Toast.LENGTH_SHORT)
+                        .show()
                 }
                 is AsyncState.Exit -> {
                     findNavController().navigateUp()
@@ -106,7 +112,7 @@ class CategoryDetailsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_edit) {
             val bundle = Bundle().apply {
-                putLong(EXTRA_CATEGORY_ID, arguments?.getLong(EXTRA_CATEGORY_ID) ?: -1)
+                putString(EXTRA_CATEGORY_ID, arguments?.getString(EXTRA_CATEGORY_ID))
             }
             findNavController().navigate(R.id.addEditCategoryActivity, bundle)
         } else if (item.itemId == android.R.id.home) {
