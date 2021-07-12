@@ -57,5 +57,10 @@
     <activity
         android:id="@+id/addEditCategoryActivity"
         android:name="com.wbrawner.budget.ui.categories.CategoryFormActivity"
-        android:label="@string/title_add_category" />
+        android:label="@string/title_add_category" >
+        <argument
+            android:name="categoryId"
+            app:argType="string"
+            app:nullable="true" />
+    </activity>
 </navigation>
