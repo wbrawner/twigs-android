@@ -93,7 +93,8 @@ class NetworkBudgetRepository(
         }
     }
 
-    override suspend fun getBalance(id: String): Long = apiService.getBudgetBalance(id).balance
+    override suspend fun getBalance(id: String): Long =
+        apiService.sumTransactions(budgetId = id).balance
 }
 
 data class NewBudgetRequest(

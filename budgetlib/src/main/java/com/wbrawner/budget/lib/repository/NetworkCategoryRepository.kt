@@ -19,7 +19,6 @@ class NetworkCategoryRepository @Inject constructor(private val apiService: Twig
 
     override suspend fun delete(id: String) = apiService.deleteCategory(id)
 
-    // TODO: Implement this method server-side and then here
-    override suspend fun getBalance(id: String): Long = apiService.getCategoryBalance(id).balance
+    override suspend fun getBalance(id: String): Long =
+        apiService.sumTransactions(categoryId = id).balance
 }
-

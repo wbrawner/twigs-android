@@ -11,111 +11,109 @@ import retrofit2.http.*
 
 interface TwigsApiService {
     // Budgets
-    @GET("budgets")
+    @GET("api/budgets")
     suspend fun getBudgets(
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
     ): List<Budget>
 
-    @GET("budgets/{id}")
+    @GET("api/budgets/{id}")
     suspend fun getBudget(@Path("id") id: String): Budget
 
-    @GET("budgets/{id}/balance")
-    suspend fun getBudgetBalance(@Path("id") id: String): BudgetBalanceResponse
-
-    @POST("budgets")
+    @POST("api/budgets")
     suspend fun newBudget(@Body budget: NewBudgetRequest): Budget
 
-    @PUT("budgets/{id}")
+    @PUT("api/budgets/{id}")
     suspend fun updateBudget(
             @Path("id") id: String,
             @Body budget: Budget
     ): Budget
 
-    @DELETE("budgets/{id}")
+    @DELETE("api/budgets/{id}")
     suspend fun deleteBudget(@Path("id") id: String)
 
     // Categories
-    @GET("categories")
+    @GET("api/categories")
     suspend fun getCategories(
-            @Query("budgetIds") budgetIds: Array<String>? = null,
-            @Query("count") count: Int? = null,
-            @Query("page") page: Int? = null
+        @Query("budgetIds") budgetIds: Array<String>? = null,
+        @Query("archived") archived: Boolean? = false,
+        @Query("count") count: Int? = null,
+        @Query("page") page: Int? = null,
     ): List<Category>
 
-    @GET("categories/{id}")
+    @GET("api/categories/{id}")
     suspend fun getCategory(@Path("id") id: String): Category
 
-    @GET("categories/{id}/balance")
-    suspend fun getCategoryBalance(@Path("id") id: String): CategoryBalanceResponse
-
-    @POST("categories")
+    @POST("api/categories")
     suspend fun newCategory(@Body category: Category): Category
 
-    @PUT("categories/{id}")
+    @PUT("api/categories/{id}")
     suspend fun updateCategory(
             @Path("id") id: String,
             @Body category: Category
     ): Category
 
-    @DELETE("categories/{id}")
+    @DELETE("api/categories/{id}")
     suspend fun deleteCategory(@Path("id") id: String)
 
     // Transactions
-    @GET("transactions")
+    @GET("api/transactions")
     suspend fun getTransactions(
-            @Query("budgetIds") budgetIds: List<String>? = null,
-            @Query("categoryIds") categoryIds: List<String>? = null,
-            @Query("from") from: String? = null,
-            @Query("to") to: String? = null,
-            @Query("count") count: Int? = null,
-            @Query("page") page: Int? = null
+        @Query("budgetIds") budgetIds: List<String>? = null,
+        @Query("categoryIds") categoryIds: List<String>? = null,
+        @Query("from") from: String? = null,
+        @Query("to") to: String? = null,
+        @Query("count") count: Int? = null,
+        @Query("page") page: Int? = null
     ): List<Transaction>
 
-    @GET("transactions/{id}")
+    @GET("api/transactions/{id}")
     suspend fun getTransaction(@Path("id") id: String): Transaction
 
-    @POST("transactions")
+    @GET("api/transactions/sum")
+    suspend fun sumTransactions(
+        @Query("budgetId") budgetId: String? = null,
+        @Query("categoryId") categoryId: String? = null
+    ): BalanceResponse
+
+    @POST("api/transactions")
     suspend fun newTransaction(@Body transaction: Transaction): Transaction
 
-    @PUT("transactions/{id}")
+    @PUT("api/transactions/{id}")
     suspend fun updateTransaction(
-            @Path("id") id: String,
-            @Body transaction: Transaction
+        @Path("id") id: String,
+        @Body transaction: Transaction
     ): Transaction
 
-    @DELETE("transactions/{id}")
+    @DELETE("api/transactions/{id}")
     suspend fun deleteTransaction(@Path("id") id: String)
 
     // Users
-    @GET("users")
+    @GET("api/users")
     suspend fun getUsers(
             @Query("budgetId") budgetid: String? = null,
             @Query("count") count: Int? = null,
             @Query("page") page: Int? = null
     ): List<User>
 
-    @POST("users/login")
+    @POST("api/users/login")
     suspend fun login(@Body request: LoginRequest): Session
 
-    @GET("users/me")
-    suspend fun getProfile(): User
-
-    @GET("users/search")
+    @GET("api/users/search")
     suspend fun searchUsers(@Query("query") query: String): List<User>
 
-    @GET("users/{id}")
+    @GET("api/users/{id}")
     suspend fun getUser(@Path("id") id: String): User
 
-    @POST("users")
+    @POST("api/users")
     suspend fun newUser(@Body user: User): User
 
-    @PUT("users/{id}")
+    @PUT("api/users/{id}")
     suspend fun updateUser(
             @Path("id") id: String,
             @Body user: User
     ): User
 
-    @DELETE("users/{id}")
+    @DELETE("api/users/{id}")
     suspend fun deleteUser(@Path("id") id: String)
 }

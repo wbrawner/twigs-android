@@ -50,20 +50,15 @@ class SplashViewModel : ViewModel(), AsyncViewModel<AuthenticationState> {
             else "https://$server"
             baseUrlHelper.url = correctServer
             userRepository.login(username, password).also {
-                loadBudgetData()
+                budgetRepository.prefetchData()
             }
             sharedPreferences.edit {
                 putString(PREF_KEY_BASE_URL, correctServer)
             }
             AuthenticationState.Authenticated
         } catch (e: Exception) {
-            // TODO: Return error message here
             AuthenticationState.Unauthenticated(server, username, password, e.message)
         }
-    }
-
-    private suspend fun loadBudgetData() {
-        budgetRepository.prefetchData()
     }
 }
 

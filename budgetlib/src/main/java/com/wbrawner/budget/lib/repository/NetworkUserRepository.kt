@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.wbrawner.budget.common.PREF_KEY_TOKEN
+import com.wbrawner.budget.common.PREF_KEY_USER_ID
 import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
@@ -21,24 +22,36 @@ class NetworkUserRepository @Inject constructor(
 
     init {
         GlobalScope.launch {
-            try {
-                getProfile()
-            } catch (ignored: Exception) {
-            }
+            sharedPreferences.getString(PREF_KEY_USER_ID, null)
+                ?.let {
+                    try {
+                        getProfile()
+                    } catch (ignored: Exception) {
+                        sharedPreferences.edit()
+                            .remove(PREF_KEY_USER_ID)
+                            .remove(PREF_KEY_TOKEN)
+                            .apply()
+                    }
+                }
         }
     }
 
     override suspend fun login(username: String, password: String): User {
         apiService.login(LoginRequest(username, password)).also {
             sharedPreferences.edit()
-                    .putString(PREF_KEY_TOKEN, it.token)
-                    .apply()
+                .putString(PREF_KEY_USER_ID, it.userId)
+                .putString(PREF_KEY_TOKEN, it.token)
+                .apply()
         }
         return getProfile()
     }
 
-    override suspend fun getProfile(): User = apiService.getProfile().also {
-        (currentUser as MutableLiveData).postValue(it)
+    override suspend fun getProfile(): User {
+        val userId = sharedPreferences.getString(PREF_KEY_USER_ID, null)
+            ?: throw RuntimeException("Not authenticated")
+        return apiService.getUser(userId).also {
+            (currentUser as MutableLiveData).postValue(it)
+        }
     }
 
     override suspend fun create(newItem: User): User = apiService.newUser(newItem)
