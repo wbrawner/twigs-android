@@ -15,8 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.transaction.Transaction
@@ -47,8 +47,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.title_add_transaction)
         edit_transaction_type_expense.isChecked = true
-        (application as AllowanceApplication).appComponent.inject(viewModel)
-        viewModel.init()
+        (application as TwigsApplication).appComponent.inject(viewModel)
         launch {
             val accounts = viewModel.getAccounts().toTypedArray()
             setCategories()
@@ -92,7 +91,7 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
             val budgetIndex = if (transaction?.budgetId != null) {
                 accounts.indexOfFirst { it.id == transaction?.budgetId }
             } else {
-                accounts.indexOfFirst { it.id == viewModel.budgetRepository.currentBudget.value?.id }
+                accounts.indexOfFirst { it.id == viewModel.budgetRepository.currentBudget.replayCache.firstOrNull()?.id }
             }
             budgetSpinner.setSelection(max(0, budgetIndex))
             loadTransaction()

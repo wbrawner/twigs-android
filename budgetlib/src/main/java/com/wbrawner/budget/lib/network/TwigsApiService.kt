@@ -3,117 +3,97 @@ package com.wbrawner.budget.lib.network
 import com.wbrawner.budget.common.Session
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
+import com.wbrawner.budget.common.transaction.BalanceResponse
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.lib.repository.NewBudgetRequest
-import retrofit2.http.*
 
 interface TwigsApiService {
+    var baseUrl: String?
+    var authToken: String?
+
     // Budgets
-    @GET("api/budgets")
     suspend fun getBudgets(
-            @Query("count") count: Int? = null,
-            @Query("page") page: Int? = null
+        count: Int? = null,
+        page: Int? = null
     ): List<Budget>
 
-    @GET("api/budgets/{id}")
-    suspend fun getBudget(@Path("id") id: String): Budget
+    suspend fun getBudget(id: String): Budget
 
-    @POST("api/budgets")
-    suspend fun newBudget(@Body budget: NewBudgetRequest): Budget
+    suspend fun newBudget(budget: NewBudgetRequest): Budget
 
-    @PUT("api/budgets/{id}")
     suspend fun updateBudget(
-            @Path("id") id: String,
-            @Body budget: Budget
+        id: String,
+        budget: Budget
     ): Budget
 
-    @DELETE("api/budgets/{id}")
-    suspend fun deleteBudget(@Path("id") id: String)
+    suspend fun deleteBudget(id: String)
 
     // Categories
-    @GET("api/categories")
     suspend fun getCategories(
-        @Query("budgetIds") budgetIds: Array<String>? = null,
-        @Query("archived") archived: Boolean? = false,
-        @Query("count") count: Int? = null,
-        @Query("page") page: Int? = null,
+        budgetIds: Array<String>? = null,
+        archived: Boolean? = false,
+        count: Int? = null,
+        page: Int? = null,
     ): List<Category>
 
-    @GET("api/categories/{id}")
-    suspend fun getCategory(@Path("id") id: String): Category
+    suspend fun getCategory(id: String): Category
 
-    @POST("api/categories")
-    suspend fun newCategory(@Body category: Category): Category
+    suspend fun newCategory(category: Category): Category
 
-    @PUT("api/categories/{id}")
     suspend fun updateCategory(
-            @Path("id") id: String,
-            @Body category: Category
+        id: String,
+        category: Category
     ): Category
 
-    @DELETE("api/categories/{id}")
-    suspend fun deleteCategory(@Path("id") id: String)
+    suspend fun deleteCategory(id: String)
 
     // Transactions
-    @GET("api/transactions")
     suspend fun getTransactions(
-        @Query("budgetIds") budgetIds: List<String>? = null,
-        @Query("categoryIds") categoryIds: List<String>? = null,
-        @Query("from") from: String? = null,
-        @Query("to") to: String? = null,
-        @Query("count") count: Int? = null,
-        @Query("page") page: Int? = null
+        budgetIds: List<String>? = null,
+        categoryIds: List<String>? = null,
+        from: String? = null,
+        to: String? = null,
+        count: Int? = null,
+        page: Int? = null
     ): List<Transaction>
 
-    @GET("api/transactions/{id}")
-    suspend fun getTransaction(@Path("id") id: String): Transaction
+    suspend fun getTransaction(id: String): Transaction
 
-    @GET("api/transactions/sum")
     suspend fun sumTransactions(
-        @Query("budgetId") budgetId: String? = null,
-        @Query("categoryId") categoryId: String? = null
+        budgetId: String? = null,
+        categoryId: String? = null
     ): BalanceResponse
 
-    @POST("api/transactions")
-    suspend fun newTransaction(@Body transaction: Transaction): Transaction
+    suspend fun newTransaction(transaction: Transaction): Transaction
 
-    @PUT("api/transactions/{id}")
     suspend fun updateTransaction(
-        @Path("id") id: String,
-        @Body transaction: Transaction
+        id: String,
+        transaction: Transaction
     ): Transaction
 
-    @DELETE("api/transactions/{id}")
-    suspend fun deleteTransaction(@Path("id") id: String)
+    suspend fun deleteTransaction(id: String)
 
     // Users
-    @GET("api/users")
     suspend fun getUsers(
-            @Query("budgetId") budgetid: String? = null,
-            @Query("count") count: Int? = null,
-            @Query("page") page: Int? = null
+        budgetId: String? = null,
+        count: Int? = null,
+        page: Int? = null
     ): List<User>
 
-    @POST("api/users/login")
-    suspend fun login(@Body request: LoginRequest): Session
+    suspend fun login(request: LoginRequest): Session
 
-    @GET("api/users/search")
-    suspend fun searchUsers(@Query("query") query: String): List<User>
+    suspend fun searchUsers(query: String): List<User>
 
-    @GET("api/users/{id}")
-    suspend fun getUser(@Path("id") id: String): User
+    suspend fun getUser(id: String): User
 
-    @POST("api/users")
-    suspend fun newUser(@Body user: User): User
+    suspend fun newUser(user: User): User
 
-    @PUT("api/users/{id}")
     suspend fun updateUser(
-            @Path("id") id: String,
-            @Body user: User
+        id: String,
+        user: User
     ): User
 
-    @DELETE("api/users/{id}")
-    suspend fun deleteUser(@Path("id") id: String)
+    suspend fun deleteUser(id: String)
 }

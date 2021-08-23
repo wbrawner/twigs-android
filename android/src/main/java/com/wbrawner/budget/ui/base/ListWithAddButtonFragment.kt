@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wbrawner.budget.AsyncState
@@ -16,9 +16,10 @@ import com.wbrawner.budget.R
 import com.wbrawner.budget.common.Identifiable
 import com.wbrawner.budget.ui.hideFabOnScroll
 import kotlinx.android.synthetic.main.fragment_list_with_add_button.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 abstract class ListWithAddButtonFragment<Data : Identifiable, ViewModel : AsyncViewModel<List<Data>>> : Fragment() {
-
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -35,27 +36,29 @@ abstract class ListWithAddButtonFragment<Data : Identifiable, ViewModel : AsyncV
             addItem()
         }
         noItemsTextView.setText(noItemsStringRes)
-        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            when (state) {
-                is AsyncState.Loading -> {
-                    progressBar.visibility = View.VISIBLE
-                    listContainer.visibility = View.GONE
-                    noItemsTextView.visibility = View.GONE
-                }
-                is AsyncState.Success -> {
-                    progressBar.visibility = View.GONE
-                    listContainer.visibility = View.VISIBLE
-                    noItemsTextView.visibility = View.GONE
-                    adapter.submitList(state.data.map { bindData(it) })
-                }
-                is AsyncState.Error -> {
-                    // TODO: Show an error message
-                    progressBar.visibility = View.GONE
-                    listContainer.visibility = View.GONE
-                    noItemsTextView.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    is AsyncState.Loading -> {
+                        progressBar.visibility = View.VISIBLE
+                        listContainer.visibility = View.GONE
+                        noItemsTextView.visibility = View.GONE
+                    }
+                    is AsyncState.Success -> {
+                        progressBar.visibility = View.GONE
+                        listContainer.visibility = View.VISIBLE
+                        noItemsTextView.visibility = View.GONE
+                        adapter.submitList(state.data.map { bindData(it) })
+                    }
+                    is AsyncState.Error -> {
+                        // TODO: Show an error message
+                        progressBar.visibility = View.GONE
+                        listContainer.visibility = View.GONE
+                        noItemsTextView.visibility = View.VISIBLE
+                    }
                 }
             }
-        })
+        }
     }
 
     override fun onStart() {

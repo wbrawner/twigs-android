@@ -14,8 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
@@ -38,7 +38,7 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
     override fun bindData(data: Transaction): BindableData<Transaction> = BindableData(data, TRANSACTION_VIEW)
 
     override fun onAttach(context: Context) {
-        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
+        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
         super.onAttach(context)
     }
 

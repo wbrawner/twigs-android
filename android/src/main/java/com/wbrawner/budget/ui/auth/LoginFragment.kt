@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
 import com.wbrawner.budget.ui.AuthenticationState
@@ -17,6 +17,8 @@ import com.wbrawner.budget.ui.SplashViewModel
 import com.wbrawner.budget.ui.ensureNotEmpty
 import com.wbrawner.budget.ui.show
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -32,33 +34,35 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            when (state) {
-                is AsyncState.Loading -> {
-                    handleLoading(true)
-                }
-                is AsyncState.Error -> {
-                    handleLoading(false)
-                    username.error = "Invalid username/password"
-                    password.error = "Invalid username/password"
-                    state.exception.printStackTrace()
-                }
-                is AsyncState.Success -> {
-                    if (state.data is AuthenticationState.Unauthenticated) {
-                        server.setText(state.data.server ?: "")
-                        username.setText(state.data.username ?: "")
-                        password.setText(state.data.password ?: "")
-                        state.data.errorMessage?.let {
-                            AlertDialog.Builder(view.context)
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    is AsyncState.Loading -> {
+                        handleLoading(true)
+                    }
+                    is AsyncState.Error -> {
+                        handleLoading(false)
+                        username.error = "Invalid username/password"
+                        password.error = "Invalid username/password"
+                        state.exception.printStackTrace()
+                    }
+                    is AsyncState.Success -> {
+                        if (state.data is AuthenticationState.Unauthenticated) {
+                            server.setText(state.data.server ?: "")
+                            username.setText(state.data.username ?: "")
+                            password.setText(state.data.password ?: "")
+                            state.data.errorMessage?.let {
+                                AlertDialog.Builder(view.context)
                                     .setTitle("Login Failed")
                                     .setMessage(it)
                                     .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int -> }
                                     .show()
+                            }
                         }
                     }
                 }
             }
-        })
+        }
         password.setOnEditorActionListener { _, _, _ ->
             submit.performClick()
         }

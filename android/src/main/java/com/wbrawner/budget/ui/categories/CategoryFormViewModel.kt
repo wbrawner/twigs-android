@@ -1,7 +1,6 @@
 package com.wbrawner.budget.ui.categories
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wbrawner.budget.AsyncState
@@ -12,12 +11,13 @@ import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.util.randomId
-import com.wbrawner.budget.launch
+import com.wbrawner.budget.load
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
-    override val state: MutableLiveData<AsyncState<CategoryFormState>> = MutableLiveData(AsyncState.Loading)
+    override val state: MutableStateFlow<AsyncState<CategoryFormState>> = MutableStateFlow(AsyncState.Loading)
     @Inject
     lateinit var categoryRepository: CategoryRepository
 
@@ -25,7 +25,7 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
     lateinit var budgetRepository: BudgetRepository
 
     fun loadCategory(categoryId: String? = null) {
-        launch {
+        load {
             val category = categoryId?.let {
                 categoryRepository.findById(it)
             } ?: Category("", title = "", amount = 0)
@@ -38,27 +38,27 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
 
     fun saveCategory(category: Category) {
         viewModelScope.launch {
-            state.postValue(AsyncState.Loading)
+            state.emit(AsyncState.Loading)
             try {
                 if (category.id == null)
                     categoryRepository.create(category.copy(id = randomId()))
                 else
                     categoryRepository.update(category)
-                state.postValue(AsyncState.Exit)
+                state.emit(AsyncState.Exit)
             } catch (e: Exception) {
-                state.postValue(AsyncState.Error(e))
+                state.emit(AsyncState.Error(e))
             }
         }
     }
 
     fun deleteCategoryById(id: String) {
         viewModelScope.launch {
-            state.postValue(AsyncState.Loading)
+            state.emit(AsyncState.Loading)
             try {
                 categoryRepository.delete(id)
-                state.postValue(AsyncState.Exit)
+                state.emit(AsyncState.Exit)
             } catch (e: Exception) {
-                state.postValue(AsyncState.Error(e))
+                state.emit(AsyncState.Error(e))
             }
         }
     }

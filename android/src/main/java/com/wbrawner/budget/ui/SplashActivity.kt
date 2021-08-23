@@ -4,22 +4,19 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.wbrawner.budget.TwigsApplication
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
-class SplashActivity : AppCompatActivity(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Main
+class SplashActivity : AppCompatActivity() {
     private val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as AllowanceApplication).appComponent.inject(viewModel)
+        (application as TwigsApplication).appComponent.inject(viewModel)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         window.decorView.apply {
@@ -30,22 +27,25 @@ class SplashActivity : AppCompatActivity(), CoroutineScope {
                     )
         }
         val navController = findNavController(R.id.auth_content)
-        viewModel.state.observe(this, { state ->
-            when (state) {
-                is AsyncState.Success -> {
-                    when (state.data) {
-                        is AuthenticationState.Authenticated -> {
-                            navController.navigate(R.id.mainActivity)
-                            finish()
-                        }
-                        is AuthenticationState.Unauthenticated -> {
-                            navController.navigate(R.id.loginFragment)
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    is AsyncState.Success -> {
+                        when (state.data) {
+                            is AuthenticationState.Authenticated -> {
+                                navController.navigate(R.id.mainActivity)
+                                finish()
+                            }
+                            is AuthenticationState.Unauthenticated -> {
+                                navController.navigate(R.id.loginFragment)
+                            }
                         }
                     }
+                    is AsyncState.Loading -> {}
                 }
             }
-        })
-        launch {
+        }
+        lifecycleScope.launch {
             viewModel.checkForExistingCredentials()
         }
     }

@@ -1,10 +1,10 @@
 package com.wbrawner.budget
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 sealed class AsyncState<out T> {
@@ -18,17 +18,18 @@ sealed class AsyncState<out T> {
 }
 
 interface AsyncViewModel<T> {
-    val state: MutableLiveData<AsyncState<T>>
+    val state: MutableStateFlow<AsyncState<T>>
 }
 
-fun <T> MutableLiveData<AsyncState<T>>.postValue(value: T) = postValue(AsyncState.Success(value))
 
-fun <VM, T> VM.launch(block: suspend () -> T): Job where VM : ViewModel, VM : AsyncViewModel<T> = viewModelScope.launch {
-    state.postValue(AsyncState.Loading)
+fun <VM, T> VM.load(block: suspend () -> T): Job where VM : ViewModel, VM : AsyncViewModel<T> = viewModelScope.launch {
+    if (state.replayCache.firstOrNull() !is AsyncState.Success) {
+        state.emit(AsyncState.Loading)
+    }
     try {
-        state.postValue(AsyncState.Success(block()))
+        state.emit(AsyncState.Success(block()))
     } catch (e: Exception) {
-        state.postValue(AsyncState.Error(e))
+        state.emit(AsyncState.Error(e))
         Log.e("AsyncViewModel", "Failed to load data", e)
     }
 }

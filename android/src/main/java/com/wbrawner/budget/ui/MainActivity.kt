@@ -6,12 +6,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.emoji.text.EmojiCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 private const val MENU_GROUP_BUDGETS = 50
 private const val MENU_ITEM_ADD_BUDGET = 100
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         EmojiCompat.init(androidx.emoji.bundled.BundledEmojiCompatConfig(this))
         setContentView(R.layout.activity_main)
-        (application as AllowanceApplication).appComponent.inject(viewModel)
+        (application as TwigsApplication).appComponent.inject(viewModel)
         setSupportActionBar(action_bar)
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.action_open, R.string.action_close)
         toggle.isDrawerIndicatorEnabled = true
@@ -47,23 +50,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicator)
         }
-        viewModel.loadBudgets().observe(this, { list ->
-            val menu = navigationView.menu
-            menu.clear()
-            val budgetsMenu = navigationView.menu.addSubMenu(0, 0, 0, "Budgets")
-            list.budgets.forEachIndexed { index, budget ->
-                budgetsMenu.add(MENU_GROUP_BUDGETS, index, index, budget.name)
+        lifecycleScope.launch {
+            viewModel.loadBudgets().collect { list ->
+                val menu = navigationView.menu
+                menu.clear()
+                val budgetsMenu = navigationView.menu.addSubMenu(0, 0, 0, "Budgets")
+                list.budgets.forEachIndexed { index, budget ->
+                    budgetsMenu.add(MENU_GROUP_BUDGETS, index, index, budget.name)
                         .setIcon(R.drawable.ic_folder_selectable)
-            }
-            budgetsMenu.setGroupCheckable(MENU_GROUP_BUDGETS, true, true)
-            list.selectedIndex?.let {
-                budgetsMenu.getItem(it).isChecked = true
-            }
-            menu.add(0, MENU_ITEM_ADD_BUDGET, list.budgets.size, R.string.title_add_budget)
+                }
+                budgetsMenu.setGroupCheckable(MENU_GROUP_BUDGETS, true, true)
+                list.selectedIndex?.let {
+                    budgetsMenu.getItem(it).isChecked = true
+                }
+                menu.add(0, MENU_ITEM_ADD_BUDGET, list.budgets.size, R.string.title_add_budget)
                     .setIcon(R.drawable.ic_add_white_24dp)
-            menu.add(1, MENU_ITEM_SETTINGS, list.budgets.size + 1, "Settings")
+                menu.add(1, MENU_ITEM_SETTINGS, list.budgets.size + 1, "Settings")
                     .setIcon(R.drawable.ic_settings)
-        })
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

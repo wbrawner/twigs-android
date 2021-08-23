@@ -1,7 +1,8 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
 
 android {
     compileSdkVersion 30
@@ -26,19 +27,18 @@ android {
 dependencies {
     implementation project(':common')
     implementation project(':storage')
-    // Retrofit
-    api "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit"
-    implementation "com.squareup.retrofit2:converter-moshi:$rootProject.ext.retrofit"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
-    implementation("com.squareup.okhttp3:logging-interceptor:4.7.2")
-    api "com.squareup.moshi:moshi:$rootProject.ext.moshi"
-    implementation "com.squareup.moshi:moshi-adapters:$rootProject.ext.moshi"
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+    def ktor_version = "1.6.0"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "io.ktor:ktor-client-serialization:$ktor_version"
+    implementation "io.ktor:ktor-client-logging:$ktor_version"
+    implementation "ch.qos.logback:logback-classic:1.2.5"
     // Dagger
     implementation "com.google.dagger:dagger:$rootProject.ext.dagger"
     kapt "com.google.dagger:dagger-compiler:$rootProject.ext.dagger"
-    testImplementation 'junit:junit:4.12'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    testImplementation 'junit:junit:4.13.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 repositories {
     mavenCentral()

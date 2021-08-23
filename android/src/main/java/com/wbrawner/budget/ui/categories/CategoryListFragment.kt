@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_NAME
@@ -23,7 +23,7 @@ class CategoryListFragment : ListWithAddButtonFragment<Category, CategoryListVie
     override val noItemsStringRes: Int = R.string.categories_no_data
     override val viewModel: CategoryListViewModel by viewModels()
     override fun reloadItems() {
-        viewModel.getCategories(viewLifecycleOwner)
+        viewModel.getCategories()
     }
 
     override fun bindData(data: Category): BindableData<Category> = BindableData(data, CATEGORY_VIEW)
@@ -31,7 +31,7 @@ class CategoryListFragment : ListWithAddButtonFragment<Category, CategoryListVie
     override val constructors: Map<Int, (View) -> BindableAdapter.BindableViewHolder<Category>> = mapOf(CATEGORY_VIEW to { v -> CategoryViewHolder(v, viewModel, findNavController()) })
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
+        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
         super.onCreate(savedInstanceState)
     }
 

@@ -1,11 +1,14 @@
 package com.wbrawner.budget.ui.transactions
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.common.user.UserRepository
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TransactionFormViewModel : ViewModel() {
@@ -24,10 +27,11 @@ class TransactionFormViewModel : ViewModel() {
     var currentUserId: String? = null
         private set
 
-    //TODO: Find a better way to handle this
-    fun init() {
-        userRepository.currentUser.observeForever {
-            currentUserId = it?.id
+    init {
+        viewModelScope.launch {
+            userRepository.currentUser.collect {
+                currentUserId = it?.id
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [AppModule::class, StorageModule::class, NetworkModule::class])
 interface AppComponent {
+    fun inject(app: TwigsApplication)
     fun inject(viewModel: OverviewViewModel)
     fun inject(viewModel: SplashViewModel)
     fun inject(viewModel: MainViewModel)

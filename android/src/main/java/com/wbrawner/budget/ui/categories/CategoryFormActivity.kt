@@ -11,15 +11,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.Observer
-import com.wbrawner.budget.AllowanceApplication
+import androidx.lifecycle.lifecycleScope
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.transactions.toLong
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class CategoryFormActivity : AppCompatActivity() {
     val viewModel: CategoryFormViewModel by viewModels()
@@ -31,49 +33,51 @@ class CategoryFormActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit_category)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (application as AllowanceApplication).appComponent.inject(viewModel)
-        viewModel.state.observe(this, Observer { state ->
-            when (state) {
-                is AsyncState.Loading -> {
-                    categoryForm.visibility = View.GONE
-                    progressBar.visibility = View.VISIBLE
-                }
-                is AsyncState.Success -> {
-                    categoryForm.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    val category = state.data.category
-                    id = category.id
-                    setTitle(state.data.titleRes)
-                    menu?.findItem(R.id.action_delete)?.isVisible = state.data.showDeleteButton
-                    edit_category_name.setText(category.title)
-                    edit_category_amount.setText(
-                        String.format(
-                            "%.02f",
-                            (category.amount.toBigDecimal() / 100.toBigDecimal()).toFloat()
+        (application as TwigsApplication).appComponent.inject(viewModel)
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    is AsyncState.Loading -> {
+                        categoryForm.visibility = View.GONE
+                        progressBar.visibility = View.VISIBLE
+                    }
+                    is AsyncState.Success -> {
+                        categoryForm.visibility = View.VISIBLE
+                        progressBar.visibility = View.GONE
+                        val category = state.data.category
+                        id = category.id
+                        setTitle(state.data.titleRes)
+                        menu?.findItem(R.id.action_delete)?.isVisible = state.data.showDeleteButton
+                        edit_category_name.setText(category.title)
+                        edit_category_amount.setText(
+                            String.format(
+                                "%.02f",
+                                (category.amount.toBigDecimal() / 100.toBigDecimal()).toFloat()
+                            )
                         )
-                    )
-                    expense.isChecked = category.expense
-                    income.isChecked = !category.expense
-                    archived.isChecked = category.archived
-                    budgetSpinner.adapter = ArrayAdapter(
-                        this@CategoryFormActivity,
-                        android.R.layout.simple_list_item_1,
-                        state.data.budgets
-                    )
-                    val budget = state.data.budgets.firstOrNull { it.id == category.budgetId }
-                        ?: viewModel.budgetRepository.currentBudget.value
-                    budgetSpinner.setSelection(state.data.budgets.indexOf(budget))
+                        expense.isChecked = category.expense
+                        income.isChecked = !category.expense
+                        archived.isChecked = category.archived
+                        budgetSpinner.adapter = ArrayAdapter(
+                            this@CategoryFormActivity,
+                            android.R.layout.simple_list_item_1,
+                            state.data.budgets
+                        )
+                        val budget = state.data.budgets.firstOrNull { it.id == category.budgetId }
+                            ?: viewModel.budgetRepository.currentBudget.replayCache.firstOrNull()
+                        budgetSpinner.setSelection(state.data.budgets.indexOf(budget))
 
+                    }
+                    is AsyncState.Error -> {
+                        // TODO: Show error message
+                        categoryForm.visibility = View.VISIBLE
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(this@CategoryFormActivity, "Failed to save Category", Toast.LENGTH_SHORT).show()
+                    }
+                    is AsyncState.Exit -> finish()
                 }
-                is AsyncState.Error -> {
-                    // TODO: Show error message
-                    categoryForm.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Failed to save Category", Toast.LENGTH_SHORT).show()
-                }
-                is AsyncState.Exit -> finish()
             }
-        })
+        }
         viewModel.loadCategory(intent?.extras?.getString(EXTRA_CATEGORY_ID))
     }
 

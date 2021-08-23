@@ -1,16 +1,15 @@
 package com.wbrawner.budget.lib.repository
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.wbrawner.budget.common.PREF_KEY_TOKEN
 import com.wbrawner.budget.common.PREF_KEY_USER_ID
+import com.wbrawner.budget.common.Session
 import com.wbrawner.budget.common.user.LoginRequest
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
 import com.wbrawner.budget.lib.network.TwigsApiService
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
 class NetworkUserRepository @Inject constructor(
@@ -18,39 +17,21 @@ class NetworkUserRepository @Inject constructor(
         private val sharedPreferences: SharedPreferences
 ) : UserRepository {
 
-    override val currentUser: LiveData<User?> = MutableLiveData()
+    private val current = MutableStateFlow<User?>(null)
+    override val currentUser: SharedFlow<User?> = current.asSharedFlow()
 
-    init {
-        GlobalScope.launch {
-            sharedPreferences.getString(PREF_KEY_USER_ID, null)
-                ?.let {
-                    try {
-                        getProfile()
-                    } catch (ignored: Exception) {
-                        sharedPreferences.edit()
-                            .remove(PREF_KEY_USER_ID)
-                            .remove(PREF_KEY_TOKEN)
-                            .apply()
-                    }
-                }
+    override suspend fun login(server: String, username: String, password: String): Session {
+        apiService.baseUrl = server
+        return apiService.login(LoginRequest(username, password)).apply {
+            apiService.authToken = token
         }
-    }
-
-    override suspend fun login(username: String, password: String): User {
-        apiService.login(LoginRequest(username, password)).also {
-            sharedPreferences.edit()
-                .putString(PREF_KEY_USER_ID, it.userId)
-                .putString(PREF_KEY_TOKEN, it.token)
-                .apply()
-        }
-        return getProfile()
     }
 
     override suspend fun getProfile(): User {
         val userId = sharedPreferences.getString(PREF_KEY_USER_ID, null)
             ?: throw RuntimeException("Not authenticated")
         return apiService.getUser(userId).also {
-            (currentUser as MutableLiveData).postValue(it)
+            current.emit(it)
         }
     }
 

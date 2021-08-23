@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
@@ -28,7 +28,7 @@ class AddEditBudgetFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
-        (requireActivity().application as AllowanceApplication)
+        (requireActivity().application as TwigsApplication)
                 .appComponent
                 .inject(viewModel)
         super.onAttach(context)
@@ -90,7 +90,7 @@ class AddEditBudgetFragment : Fragment() {
                         id = id,
                         name = name.text.toString(),
                         description = description.text.toString(),
-                        users = viewModel.users.value ?: emptyList()
+                        users = emptyList()
                 ))
             }
             R.id.action_delete -> {

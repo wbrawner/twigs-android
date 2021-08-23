@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.wbrawner.budget.AllowanceApplication
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
+import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.ui.toAmountSpannable
 import kotlinx.android.synthetic.main.fragment_overview.*
 
@@ -19,7 +19,7 @@ class OverviewFragment : Fragment() {
     val viewModel: OverviewViewModel by viewModels()
 
     override fun onAttach(context: Context) {
-        (requireActivity().application as AllowanceApplication).appComponent.inject(viewModel)
+        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
         super.onAttach(context)
     }
 
@@ -56,7 +56,7 @@ class OverviewFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.loadOverview(viewLifecycleOwner)
+        viewModel.loadOverview()
     }
 
     companion object {
