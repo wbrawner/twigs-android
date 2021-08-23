@@ -2,14 +2,15 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -35,8 +36,8 @@ dependencies {
     implementation "io.ktor:ktor-client-logging:$ktor_version"
     implementation "ch.qos.logback:logback-classic:1.2.5"
     // Dagger
-    implementation "com.google.dagger:dagger:$rootProject.ext.dagger"
-    kapt "com.google.dagger:dagger-compiler:$rootProject.ext.dagger"
+    implementation "com.google.dagger:hilt-android:$rootProject.ext.dagger"
+    kapt "com.google.dagger:hilt-compiler:$rootProject.ext.dagger"
     testImplementation 'junit:junit:4.13.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

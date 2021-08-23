@@ -8,15 +8,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
-    private val viewModel: SplashViewModel by viewModels()
+    val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (application as TwigsApplication).appComponent.inject(viewModel)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         window.decorView.apply {

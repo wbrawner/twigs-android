@@ -7,15 +7,17 @@ import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.load
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class CategoryDetailsViewModel : ViewModel(), AsyncViewModel<CategoryDetails> {
-    override val state: MutableStateFlow<AsyncState<CategoryDetails>> = MutableStateFlow(AsyncState.Loading)
-
-    @Inject
-    lateinit var categoryRepo: CategoryRepository
+@HiltViewModel
+class CategoryDetailsViewModel @Inject constructor(
+    val categoryRepo: CategoryRepository
+) : ViewModel(), AsyncViewModel<CategoryDetails> {
+    override val state: MutableStateFlow<AsyncState<CategoryDetails>> =
+        MutableStateFlow(AsyncState.Loading)
 
     fun getCategory(id: String? = null) {
         viewModelScope.launch {

@@ -11,21 +11,18 @@ import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.user.UserRepository
 import com.wbrawner.budget.lib.network.PREF_KEY_BASE_URL
 import com.wbrawner.budget.load
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class SplashViewModel : ViewModel(), AsyncViewModel<AuthenticationState> {
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    val budgetRepository: BudgetRepository,
+    val userRepository: UserRepository,
+    val sharedPreferences: SharedPreferences,
+) : ViewModel(), AsyncViewModel<AuthenticationState> {
     override val state: MutableStateFlow<AsyncState<AuthenticationState>> =
         MutableStateFlow(AsyncState.Loading)
-
-    @Inject
-    lateinit var budgetRepository: BudgetRepository
-
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
-
-    @Inject
-    lateinit var userRepository: UserRepository
 
     suspend fun checkForExistingCredentials() {
         if (!sharedPreferences.contains(PREF_KEY_TOKEN)) {

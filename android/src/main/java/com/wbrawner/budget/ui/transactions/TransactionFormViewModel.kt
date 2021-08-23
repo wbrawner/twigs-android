@@ -7,22 +7,18 @@ import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.common.transaction.TransactionRepository
 import com.wbrawner.budget.common.user.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TransactionFormViewModel : ViewModel() {
-    @Inject
-    lateinit var budgetRepository: BudgetRepository
-
-    @Inject
-    lateinit var categoryRepository: CategoryRepository
-
-    @Inject
-    lateinit var transactionRepository: TransactionRepository
-
-    @Inject
-    lateinit var userRepository: UserRepository
+@HiltViewModel
+class TransactionFormViewModel @Inject constructor(
+    val budgetRepository: BudgetRepository,
+    val categoryRepository: CategoryRepository,
+    val transactionRepository: TransactionRepository,
+    val userRepository: UserRepository,
+) : ViewModel() {
 
     var currentUserId: String? = null
         private set

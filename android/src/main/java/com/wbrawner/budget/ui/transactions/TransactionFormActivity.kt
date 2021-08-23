@@ -16,12 +16,12 @@ import androidx.core.app.NavUtils
 import androidx.core.app.TaskStackBuilder
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.ui.EXTRA_TRANSACTION_ID
 import com.wbrawner.budget.ui.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_add_edit_transaction.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +31,7 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
+@AndroidEntryPoint
 class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.Main
 
@@ -47,7 +48,6 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.title_add_transaction)
         edit_transaction_type_expense.isChecked = true
-        (application as TwigsApplication).appComponent.inject(viewModel)
         launch {
             val accounts = viewModel.getAccounts().toTypedArray()
             setCategories()

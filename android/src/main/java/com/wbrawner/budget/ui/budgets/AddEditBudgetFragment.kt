@@ -10,12 +10,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_add_edit_budget.*
 
+@AndroidEntryPoint
 class AddEditBudgetFragment : Fragment() {
     private val viewModel: BudgetFormViewModel by viewModels()
 
@@ -28,17 +29,14 @@ class AddEditBudgetFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
-        (requireActivity().application as TwigsApplication)
-                .appComponent
-                .inject(viewModel)
         super.onAttach(context)
         viewModel.getBudget(arguments?.getString(EXTRA_BUDGET_ID))
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_add_edit_budget, container, false)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -51,9 +49,9 @@ class AddEditBudgetFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val suggestionsAdapter = ArrayAdapter<User>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                mutableListOf()
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            mutableListOf()
         )
         usersSearch.setAdapter(suggestionsAdapter)
         viewModel.userSuggestions.observe(viewLifecycleOwner, Observer {
@@ -87,10 +85,10 @@ class AddEditBudgetFragment : Fragment() {
             android.R.id.home -> findNavController().navigateUp()
             R.id.action_save -> {
                 viewModel.saveBudget(Budget(
-                        id = id,
-                        name = name.text.toString(),
-                        description = description.text.toString(),
-                        users = emptyList()
+                    id = id,
+                    name = name.text.toString(),
+                    description = description.text.toString(),
+                    users = emptyList()
                 ))
             }
             R.id.action_delete -> {

@@ -11,7 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -20,6 +20,7 @@ private const val MENU_GROUP_BUDGETS = 50
 private const val MENU_ITEM_ADD_BUDGET = 100
 private const val MENU_ITEM_SETTINGS = 101
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var toggle: ActionBarDrawerToggle
     private val viewModel: MainViewModel by viewModels()
@@ -28,7 +29,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         EmojiCompat.init(androidx.emoji.bundled.BundledEmojiCompatConfig(this))
         setContentView(R.layout.activity_main)
-        (application as TwigsApplication).appComponent.inject(viewModel)
         setSupportActionBar(action_bar)
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.action_open, R.string.action_close)
         toggle.isDrawerIndicatorEnabled = true

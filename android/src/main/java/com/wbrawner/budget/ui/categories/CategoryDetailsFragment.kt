@@ -1,7 +1,6 @@
 package com.wbrawner.budget.ui.categories
 
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -12,26 +11,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_NAME
 import com.wbrawner.budget.ui.toAmountSpannable
 import com.wbrawner.budget.ui.transactions.TransactionListFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_category_details.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-/**
- * A simple [Fragment] subclass.
- */
+@AndroidEntryPoint
 class CategoryDetailsFragment : Fragment() {
     val viewModel: CategoryDetailsViewModel by viewModels()
-
-    override fun onAttach(context: Context) {
-        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
-        super.onAttach(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

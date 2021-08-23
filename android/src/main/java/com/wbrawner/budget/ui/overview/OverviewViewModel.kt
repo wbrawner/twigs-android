@@ -5,18 +5,17 @@ import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.transaction.TransactionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class OverviewViewModel : ViewModel() {
+@HiltViewModel
+class OverviewViewModel @Inject constructor(
+    val budgetRepo: BudgetRepository,
+    val transactionRepo: TransactionRepository
+) : ViewModel() {
     val state = MutableLiveData<AsyncState<OverviewState>>(AsyncState.Loading)
-
-    @Inject
-    lateinit var budgetRepo: BudgetRepository
-
-    @Inject
-    lateinit var transactionRepo: TransactionRepository
 
     fun loadOverview() {
         viewModelScope.launch {

@@ -1,7 +1,6 @@
 package com.wbrawner.budget.ui.budgets
 
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -9,20 +8,16 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
 import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BudgetListFragment : ListWithAddButtonFragment<Budget, BudgetListViewModel>() {
     override val noItemsStringRes: Int = R.string.overview_no_data
-
-    override fun onAttach(context: Context) {
-        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
-        super.onAttach(context)
-    }
 
     override val viewModel: BudgetListViewModel by viewModels()
 

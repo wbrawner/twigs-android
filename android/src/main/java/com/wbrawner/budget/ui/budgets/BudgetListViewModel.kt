@@ -6,18 +6,20 @@ import com.wbrawner.budget.AsyncViewModel
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.load
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class BudgetListViewModel : ViewModel(), AsyncViewModel<List<Budget>> {
-    override val state: MutableStateFlow<AsyncState<List<Budget>>> = MutableStateFlow(AsyncState.Loading)
-
-    @Inject
-    lateinit var budgetRepo: BudgetRepository
+@HiltViewModel
+class BudgetListViewModel @Inject constructor(
+    val budgetRepository: BudgetRepository
+) : ViewModel(), AsyncViewModel<List<Budget>> {
+    override val state: MutableStateFlow<AsyncState<List<Budget>>> =
+        MutableStateFlow(AsyncState.Loading)
 
     fun getBudgets() {
         load {
-            budgetRepo.findAll().toList()
+            budgetRepository.findAll().toList()
         }
     }
 }

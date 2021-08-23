@@ -1,6 +1,5 @@
 package com.wbrawner.budget.ui.overview
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,22 +10,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.ui.toAmountSpannable
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_overview.*
 
+@AndroidEntryPoint
 class OverviewFragment : Fragment() {
     val viewModel: OverviewViewModel by viewModels()
 
-    override fun onAttach(context: Context) {
-        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
-        super.onAttach(context)
-    }
-
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_overview, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

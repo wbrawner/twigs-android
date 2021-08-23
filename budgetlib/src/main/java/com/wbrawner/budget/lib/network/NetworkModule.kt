@@ -12,11 +12,14 @@ import com.wbrawner.budget.lib.repository.NetworkTransactionRepository
 import com.wbrawner.budget.lib.repository.NetworkUserRepository
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 const val PREF_KEY_BASE_URL = "baseUrl"
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NetworkModule {
     @Singleton
     @Provides

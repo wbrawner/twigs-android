@@ -10,20 +10,19 @@ import com.wbrawner.budget.common.budget.BudgetRepository
 import com.wbrawner.budget.common.user.User
 import com.wbrawner.budget.common.user.UserRepository
 import com.wbrawner.budget.common.util.randomId
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class BudgetFormViewModel : ViewModel() {
+@HiltViewModel
+class BudgetFormViewModel @Inject constructor(
+    val budgetRepository: BudgetRepository,
+    val userRepository: UserRepository
+) : ViewModel() {
 
     val state = MutableLiveData<BudgetFormState>(BudgetFormState.Loading)
     val users = MutableLiveData<List<User>>()
     val userSuggestions = MutableLiveData<List<User>>()
-
-    @Inject
-    lateinit var budgetRepository: BudgetRepository
-
-    @Inject
-    lateinit var userRepository: UserRepository
 
     fun getBudget(id: String? = null) {
         viewModelScope.launch {

@@ -12,17 +12,18 @@ import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.common.category.CategoryRepository
 import com.wbrawner.budget.common.util.randomId
 import com.wbrawner.budget.load
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
-    override val state: MutableStateFlow<AsyncState<CategoryFormState>> = MutableStateFlow(AsyncState.Loading)
-    @Inject
-    lateinit var categoryRepository: CategoryRepository
-
-    @Inject
-    lateinit var budgetRepository: BudgetRepository
+@HiltViewModel
+class CategoryFormViewModel @Inject constructor(
+    val categoryRepository: CategoryRepository,
+    val budgetRepository: BudgetRepository
+) : ViewModel(), AsyncViewModel<CategoryFormState> {
+    override val state: MutableStateFlow<AsyncState<CategoryFormState>> =
+        MutableStateFlow(AsyncState.Loading)
 
     fun loadCategory(categoryId: String? = null) {
         load {
@@ -30,8 +31,8 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
                 categoryRepository.findById(it)
             } ?: Category("", title = "", amount = 0)
             CategoryFormState(
-                    category,
-                    budgetRepository.findAll().toList()
+                category,
+                budgetRepository.findAll().toList()
             )
         }
     }
@@ -65,15 +66,15 @@ class CategoryFormViewModel : ViewModel(), AsyncViewModel<CategoryFormState> {
 }
 
 data class CategoryFormState(
-        val category: Category,
-        val budgets: List<Budget>,
-        @StringRes val titleRes: Int,
-        val showDeleteButton: Boolean
+    val category: Category,
+    val budgets: List<Budget>,
+    @StringRes val titleRes: Int,
+    val showDeleteButton: Boolean
 ) {
     constructor(category: Category, budgets: List<Budget>) : this(
-            category,
-            budgets,
-            category.id?.let { R.string.title_edit_category } ?: R.string.title_add_category,
-            category.id != null
+        category,
+        budgets,
+        category.id?.let { R.string.title_edit_category } ?: R.string.title_add_category,
+        category.id != null
     )
 }

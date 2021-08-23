@@ -1,7 +1,6 @@
 package com.wbrawner.budget.ui.transactions
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -15,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.transaction.Transaction
 import com.wbrawner.budget.ui.EXTRA_BUDGET_ID
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
@@ -23,8 +21,10 @@ import com.wbrawner.budget.ui.EXTRA_TRANSACTION_ID
 import com.wbrawner.budget.ui.base.BindableAdapter
 import com.wbrawner.budget.ui.base.BindableData
 import com.wbrawner.budget.ui.base.ListWithAddButtonFragment
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 
+@AndroidEntryPoint
 class TransactionListFragment : ListWithAddButtonFragment<Transaction, TransactionListViewModel>() {
     override val noItemsStringRes: Int = R.string.transactions_no_data
     override val viewModel: TransactionListViewModel by viewModels()
@@ -36,11 +36,6 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
     }
 
     override fun bindData(data: Transaction): BindableData<Transaction> = BindableData(data, TRANSACTION_VIEW)
-
-    override fun onAttach(context: Context) {
-        (requireActivity().application as TwigsApplication).appComponent.inject(viewModel)
-        super.onAttach(context)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,15 +52,15 @@ class TransactionListFragment : ListWithAddButtonFragment<Transaction, Transacti
         }
         // TODO: Launch a Google Drive-style search/filter screen
         AlertDialog.Builder(requireContext(), R.style.DialogTheme)
-                .setTitle("Filter Transactions")
-                .setPositiveButton(R.string.action_submit) { _, _ ->
-                    reloadItems()
-                }
-                .setNegativeButton(R.string.action_cancel) { _, _ ->
-                    // Do nothing
-                }
-                .create()
-                .show()
+            .setTitle("Filter Transactions")
+            .setPositiveButton(R.string.action_submit) { _, _ ->
+                reloadItems()
+            }
+            .setNegativeButton(R.string.action_cancel) { _, _ ->
+                // Do nothing
+            }
+            .create()
+            .show()
         return true
     }
 

@@ -14,15 +14,16 @@ import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.lifecycleScope
 import com.wbrawner.budget.AsyncState
 import com.wbrawner.budget.R
-import com.wbrawner.budget.TwigsApplication
 import com.wbrawner.budget.common.budget.Budget
 import com.wbrawner.budget.common.category.Category
 import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.transactions.toLong
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class CategoryFormActivity : AppCompatActivity() {
     val viewModel: CategoryFormViewModel by viewModels()
     var id: String? = null
@@ -33,7 +34,6 @@ class CategoryFormActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_edit_category)
         setSupportActionBar(action_bar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (application as TwigsApplication).appComponent.inject(viewModel)
         lifecycleScope.launch {
             viewModel.state.collect { state ->
                 when (state) {
