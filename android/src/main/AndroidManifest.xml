@@ -15,8 +15,8 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
         <activity
-            android:name=".ui.SplashActivity"
-            android:theme="@style/SplashTheme"
+            android:name=".ui.AuthActivity"
+            android:theme="@style/Theme.App.Starting"
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">

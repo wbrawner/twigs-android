@@ -2,8 +2,10 @@ package com.wbrawner.budget.ui
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.wbrawner.budget.AsyncState
@@ -13,12 +15,26 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
+class AuthActivity : AppCompatActivity() {
     val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+        installSplashScreen()
+        val content: View = findViewById(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    return if (viewModel.state.value is AsyncState.Success) {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        )
+        setContentView(R.layout.activity_auth)
         window.decorView.apply {
             systemUiVisibility = (
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -41,7 +57,8 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    is AsyncState.Loading -> {}
+                    is AsyncState.Loading -> {
+                    }
                 }
             }
         }

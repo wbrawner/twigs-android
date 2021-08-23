@@ -32,16 +32,13 @@
 
     <style name="AppTheme" parent="BaseTheme" />
 
-    <style name="DateTimePickerDialogTheme" parent="BaseDateTimePickerDialogTheme" />
-
-    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <!--        <item name="android:windowBackground">@drawable/bg_splash</item>-->
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/colorBackgroundPrimary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_twigs_color</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
+
+    <style name="DateTimePickerDialogTheme" parent="BaseDateTimePickerDialogTheme" />
 
     <style name="AppTheme.EditText">
         <item name="android:layout_height">wrap_content</item>
