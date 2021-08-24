@@ -4,7 +4,7 @@
     <shortcut
         android:shortcutId="transaction"
         android:enabled="true"
-        android:icon="@drawable/ic_shortcut_attach_money"
+        android:icon="@mipmap/ic_shortcut_add_transaction"
         android:shortcutShortLabel="@string/title_add_transaction"
         tools:ignore="UnusedAttribute">
         <intent
