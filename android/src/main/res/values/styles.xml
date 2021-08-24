@@ -7,8 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="fontFamily">@font/ubuntu</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">?android:attr/windowBackground</item>
+        <item name="statusBarBackground">@color/colorBackgroundPrimary</item>
+        <item name="statusBarForeground">@color/colorTextPrimary</item>
+        <item name="android:statusBarColor">@color/colorBackgroundPrimary</item>
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
         <item name="android:navigationBarColor">@color/colorBackgroundPrimary</item>
         <item name="android:timePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
@@ -30,12 +31,14 @@
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme" />
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/colorBackgroundPrimary</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_twigs_color</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
     </style>
 
     <style name="DateTimePickerDialogTheme" parent="BaseDateTimePickerDialogTheme" />

@@ -16,7 +16,7 @@ android {
         jvmTarget = "1.8"
     }
     defaultConfig {
-        applicationId "com.wbrawner.budget"
+        applicationId "com.wbrawner.twigs"
         minSdkVersion 26
         targetSdkVersion 31
         versionCode 1
@@ -60,6 +60,7 @@ dependencies {
     // Dagger
     implementation "com.google.dagger:hilt-android:$dagger"
     kapt "com.google.dagger:hilt-compiler:$dagger"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

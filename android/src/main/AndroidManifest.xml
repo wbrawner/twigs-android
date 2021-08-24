@@ -15,7 +15,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
         <activity
-            android:name=".ui.AuthActivity"
+            android:name=".ui.auth.AuthActivity"
             android:theme="@style/Theme.App.Starting"
             android:resizeableActivity="true"
             android:windowSoftInputMode="adjustResize"
@@ -37,6 +37,7 @@
             android:name=".ui.transactions.TransactionFormActivity"
             android:parentActivityName=".ui.MainActivity"
             android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -46,6 +47,7 @@
             android:name=".ui.categories.CategoryFormActivity"
             android:parentActivityName=".ui.MainActivity"
             android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
