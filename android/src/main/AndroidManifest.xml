@@ -16,10 +16,10 @@
         tools:targetApi="n">
         <activity
             android:name=".ui.auth.AuthActivity"
-            android:theme="@style/Theme.App.Starting"
+            android:exported="true"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true">
+            android:theme="@style/Theme.App.Starting"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,25 +30,29 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false"
             android:resizeableActivity="true"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.transactions.TransactionFormActivity"
+            android:exported="true"
             android:parentActivityName=".ui.MainActivity"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.categories.CategoryFormActivity"
+            android:exported="false"
             android:parentActivityName=".ui.MainActivity"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

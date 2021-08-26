@@ -2,15 +2,35 @@ package com.wbrawner.budget.ui
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.emoji.text.EmojiCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.wbrawner.budget.R
+import com.wbrawner.budget.common.budget.Budget
+import com.wbrawner.budget.ui.base.TwigsApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.collect
@@ -27,7 +47,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        EmojiCompat.init(androidx.emoji.bundled.BundledEmojiCompatConfig(this))
+        setContent {
+
+        }
         setContentView(R.layout.activity_main)
         setSupportActionBar(action_bar)
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.action_open, R.string.action_close)
@@ -97,5 +119,76 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawerLayout.close()
         return true
+    }
+}
+
+@Composable
+fun MainScreen() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scaffoldState = rememberScaffoldState(drawerState)
+    Scaffold(
+        scaffoldState = scaffoldState,
+        drawerContent = {
+
+        }
+    ) {
+
+    }
+}
+
+@Composable
+fun TwigsDrawer(navController: NavController, budgets: List<Budget>) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val image = if (isSystemInDarkTheme()) R.drawable.ic_twigs_outline else R.drawable.ic_twigs_color
+            Image(painter = painterResource(id = image), null)
+            Text(
+                text = "twigs",
+                style = MaterialTheme.typography.h3
+            )
+        }
+        val currentBudget = navController.currentBackStackEntry?.arguments?.getString("id")
+        navController.currentDestination?.arguments?.get()
+    }
+}
+
+@Composable
+fun DrawerItem(@DrawableRes image: Int, text: String, selected: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = spacedBy(8.dp, Alignment.Start),
+    ) {
+        val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(tint)
+        )
+        Text(text = text, color = tint)
+    }
+}
+
+@Composable
+@Preview
+fun DrawerItem_Preview() {
+    TwigsApp {
+        DrawerItem(R.drawable.ic_folder_open)
+    }
+}
+
+@Composable
+@Preview
+fun TwigsDrawer_Preview() {
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(initialValue = DrawerValue.Open))
+    TwigsApp {
+        Scaffold(
+            scaffoldState = scaffoldState,
+            drawerContent = { TwigsDrawer() }
+        ) {
+
+        }
     }
 }
