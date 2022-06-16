@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="fill_vertical|center_horizontal" />
 
-    <androidx.emoji.widget.EmojiTextView
+    <TextView
         android:id="@+id/transaction_list_no_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

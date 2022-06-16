@@ -22,9 +22,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.emoji.text.EmojiCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
@@ -150,7 +150,6 @@ fun TwigsDrawer(navController: NavController, budgets: List<Budget>) {
             )
         }
         val currentBudget = navController.currentBackStackEntry?.arguments?.getString("id")
-        navController.currentDestination?.arguments?.get()
     }
 }
 
@@ -175,7 +174,7 @@ fun DrawerItem(@DrawableRes image: Int, text: String, selected: Boolean) {
 @Preview
 fun DrawerItem_Preview() {
     TwigsApp {
-        DrawerItem(R.drawable.ic_folder_open)
+        DrawerItem(R.drawable.ic_folder_open, "Budget", false)
     }
 }
 
@@ -183,10 +182,11 @@ fun DrawerItem_Preview() {
 @Preview
 fun TwigsDrawer_Preview() {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(initialValue = DrawerValue.Open))
+    val navController = rememberNavController()
     TwigsApp {
         Scaffold(
             scaffoldState = scaffoldState,
-            drawerContent = { TwigsDrawer() }
+            drawerContent = { TwigsDrawer(navController, emptyList()) }
         ) {
 
         }

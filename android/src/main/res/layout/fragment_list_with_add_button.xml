@@ -30,7 +30,7 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <androidx.emoji.widget.EmojiTextView
+    <TextView
         android:id="@+id/noItemsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
