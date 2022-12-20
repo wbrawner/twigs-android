@@ -45,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.time.Instant
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
@@ -124,6 +125,9 @@ class TransactionFormActivity : AppCompatActivity(), CoroutineScope {
                             picker.addOnPositiveButtonClickListener {
                                 transactionDate.text =
                                         DateFormat.getDateFormat(this@TransactionFormActivity)
+                                                .apply {
+                                                    timeZone = TimeZone.getTimeZone("UTC")
+                                                }
                                                 .format(Date(it))
                             }
                         }

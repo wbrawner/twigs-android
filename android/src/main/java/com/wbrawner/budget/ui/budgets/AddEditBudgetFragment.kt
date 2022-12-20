@@ -76,6 +76,7 @@ class AddEditBudgetFragment : Fragment() {
                 is BudgetFormState.Exit -> {
                     findNavController().navigateUp()
                 }
+                else -> { /* no-op */ }
             }
         })
     }

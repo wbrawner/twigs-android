@@ -67,6 +67,8 @@ class AuthViewModel @Inject constructor(
             val correctServer = with(server.value) {
                 if (this.startsWith("http://") || this.startsWith("https://")) this
                 else "https://$this"
+            }.run{
+                if (this.endsWith("/api")) this else "$this/api"
             }
             userRepository.login(correctServer.trim(), username.value.trim(), password.value.trim())
                 .also {

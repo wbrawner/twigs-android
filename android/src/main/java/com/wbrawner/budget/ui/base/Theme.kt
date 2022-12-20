@@ -1,25 +1,21 @@
 package com.wbrawner.budget.ui.base
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import com.wbrawner.budget.R
 
-val lightColors = lightColors(
+val lightColors = lightColorScheme(
     primary = Green500,
-    primaryVariant = Green700,
+    secondary = Green700,
 )
 
-val darkColors = darkColors(
+val darkColors = darkColorScheme(
     primary = Green300,
-    primaryVariant = Green500,
+    secondary = Green500,
     background = Color.Black,
     surface = Color.Black,
 )
@@ -27,7 +23,7 @@ val darkColors = darkColors(
 @Composable
 fun TwigsTheme(darkMode: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     MaterialTheme(
-        colors = if (darkMode) darkColors else lightColors,
+        colorScheme = if (darkMode) darkColors else lightColors,
 //        typography = MaterialTheme.typography.copy(
 //            h1 = MaterialTheme.typography.h1.copy(fontFamily = FontFamily(Font(R.font.ubuntu))),
 //            h2 = MaterialTheme.typography.h2.copy(fontFamily = FontFamily(Font(R.font.ubuntu))),

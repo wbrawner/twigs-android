@@ -40,6 +40,17 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/container_edit_category_description"
+                style="@style/AppTheme.EditText.Container"
+                android:hint="@string/prompt_category_description">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_category_description"
+                    style="@style/AppTheme.EditText"
+                    android:inputType="textCapSentences" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/container_edit_category_amount"
                 style="@style/AppTheme.EditText.Container"
                 android:hint="@string/prompt_category_amount">

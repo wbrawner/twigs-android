@@ -45,6 +45,7 @@ class OverviewFragment : Fragment() {
                     noData.visibility = View.VISIBLE
                     Log.e("OverviewFragment", "Failed to load overview", state.exception)
                 }
+                else -> { /* no-op */ }
             }
         })
     }
