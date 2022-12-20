@@ -10,6 +10,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,6 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +33,8 @@ import com.wbrawner.budget.ui.base.TwigsApp
 @ExperimentalAnimationApi
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    viewModel: AuthViewModel
+        navController: NavController,
+        viewModel: AuthViewModel
 ) {
     val loading by viewModel.loading.collectAsState()
     val server by viewModel.server.collectAsState()
@@ -39,87 +42,88 @@ fun LoginScreen(
     val password by viewModel.password.collectAsState()
     val enableLogin by viewModel.enableLogin.collectAsState()
     AnimatedVisibility(
-        visible = !loading,
-        enter = fadeIn(),
-        exit = fadeOut()
+            visible = !loading,
+            enter = fadeIn(),
+            exit = fadeOut()
     ) {
         LoginForm(
-            server,
-            viewModel::setServer,
-            username,
-            viewModel::setUsername,
-            password,
-            viewModel::setPassword,
-            enableLogin,
-            { navController.navigate(AuthRoutes.FORGOT_PASSWORD.name) },
-            { navController.navigate(AuthRoutes.REGISTER.name) },
-            viewModel::login,
+                server,
+                viewModel::setServer,
+                username,
+                viewModel::setUsername,
+                password,
+                viewModel::setPassword,
+                enableLogin,
+                { navController.navigate(AuthRoutes.FORGOT_PASSWORD.name) },
+                { navController.navigate(AuthRoutes.REGISTER.name) },
+                viewModel::login,
         )
     }
 }
 
 @Composable
 fun LoginForm(
-    server: String,
-    setServer: (String) -> Unit,
-    username: String,
-    setUsername: (String) -> Unit,
-    password: String,
-    setPassword: (String) -> Unit,
-    enableLogin: Boolean,
-    forgotPassword: () -> Unit,
-    register: () -> Unit,
-    login: () -> Unit,
+        server: String,
+        setServer: (String) -> Unit,
+        username: String,
+        setUsername: (String) -> Unit,
+        password: String,
+        setPassword: (String) -> Unit,
+        enableLogin: Boolean,
+        forgotPassword: () -> Unit,
+        register: () -> Unit,
+        login: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(16.dp),
-        verticalArrangement = spacedBy(8.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+            verticalArrangement = spacedBy(8.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(id = if (isSystemInDarkTheme()) R.drawable.ic_twigs_outline else R.drawable.ic_twigs_color),
-            contentDescription = null
+                painter = painterResource(id = if (isSystemInDarkTheme()) R.drawable.ic_twigs_outline else R.drawable.ic_twigs_color),
+                contentDescription = null
         )
         Text("Log in to manage your budgets")
         TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = server,
-            onValueChange = setServer,
-            placeholder = { Text("Server") }
+                modifier = Modifier.fillMaxWidth(),
+                value = server,
+                onValueChange = setServer,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Uri, capitalization = KeyboardCapitalization.None),
+                placeholder = { Text("Server") }
         )
         TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = username,
-            onValueChange = setUsername,
-            placeholder = { Text("Username") }
+                modifier = Modifier.fillMaxWidth(),
+                value = username,
+                onValueChange = setUsername,
+                placeholder = { Text("Username") }
         )
         TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = password,
-            onValueChange = setPassword,
-            placeholder = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation()
+                modifier = Modifier.fillMaxWidth(),
+                value = password,
+                onValueChange = setPassword,
+                placeholder = { Text("Password") },
+                visualTransformation = PasswordVisualTransformation()
         )
         Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enableLogin,
-            onClick = login
+                modifier = Modifier.fillMaxWidth(),
+                enabled = enableLogin,
+                onClick = login
         ) {
             Text("Login")
         }
         TextButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = forgotPassword
+                modifier = Modifier.fillMaxWidth(),
+                onClick = forgotPassword
         ) {
             Text("Forgot password?")
         }
         OutlinedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = register
+                modifier = Modifier.fillMaxWidth(),
+                onClick = register
         ) {
             Text("Need an account?")
         }

@@ -56,6 +56,7 @@ abstract class ListWithAddButtonFragment<Data : Identifiable, ViewModel : AsyncV
                         listContainer.visibility = View.GONE
                         noItemsTextView.visibility = View.VISIBLE
                     }
+                    else -> { /* no-op */ }
                 }
             }
         }

@@ -2,7 +2,7 @@ package com.wbrawner.budget
 
 import android.app.Application
 import android.util.Log
-import com.wbrawner.budget.common.util.ErrorHandler
+import com.wbrawner.twigs.shared.ErrorHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +12,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 class AppModule {
     @Provides
-    fun provideErrorHandler(): ErrorHandler = object : ErrorHandler {
+    fun provideErrorHandler(): com.wbrawner.twigs.shared.ErrorHandler = object :
+        com.wbrawner.twigs.shared.ErrorHandler {
         override fun init(application: Application) {
             // no-op
         }

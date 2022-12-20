@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "com.wbrawner.twigs"
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         vectorDrawables {
@@ -39,36 +39,35 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion rootProject.extensions.getExtraProperties().get("compose")
+        kotlinCompilerExtensionVersion "1.3.2"
     }
 }
 
 dependencies {
-    implementation project(':common')
-    implementation project(':budgetlib')
-    implementation project(':storage')
+    implementation project(':shared')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.media:media:1.4.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.media:media:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     // Dagger
     implementation "com.google.dagger:hilt-android:$dagger"
     kapt "com.google.dagger:hilt-compiler:$dagger"
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
-    testImplementation 'junit:junit:4.13.1'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
-    implementation 'androidx.core:core-splashscreen:1.0.0-alpha01'
-    def navigation = '2.4.0-alpha07'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test:runner:1.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+    def navigation = '2.6.0-alpha04'
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
     implementation "androidx.navigation:navigation-compose:$navigation"
+//    implementation "androidx.compose.compiler:compiler:1.4.0-alpha02"
     implementation "androidx.compose.ui:ui:$compose"
     implementation "androidx.compose.ui:ui-tooling:$compose"
     implementation "androidx.compose.foundation:foundation:$compose"
@@ -76,7 +75,9 @@ dependencies {
     implementation "androidx.compose.material:material-icons-core:$compose"
     implementation "androidx.compose.material:material-icons-extended:$compose"
     implementation "androidx.compose.animation:animation:$compose"
-    implementation 'androidx.activity:activity-compose:1.3.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
+    implementation "androidx.compose.material3:material3:1.0.1"
+    implementation "androidx.compose.material3:material3-window-size-class:1.0.1"
+    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha03'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose"
 }

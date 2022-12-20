@@ -8,17 +8,23 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,7 +58,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         setContentView(R.layout.activity_main)
         setSupportActionBar(action_bar)
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.action_open, R.string.action_close)
+        toggle =
+            ActionBarDrawerToggle(this, drawerLayout, R.string.action_open, R.string.action_close)
         toggle.isDrawerIndicatorEnabled = true
         toggle.isDrawerSlideAnimationEnabled = true
         drawerLayout.addDrawerListener(toggle)
@@ -136,45 +143,59 @@ fun MainScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TwigsDrawer(navController: NavController, budgets: List<Budget>) {
+fun TwigsDrawer(navController: NavController, budgets: List<Budget>, selectedBudgetId: String) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val image = if (isSystemInDarkTheme()) R.drawable.ic_twigs_outline else R.drawable.ic_twigs_color
+            val image =
+                if (isSystemInDarkTheme()) R.drawable.ic_twigs_outline else R.drawable.ic_twigs_color
             Image(painter = painterResource(id = image), null)
             Text(
                 text = "twigs",
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.h4
             )
         }
-        val currentBudget = navController.currentBackStackEntry?.arguments?.getString("id")
-    }
-}
-
-@Composable
-fun DrawerItem(@DrawableRes image: Int, text: String, selected: Boolean) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = spacedBy(8.dp, Alignment.Start),
-    ) {
-        val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(tint)
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { navController.navigate("overview") },
+            icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
+            label = { Text(text = "Overview") }
         )
-        Text(text = text, color = tint)
-    }
-}
-
-@Composable
-@Preview
-fun DrawerItem_Preview() {
-    TwigsApp {
-        DrawerItem(R.drawable.ic_folder_open, "Budget", false)
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { navController.navigate("transactions") },
+            icon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
+            label = { Text(text = "Transactions") }
+        )
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { navController.navigate("categories") },
+            icon = { Icon(Icons.Default.Category, contentDescription = null) },
+            label = { Text(text = "Categories") }
+        )
+        NavigationDrawerItem(
+            selected = false,
+            onClick = { navController.navigate("recurring") },
+            icon = { Icon(Icons.Default.Repeat, contentDescription = null) },
+            label = { Text(text = "Recurring Transactions") }
+        )
+        Divider()
+        LazyColumn(modifier = Modifier.fillMaxHeight()) {
+            items(budgets) { budget ->
+                val selected = budget.id == selectedBudgetId
+                val icon = if (selected) Icons.Filled.Folder else Icons.Outlined.Folder
+                NavigationDrawerItem(
+                    icon = { Icon(icon, contentDescription = null) },
+                    label = { Text(budget.name) },
+                    selected = selected,
+                    onClick = { navController.navigate("budgets/${budget.id}") }
+                )
+            }
+        }
     }
 }
 
@@ -186,7 +207,7 @@ fun TwigsDrawer_Preview() {
     TwigsApp {
         Scaffold(
             scaffoldState = scaffoldState,
-            drawerContent = { TwigsDrawer(navController, emptyList()) }
+            drawerContent = { TwigsDrawer(navController, emptyList(), "") }
         ) {
 
         }

@@ -20,6 +20,8 @@ import com.wbrawner.budget.ui.EXTRA_CATEGORY_ID
 import com.wbrawner.budget.ui.transactions.toLong
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_add_edit_category.*
+import kotlinx.android.synthetic.main.activity_add_edit_category.progressBar
+import kotlinx.android.synthetic.main.fragment_add_edit_budget.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,7 @@ class CategoryFormActivity : AppCompatActivity() {
                         setTitle(state.data.titleRes)
                         menu?.findItem(R.id.action_delete)?.isVisible = state.data.showDeleteButton
                         edit_category_name.setText(category.title)
+                        edit_category_description.setText(category.description)
                         edit_category_amount.setText(
                             String.format(
                                 "%.02f",
@@ -113,6 +116,7 @@ class CategoryFormActivity : AppCompatActivity() {
                     Category(
                         id = id,
                         title = edit_category_name.text.toString(),
+                        description = edit_category_description.text.toString(),
                         amount = edit_category_amount.text.toLong(),
                         budgetId = (budgetSpinner.selectedItem as Budget).id!!,
                         expense = expense.isChecked,
