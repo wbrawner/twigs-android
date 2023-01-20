@@ -1,75 +1,78 @@
 package com.wbrawner.twigs.shared
 
-import com.russhwolf.settings.Settings
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.category.Category
-import com.wbrawner.twigs.shared.network.APIService
 import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.User
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-enum class Route(val path: String) {
-    WELCOME("welcome"),
-    LOGIN("login"),
-    REGISTER("register"),
-    OVERVIEW("overview"),
-    TRANSACTIONS("transactions"),
-    CATEGORIES("categories"),
-    RECURRING_TRANSACTIONS("recurringtransactions"),
-    PROFILE("profile"),
-    SETTINGS("settings"),
-    ABOUT("about"),
+sealed class Route(val path: String) {
+    object Welcome : Route("welcome")
+    object Login : Route("login")
+    object Register : Route("register")
+    object Overview : Route("overview")
+    data class Transactions(val selected: String? = null) :
+        Route(if (selected != null) "transactions/${selected}" else "transactions")
+
+    data class Categories(val selected: String? = null) :
+        Route(if (selected != null) "categories/${selected}" else "categories")
+
+    //    data class RecurringTransactions(val selected: RecurringTransaction?): Route(if (selected != null) "transactions/${selected.id}" else "transactions")
+    object Profile : Route("profile")
+    object Settings : Route("settings")
+    object About : Route("about")
 }
 
 data class State(
-    val host: String? = null,
     val user: User? = null,
     val budgets: List<Budget>? = null,
+    val budgetBalance: Long? = null,
     val selectedBudget: String? = null,
     val editingBudget: Boolean = false,
     val categories: List<Category>? = null,
+    val categoryBalances: Map<String, Long>? = null,
     val selectedCategory: String? = null,
     val editingCategory: Boolean = false,
     val transactions: List<Transaction>? = null,
     val selectedTransaction: String? = null,
+    val selectedTransactionCreatedBy: User? = null,
     val editingTransaction: Boolean = false,
     val loading: Boolean = false,
-    val route: Route = Route.WELCOME,
-    val initialRoute: Route = Route.WELCOME
-)
+    val route: Route = Route.Login,
+    val initialRoute: Route = Route.Login
+) {
+    override fun toString(): String {
+        return "State(budget=$selectedBudget, selectedTransaction=$selectedTransaction, route=$route)"
+    }
+}
 
 interface Action {
-    object About : Action
+    object AboutClicked : Action
     object Back : Action
 }
 
-interface AsyncAction : Action
-
 interface Effect {
     object Exit : Effect
+    data class Error(val message: String) : Effect
     object Empty: Effect
 }
 
-abstract class Reducer {
+abstract class Reducer : CoroutineScope by CoroutineScope(Dispatchers.Main) {
     lateinit var dispatch: (Action) -> Unit
     lateinit var emit: (Effect) -> Unit
+    internal val initialActions = ArrayDeque<Action>()
 
-    abstract fun reduce(action: Action, state: State): State
+    abstract fun reduce(action: Action, state: () -> State): State
 }
-
-abstract class AsyncReducer : Reducer() {
-    abstract suspend fun reduce(action: AsyncAction, state: State): State
-}
-
-const val KEY_HOST = "baseUrl"
 
 class Store(
     private val reducers: List<Reducer>,
-    private val settings: Settings = Settings(),
     initialState: State = State()
 ) : CoroutineScope by CoroutineScope(Dispatchers.Main) {
     private val _state = MutableStateFlow(initialState)
@@ -80,22 +83,32 @@ class Store(
     init {
         reducers.forEach {
             it.dispatch = this::dispatch
+            it.emit = {
+                launch {
+                    _effects.emit(it)
+                }
+            }
+            var action = it.initialActions.removeFirstOrNull()
+            while (action != null) {
+                dispatch(action)
+                action = it.initialActions.removeFirstOrNull()
+            }
+        }
+        launch {
+            state.collect {
+                println(it)
+            }
         }
     }
 
     fun dispatch(action: Action) {
+        println(action)
         launch {
-            var state = _state.value
-            if (action is AsyncAction) {
-                reducers.filterIsInstance<AsyncReducer>().forEach {
-                    state = it.reduce(action, state)
-                }
-            } else {
-                reducers.forEach {
-                    state = it.reduce(action, state)
-                }
+            var newState = _state.value
+            reducers.forEach {
+                newState = it.reduce(action) { newState }
             }
-            _state.emit(state)
+            _state.emit(newState)
         }
     }
 

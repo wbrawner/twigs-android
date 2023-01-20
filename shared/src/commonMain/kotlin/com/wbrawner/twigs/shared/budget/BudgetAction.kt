@@ -1,121 +1,163 @@
 package com.wbrawner.twigs.shared.budget
 
-import com.wbrawner.twigs.shared.*
-import com.wbrawner.twigs.shared.user.UserAction
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.set
+import com.wbrawner.twigs.shared.Action
+import com.wbrawner.twigs.shared.Reducer
+import com.wbrawner.twigs.shared.Route
+import com.wbrawner.twigs.shared.State
+import com.wbrawner.twigs.shared.user.ConfigAction
 import com.wbrawner.twigs.shared.user.UserPermission
+import kotlinx.coroutines.launch
 
 sealed interface BudgetAction : Action {
+    object OverviewClicked : BudgetAction
+    data class LoadBudgetsSuccess(val budgets: List<Budget>) : BudgetAction
+    data class LoadBudgetsFailed(val error: Exception) : BudgetAction
     data class CreateBudget(
         val name: String,
         val description: String? = null,
         val users: List<UserPermission> = emptyList()
-    ) : BudgetAction {
-        fun async() = BudgetAsyncAction.CreateBudgetAsync(name, description, users)
-    }
+    ) : BudgetAction
+
+    data class SaveBudgetSuccess(val budget: Budget) : BudgetAction
+
+    data class SaveBudgetFailure(
+        val id: String? = null,
+        val name: String,
+        val description: String? = null,
+        val users: List<UserPermission> = emptyList(),
+        val error: Exception
+    ) : BudgetAction
 
     data class EditBudget(val id: String) : BudgetAction
 
-    data class SelectBudget(val id: String) : BudgetAction
+    data class SelectBudget(val id: String?) : BudgetAction
+
+    data class BudgetSelected(val id: String) : BudgetAction
 
     data class UpdateBudget(
         val id: String,
         val name: String,
         val description: String? = null,
         val users: List<UserPermission> = emptyList()
-    ) : BudgetAction {
-        fun async() = BudgetAsyncAction.UpdateBudgetAsync(id, name, description, users)
-    }
+    ) : BudgetAction
 
-    data class DeleteBudget(val id: String) : BudgetAction {
-        fun async() = BudgetAsyncAction.DeleteBudgetAsync(id)
-    }
+    data class DeleteBudget(val id: String) : BudgetAction
 }
 
-sealed interface BudgetAsyncAction : AsyncAction {
-    data class CreateBudgetAsync(
-        val name: String,
-        val description: String? = null,
-        val users: List<UserPermission> = emptyList()
-    ) : BudgetAsyncAction
+const val KEY_LAST_BUDGET = "lastBudget"
 
-    data class UpdateBudgetAsync(
-        val id: String,
-        val name: String,
-        val description: String? = null,
-        val users: List<UserPermission> = emptyList()
-    ) : BudgetAsyncAction
-
-    data class DeleteBudgetAsync(val id: String) : BudgetAsyncAction
-}
-
-class BudgetReducer(private val budgetRepository: BudgetRepository) : AsyncReducer() {
-    override fun reduce(action: Action, state: State): State = when (action) {
-        is Action.Back -> state.copy(
-            editingBudget = false,
-            selectedBudget = if (state.editingBudget) state.selectedBudget else null
-        )
-        is BudgetAction.CreateBudget -> state.copy(loading = true).also {
-            dispatch(action.async())
-        }
-        is BudgetAction.EditBudget -> state.copy(
-            editingBudget = true,
-            selectedBudget = action.id
-        )
-        is BudgetAction.SelectBudget -> state.copy(
-            selectedBudget = action.id
-        )
-        is BudgetAction.UpdateBudget -> state.copy(loading = true).also {
-            dispatch(action.async())
-        }
-        is BudgetAction.DeleteBudget -> state.copy(loading = true).also {
-            dispatch(action.async())
-        }
-        is UserAction.Logout -> state.copy(
-            editingBudget = false,
-            selectedBudget = null,
-            budgets = null
-        )
-        else -> state
-    }
-
-    override suspend fun reduce(action: AsyncAction, state: State): State = when (action) {
-        is BudgetAsyncAction.CreateBudgetAsync -> {
-            val budget = budgetRepository.create(
-                Budget(name = action.name, description = action.description, users = action.users)
+class BudgetReducer(
+    private val budgetRepository: BudgetRepository,
+    private val settings: Settings
+) : Reducer() {
+    override fun reduce(action: Action, state: () -> State): State = when (action) {
+        is Action.Back -> {
+            val currentState = state()
+            currentState.copy(
+                editingBudget = false
             )
-            val budgets = state.budgets?.toMutableList() ?: mutableListOf()
-            budgets.add(budget)
+        }
+
+        is BudgetAction.OverviewClicked -> state().copy(route = Route.Overview)
+        is BudgetAction.LoadBudgetsSuccess -> state().copy(budgets = action.budgets).also {
+            dispatch(BudgetAction.SelectBudget(settings.getStringOrNull(KEY_LAST_BUDGET)))
+        }
+
+        is BudgetAction.CreateBudget -> {
+            launch {
+                val budget = budgetRepository.create(
+                    Budget(
+                        name = action.name,
+                        description = action.description,
+                        users = action.users
+                    )
+                )
+                dispatch(BudgetAction.SaveBudgetSuccess(budget))
+            }
+            state().copy(loading = true)
+        }
+
+        is BudgetAction.SaveBudgetSuccess -> {
+            val currentState = state()
+            val budgets = currentState.budgets?.toMutableList() ?: mutableListOf()
+            budgets.add(action.budget)
             budgets.sortBy { it.name }
-            state.copy(
+            currentState.copy(
                 loading = false,
                 budgets = budgets.toList(),
-                selectedBudget = budget.id
+                selectedBudget = action.budget.id,
+                editingBudget = false
             )
         }
-        is BudgetAsyncAction.UpdateBudgetAsync -> {
-            budgetRepository.update(
-                Budget(
-                    id = action.id,
-                    name = action.name,
-                    description = action.description,
-                    users = action.users
-                )
-            )
-            state.copy(
-                loading = false,
-                editingBudget = false,
-            )
+
+        is ConfigAction.LoginSuccess -> {
+            launch {
+                try {
+                    val budgets = budgetRepository.findAll()
+                    dispatch(BudgetAction.LoadBudgetsSuccess(budgets))
+                } catch (e: Exception) {
+                    dispatch(BudgetAction.LoadBudgetsFailed(e))
+                }
+            }
+            state().copy(loading = true)
         }
-        is BudgetAsyncAction.DeleteBudgetAsync -> {
-            budgetRepository.delete(action.id)
-            val budgets = state.budgets?.filterNot { it.id == action.id }
-            state.copy(
-                loading = false,
-                budgets = budgets,
-                editingBudget = false,
-                selectedBudget = null
-            )
+
+        is ConfigAction.Logout -> state().copy(
+            budgets = null,
+            selectedBudget = null,
+            editingBudget = false
+        )
+//        is BudgetAction.EditBudget -> state.copy(
+//            editingBudget = true,
+//            selectedBudget = action.id
+//        )
+        is BudgetAction.SelectBudget -> {
+            val currentState = state()
+            val budgetId = currentState.budgets
+                ?.firstOrNull { it.id == action.id }
+                ?.id
+                ?: currentState.budgets?.firstOrNull()?.id
+            settings[KEY_LAST_BUDGET] = budgetId
+            dispatch(BudgetAction.BudgetSelected(budgetId!!))
+            state()
         }
-        else -> state
+
+        is BudgetAction.BudgetSelected -> state().copy(selectedBudget = action.id)
+
+//        is BudgetAction.UpdateBudget -> state.copy(loading = true).also {
+//            dispatch(action.async())
+//        }
+//        is BudgetAction.DeleteBudget -> state.copy(loading = true).also {
+//            dispatch(action.async())
+//        }
+//
+//        is BudgetAsyncAction.UpdateBudgetAsync -> {
+//            budgetRepository.update(
+//                Budget(
+//                    id = action.id,
+//                    name = action.name,
+//                    description = action.description,
+//                    users = action.users
+//                )
+//            )
+//            state().copy(
+//                loading = false,
+//                editingBudget = false,
+//            )
+//        }
+//        is BudgetAsyncAction.DeleteBudgetAsync -> {
+//            budgetRepository.delete(action.id)
+//            val currentState = state()
+//            val budgets = currentState.budgets?.filterNot { it.id == action.id }
+//            currentState.copy(
+//                loading = false,
+//                budgets = budgets,
+//                editingBudget = false,
+//                selectedBudget = null
+//            )
+//        }
+        else -> state()
     }
 }
