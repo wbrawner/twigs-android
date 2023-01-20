@@ -12,10 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:targetApi="n">
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:resizeableActivity="true"
             android:theme="@style/Theme.App.Starting"
@@ -28,34 +27,6 @@
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
-        </activity>
-
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="false"
-            android:resizeableActivity="true"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".ui.transactions.TransactionFormActivity"
-            android:exported="true"
-            android:parentActivityName=".ui.MainActivity"
-            android:resizeableActivity="true"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ui.categories.CategoryFormActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.MainActivity"
-            android:resizeableActivity="true"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
         </activity>
     </application>
 

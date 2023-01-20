@@ -8,11 +8,11 @@ import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.LoginRequest
 import com.wbrawner.twigs.shared.user.Session
 import com.wbrawner.twigs.shared.user.User
-import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 const val BASE_PATH = "/api"
@@ -116,8 +116,8 @@ fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
         })
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 1000
-        connectTimeoutMillis = 1000
-        socketTimeoutMillis = 1000
+        requestTimeoutMillis = 60_000
+        connectTimeoutMillis = 60_000
+        socketTimeoutMillis = 60_000
     }
 }
