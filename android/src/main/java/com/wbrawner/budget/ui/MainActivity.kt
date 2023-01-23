@@ -28,6 +28,8 @@ import androidx.navigation.navArgument
 import com.wbrawner.budget.R
 import com.wbrawner.budget.ui.auth.LoginScreen
 import com.wbrawner.budget.ui.base.TwigsApp
+import com.wbrawner.budget.ui.category.CategoriesScreen
+import com.wbrawner.budget.ui.category.CategoryDetailsScreen
 import com.wbrawner.budget.ui.transaction.TransactionDetailsScreen
 import com.wbrawner.budget.ui.transaction.TransactionsScreen
 import com.wbrawner.twigs.shared.Route
@@ -63,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                     composable(Route.Overview.path) {
                         OverviewScreen(store = store)
                     }
-                    composable(Route.Transactions(selected = null).path) {
+                    composable(Route.Transactions().path) {
                         TransactionsScreen(store = store)
                     }
                     composable(
@@ -75,8 +77,17 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         TransactionDetailsScreen(store = store)
                     }
-                    composable(Route.Categories(selected = null).path) {
+                    composable(Route.Categories().path) {
                         CategoriesScreen(store = store)
+                    }
+                    composable(
+                        Route.Categories(selected = "{id}").path,
+                        arguments = listOf(navArgument("id") {
+                            type = NavType.StringType
+                            nullable = false
+                        })
+                    ) {
+                        CategoryDetailsScreen(store = store)
                     }
 //                    composable(Route.RECURRING_TRANSACTIONS.path) {
 //                        RecurringTransactionsScreen(store = store)
