@@ -57,7 +57,12 @@ class CategoryReducer(private val categoryRepository: CategoryRepository) : Redu
             val currentState = state()
             currentState.copy(
                 editingCategory = false,
-                selectedCategory = if (currentState.editingCategory) currentState.selectedCategory else null
+                selectedCategory = if (currentState.editingCategory) currentState.selectedCategory else null,
+                route = if (currentState.route is Route.Categories && !currentState.route.selected.isNullOrBlank() && !currentState.editingCategory) {
+                    Route.Categories()
+                } else {
+                    currentState.route
+                }
             )
         }
 
@@ -73,6 +78,11 @@ class CategoryReducer(private val categoryRepository: CategoryRepository) : Redu
             }
             state().copy(categories = null)
         }
+
+        is CategoryAction.SelectCategory -> state().copy(
+            selectedCategory = action.id,
+            route = Route.Categories(action.id)
+        ).also { newState -> println("Category selected state update: $newState") }
 
         is CategoryAction.LoadCategoriesSuccess -> state().copy(categories = action.categories)
             .also {

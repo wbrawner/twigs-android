@@ -89,7 +89,7 @@ fun TransactionDetails(
             .fillMaxSize()
             .scrollable(scrollState, Orientation.Vertical)
             .padding(16.dp),
-        verticalArrangement = spacedBy(8.dp)
+        verticalArrangement = spacedBy(16.dp)
     ) {
         Text(
             text = transaction.title,
@@ -114,7 +114,7 @@ fun TransactionDetails(
 
 @Composable
 fun LabeledField(label: String, field: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = spacedBy(4.dp)) {
         Text(text = label, style = MaterialTheme.typography.bodySmall)
         Text(text = field, style = MaterialTheme.typography.bodyLarge)
     }

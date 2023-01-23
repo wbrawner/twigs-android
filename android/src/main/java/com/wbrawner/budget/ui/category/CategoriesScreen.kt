@@ -1,4 +1,4 @@
-package com.wbrawner.budget.ui
+package com.wbrawner.budget.ui.category
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.*
@@ -20,10 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.wbrawner.budget.ui.TwigsScaffold
 import com.wbrawner.budget.ui.base.TwigsApp
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.category.Category
-import com.wbrawner.twigs.shared.transaction.TransactionAction
+import com.wbrawner.twigs.shared.category.CategoryAction
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
@@ -41,9 +42,9 @@ fun CategoriesScreen(store: Store) {
                     .padding(it),
                 state = scrollState
             ) {
-                itemsIndexed(categories, key = { _, t -> t.id!! }) { index, category ->
+                items(categories, key = { c -> c.id!! }) { category ->
                     CategoryListItem(category, state.categoryBalances?.get(category.id!!)) {
-                        store.dispatch(TransactionAction.SelectTransaction(category.id))
+                        store.dispatch(CategoryAction.SelectCategory(category.id))
                     }
                 }
             }

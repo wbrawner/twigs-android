@@ -48,7 +48,7 @@ data class State(
     val initialRoute: Route = Route.Login
 ) {
     override fun toString(): String {
-        return "State(budget=$selectedBudget, selectedTransaction=$selectedTransaction, route=$route)"
+        return "State(category=$selectedCategory, route=$route)"
     }
 }
 
