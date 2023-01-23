@@ -89,7 +89,18 @@ class TransactionReducer(
         is TransactionAction.TransactionsClicked -> state().copy(route = Route.Transactions(null))
         is TransactionAction.LoadTransactionsSuccess -> state().copy(transactions = action.transactions)
         is TransactionAction.NewTransactionClicked -> state().copy(editingTransaction = true)
-        is TransactionAction.CancelEditTransaction -> state().copy(editingTransaction = false)
+        is TransactionAction.CancelEditTransaction -> {
+            val currentState = state()
+            currentState.copy(
+                editingTransaction = false,
+                selectedTransaction = if (currentState.route is Route.Transactions && !currentState.route.selected.isNullOrBlank()) {
+                    currentState.selectedTransaction
+                } else {
+                    null
+                }
+            )
+        }
+
         is TransactionAction.CreateTransaction -> {
             launch {
                 val transaction = transactionRepository.create(
@@ -102,6 +113,27 @@ class TransactionReducer(
                         categoryId = action.category?.id,
                         budgetId = action.budget.id!!,
                         createdBy = state().user!!.id!!
+                    )
+                )
+                dispatch(TransactionAction.SaveTransactionSuccess(transaction))
+            }
+            state().copy(loading = true)
+        }
+
+        is TransactionAction.UpdateTransaction -> {
+            val createdBy = state().selectedTransactionCreatedBy!!
+            launch {
+                val transaction = transactionRepository.update(
+                    Transaction(
+                        id = action.id,
+                        title = action.title,
+                        description = action.description,
+                        amount = action.amount,
+                        date = action.date,
+                        expense = action.expense,
+                        categoryId = action.category?.id,
+                        budgetId = action.budget.id!!,
+                        createdBy = createdBy.id!!
                     )
                 )
                 dispatch(TransactionAction.SaveTransactionSuccess(transaction))

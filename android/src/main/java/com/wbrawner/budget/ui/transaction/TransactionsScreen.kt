@@ -6,9 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,29 +50,25 @@ fun TransactionsScreen(store: Store) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
+                    .padding(horizontal = 8.dp)
             ) {
                 transactionGroups.forEach { (timestamp, transactions) ->
                     item(timestamp) {
                         Text(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier.padding(8.dp),
                             text = timestamp.toInstant().format(LocalContext.current),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    itemsIndexed(transactions) { i, transaction ->
-                        TransactionListItem(transaction) {
-                            store.dispatch(TransactionAction.SelectTransaction(transaction.id))
+                    item(transactions) {
+                        Card {
+                            transactions.forEach { transaction ->
+                                TransactionListItem(transaction) {
+                                    store.dispatch(TransactionAction.SelectTransaction(transaction.id))
+                                }
+                            }
                         }
-                        if (i != transactions.lastIndex) {
-                            Divider(modifier = Modifier.padding(horizontal = 8.dp))
-                        }
-                    }
-                    item {
-                        Spacer(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(32.dp))
                     }
                 }
             }

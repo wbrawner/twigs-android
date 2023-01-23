@@ -30,6 +30,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.wbrawner.budget.ui.base.TwigsApp
 import com.wbrawner.budget.ui.util.DatePicker
+import com.wbrawner.budget.ui.util.TimePicker
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.category.Category
 import com.wbrawner.twigs.shared.transaction.Transaction
@@ -250,6 +251,14 @@ fun TransactionForm(
             setDate = setDate,
             dialogVisible = datePickerVisible,
             setDialogVisible = setDatePickerVisible
+        )
+        val (timePickerVisible, setTimePickerVisible) = remember { mutableStateOf(false) }
+        TimePicker(
+            modifier = Modifier.fillMaxWidth(),
+            date = date,
+            setDate = setDate,
+            dialogVisible = timePickerVisible,
+            setDialogVisible = setTimePickerVisible
         )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = spacedBy(8.dp)) {
             Row(
