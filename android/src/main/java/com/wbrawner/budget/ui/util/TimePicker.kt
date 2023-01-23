@@ -1,5 +1,6 @@
 package com.wbrawner.budget.ui.util
 
+import android.app.TimePickerDialog
 import android.content.Context
 import android.text.format.DateFormat
 import androidx.compose.foundation.clickable
@@ -14,7 +15,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
-import com.google.android.material.timepicker.MaterialTimePicker
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -51,35 +51,36 @@ fun TimePicker(
     )
     val dialog = remember {
         val localTime = date.toLocalDateTime(TimeZone.currentSystemDefault())
-        MaterialTimePicker.Builder()
-            .setHour(localTime.hour)
-            .setMinute(localTime.minute)
-            .build()
-            .also { picker ->
-                picker.addOnPositiveButtonClickListener {
-                    setDate(
-                        LocalDateTime(
-                            localTime.date,
-                            LocalTime(picker.hour, picker.minute)
-                        ).toInstant(TimeZone.UTC)
-                            .minus(java.util.TimeZone.getDefault().rawOffset.milliseconds)
-                    )
-                }
-                picker.addOnDismissListener {
-                    setDialogVisible(false)
-                }
+        TimePickerDialog(
+            context,
+            { _, hour, minute ->
+                setDate(
+                    LocalDateTime(
+                        localTime.date,
+                        LocalTime(hour, minute)
+                    ).toInstant(TimeZone.UTC)
+                        .minus(java.util.TimeZone.getDefault().rawOffset.milliseconds)
+                )
+            },
+            localTime.hour,
+            localTime.minute,
+            DateFormat.is24HourFormat(context)
+        ).also { picker ->
+            picker.setOnDismissListener {
+                setDialogVisible(false)
             }
+        }
     }
     DisposableEffect(key1 = dialogVisible) {
         if (dialogVisible) {
             context.fragmentManager?.let {
-                dialog.show(it, null)
+                dialog.show()
             }
-        } else if (dialog.isVisible) {
+        } else if (dialog.isShowing) {
             dialog.dismiss()
         }
         onDispose {
-            if (dialog.isVisible) {
+            if (dialog.isShowing) {
                 dialog.dismiss()
             }
         }
