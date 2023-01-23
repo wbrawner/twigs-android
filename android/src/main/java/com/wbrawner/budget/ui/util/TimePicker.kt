@@ -1,10 +1,7 @@
 package com.wbrawner.budget.ui.util
 
 import android.content.Context
-import android.content.ContextWrapper
 import android.text.format.DateFormat
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -17,57 +14,55 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.fragment.app.FragmentManager
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.wbrawner.budget.R
+import com.google.android.material.timepicker.MaterialTimePicker
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePicker(
+fun TimePicker(
     modifier: Modifier,
     date: Instant,
     setDate: (Instant) -> Unit,
     dialogVisible: Boolean,
     setDialogVisible: (Boolean) -> Unit
 ) {
-    Log.d("DatePicker", "date input: ${date.toEpochMilliseconds()}")
     val context = LocalContext.current
     OutlinedTextField(
         modifier = modifier
             .clickable {
-                Log.d("DatePicker", "click!")
                 setDialogVisible(true)
             }
             .focusRequester(FocusRequester())
             .onFocusChanged {
                 setDialogVisible(it.hasFocus)
             },
-        value = date.format(context),
+        value = date.formatTime(context),
         onValueChange = {},
         readOnly = true,
         label = {
-            Text("Date")
+            Text("Time")
         }
     )
     val dialog = remember {
-        val localTime = date.toLocalDateTime(TimeZone.UTC).time
-        MaterialDatePicker.Builder.datePicker()
-            .setSelection(date.toEpochMilliseconds())
-            .setTheme(R.style.DateTimePickerDialogTheme)
+        val localTime = date.toLocalDateTime(TimeZone.currentSystemDefault())
+        MaterialTimePicker.Builder()
+            .setHour(localTime.hour)
+            .setMinute(localTime.minute)
             .build()
             .also { picker ->
                 picker.addOnPositiveButtonClickListener {
                     setDate(
                         LocalDateTime(
-                            Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date,
-                            localTime
+                            localTime.date,
+                            LocalTime(picker.hour, picker.minute)
                         ).toInstant(TimeZone.UTC)
+                            .minus(java.util.TimeZone.getDefault().rawOffset.milliseconds)
                     )
                 }
                 picker.addOnDismissListener {
@@ -91,19 +86,5 @@ fun DatePicker(
     }
 }
 
-val Context.activity: AppCompatActivity?
-    get() = when (this) {
-        is AppCompatActivity -> this
-        is ContextWrapper -> baseContext.activity
-        else -> null
-    }
-
-val Context.fragmentManager: FragmentManager?
-    get() = this.activity?.supportFragmentManager
-
-fun Instant.format(context: Context): String =
-    DateFormat.getDateFormat(context)
-        .format(
-            this.toLocalDateTime(TimeZone.currentSystemDefault()).date.atStartOfDayIn(TimeZone.currentSystemDefault())
-                .toEpochMilliseconds()
-        )
+fun Instant.formatTime(context: Context): String =
+    DateFormat.getTimeFormat(context).format(this.toEpochMilliseconds())
