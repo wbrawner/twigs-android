@@ -9,6 +9,8 @@ import com.wbrawner.twigs.shared.category.CategoryReducer
 import com.wbrawner.twigs.shared.category.NetworkCategoryRepository
 import com.wbrawner.twigs.shared.network.KtorAPIService
 import com.wbrawner.twigs.shared.network.commonConfig
+import com.wbrawner.twigs.shared.recurringtransaction.NetworkRecurringTransactionRepository
+import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransactionReducer
 import com.wbrawner.twigs.shared.transaction.NetworkTransactionRepository
 import com.wbrawner.twigs.shared.transaction.TransactionReducer
 import com.wbrawner.twigs.shared.user.ConfigReducer
@@ -25,6 +27,7 @@ val preferences = Settings()
 val budgetRepository = NetworkBudgetRepository(apiService)
 val categoryRepository = NetworkCategoryRepository(apiService)
 val transactionRepository = NetworkTransactionRepository(apiService)
+val recurringTransactionRepository = NetworkRecurringTransactionRepository(apiService)
 val userRepository = NetworkUserRepository(apiService)
 
 fun Store.Companion.create(
@@ -32,6 +35,7 @@ fun Store.Companion.create(
         BudgetReducer(budgetRepository, preferences),
         CategoryReducer(categoryRepository),
         ConfigReducer(apiService, preferences),
-        TransactionReducer(transactionRepository, userRepository)
+        TransactionReducer(transactionRepository, userRepository),
+        RecurringTransactionReducer(recurringTransactionRepository, userRepository)
     ),
 ) = Store(reducers)

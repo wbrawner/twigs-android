@@ -2,6 +2,7 @@ package com.wbrawner.twigs.shared
 
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.category.Category
+import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransaction
 import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.User
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +24,9 @@ sealed class Route(val path: String) {
     data class Categories(val selected: String? = null) :
         Route(if (selected != null) "categories/${selected}" else "categories")
 
-    //    data class RecurringTransactions(val selected: RecurringTransaction?): Route(if (selected != null) "transactions/${selected.id}" else "transactions")
+    data class RecurringTransactions(val selected: String? = null) :
+        Route(if (selected != null) "recurringtransactions/${selected}" else "recurringtransactions")
+
     object Profile : Route("profile")
     object Settings : Route("settings")
     object About : Route("about")
@@ -43,12 +46,16 @@ data class State(
     val selectedTransaction: String? = null,
     val selectedTransactionCreatedBy: User? = null,
     val editingTransaction: Boolean = false,
+    val recurringTransactions: List<RecurringTransaction>? = null,
+    val selectedRecurringTransaction: String? = null,
+    val selectedRecurringTransactionCreatedBy: User? = null,
+    val editingRecurringTransaction: Boolean = false,
     val loading: Boolean = false,
     val route: Route = Route.Login,
     val initialRoute: Route = Route.Login
 ) {
     override fun toString(): String {
-        return "State(category=$selectedCategory, route=$route)"
+        return "State(recurringTransactionsSize=${recurringTransactions?.size}, route=$route)"
     }
 }
 

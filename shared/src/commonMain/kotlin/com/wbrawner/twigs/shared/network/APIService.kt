@@ -3,6 +3,7 @@ package com.wbrawner.twigs.shared.network
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.budget.NewBudgetRequest
 import com.wbrawner.twigs.shared.category.Category
+import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransaction
 import com.wbrawner.twigs.shared.transaction.BalanceResponse
 import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.LoginRequest
@@ -21,7 +22,6 @@ interface APIService {
     var baseUrl: String?
     var authToken: String?
 
-    // Budgets
     suspend fun getBudgets(
         count: Int? = null,
         page: Int? = null
@@ -38,7 +38,6 @@ interface APIService {
 
     suspend fun deleteBudget(id: String)
 
-    // Categories
     suspend fun getCategories(
         budgetIds: Array<String>? = null,
         archived: Boolean? = false,
@@ -57,7 +56,23 @@ interface APIService {
 
     suspend fun deleteCategory(id: String)
 
-    // Transactions
+    suspend fun getRecurringTransactions(
+        budgetId: String,
+        count: Int? = null,
+        page: Int? = null
+    ): List<RecurringTransaction>
+
+    suspend fun getRecurringTransaction(id: String): RecurringTransaction
+
+    suspend fun newRecurringTransaction(transaction: RecurringTransaction): RecurringTransaction
+
+    suspend fun updateRecurringTransaction(
+        id: String,
+        transaction: RecurringTransaction
+    ): RecurringTransaction
+
+    suspend fun deleteRecurringTransaction(id: String)
+
     suspend fun getTransactions(
         budgetIds: List<String>? = null,
         categoryIds: List<String>? = null,
@@ -83,7 +98,6 @@ interface APIService {
 
     suspend fun deleteTransaction(id: String)
 
-    // Users
     suspend fun getUsers(
         budgetId: String? = null,
         count: Int? = null,

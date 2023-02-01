@@ -3,15 +3,24 @@ package com.wbrawner.twigs.shared.network
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.budget.NewBudgetRequest
 import com.wbrawner.twigs.shared.category.Category
+import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransaction
 import com.wbrawner.twigs.shared.transaction.BalanceResponse
 import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.LoginRequest
 import com.wbrawner.twigs.shared.user.Session
 import com.wbrawner.twigs.shared.user.User
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.headers
+import io.ktor.client.request.parameter
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.URLBuilder
+import io.ktor.http.contentType
+import io.ktor.http.path
 
 class KtorAPIService(
     private val client: HttpClient
@@ -122,6 +131,44 @@ class KtorAPIService(
         httpMethod = HttpMethod.Delete
     )
 
+    override suspend fun getRecurringTransactions(
+        budgetId: String,
+        count: Int?,
+        page: Int?
+    ): List<RecurringTransaction> = request(
+        path = "recurringtransactions",
+        queryParams = listOf(
+            "budgetId" to budgetId,
+            "count" to count,
+            "page" to page,
+        )
+    )
+
+    override suspend fun getRecurringTransaction(id: String): RecurringTransaction =
+        request("recurringtransactions/$id")
+
+    override suspend fun newRecurringTransaction(transaction: RecurringTransaction): RecurringTransaction =
+        request(
+            path = "recurringtransactions",
+            body = transaction,
+            httpMethod = HttpMethod.Post
+        )
+
+    override suspend fun updateRecurringTransaction(
+        id: String,
+        transaction: RecurringTransaction
+    ): RecurringTransaction =
+        request(
+            path = "recurringtransactions/$id",
+            body = transaction,
+            httpMethod = HttpMethod.Put
+        )
+
+    override suspend fun deleteRecurringTransaction(id: String) = request<Unit>(
+        path = "recurringtransactions/$id",
+        httpMethod = HttpMethod.Delete
+    )
+
     override suspend fun getUsers(budgetId: String?, count: Int?, page: Int?): List<User> = request(
         path = "users",
         queryParams = listOf(
@@ -177,7 +224,7 @@ class KtorAPIService(
         }
         queryParams?.forEach { (param, value) ->
             value?.let {
-                when(it) {
+                when (it) {
                     is Array<*> -> parameter(param, it.joinToString(","))
                     is Iterable<*> -> parameter(param, it.joinToString(","))
                     else -> parameter(param, it)

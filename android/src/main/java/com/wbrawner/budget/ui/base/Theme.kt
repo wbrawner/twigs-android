@@ -4,9 +4,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -18,6 +21,9 @@ val lightColors = lightColorScheme(
     primaryContainer = Green300,
     secondary = Green700,
     secondaryContainer = Green300,
+    background = Color.LightGray,
+    surface = Color.White,
+    surfaceVariant = Color.White
 )
 
 val darkColors = darkColorScheme(
@@ -27,6 +33,7 @@ val darkColors = darkColorScheme(
     secondaryContainer = Green700,
     background = Color.Black,
     surface = Color.Black,
+    surfaceVariant = Color.White.copy(alpha = 0.1f)
 )
 
 val ubuntu = FontFamily(
@@ -41,7 +48,9 @@ val ubuntu = FontFamily(
 @Composable
 fun TwigsTheme(darkMode: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (darkMode) darkColors else lightColors,
+        colorScheme = if (darkMode) dynamicDarkColorScheme(LocalContext.current) else dynamicLightColorScheme(
+            LocalContext.current
+        ),
         typography = MaterialTheme.typography.copy(
             displayLarge = MaterialTheme.typography.displayLarge.copy(fontFamily = ubuntu),
             displayMedium = MaterialTheme.typography.displayMedium.copy(fontFamily = ubuntu),
