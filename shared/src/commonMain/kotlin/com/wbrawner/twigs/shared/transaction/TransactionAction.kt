@@ -7,6 +7,7 @@ import com.wbrawner.twigs.shared.State
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.budget.BudgetAction
 import com.wbrawner.twigs.shared.category.Category
+import com.wbrawner.twigs.shared.replace
 import com.wbrawner.twigs.shared.user.ConfigAction
 import com.wbrawner.twigs.shared.user.User
 import com.wbrawner.twigs.shared.user.UserPermission
@@ -144,8 +145,7 @@ class TransactionReducer(
         is TransactionAction.SaveTransactionSuccess -> {
             val currentState = state()
             val transactions = currentState.transactions?.toMutableList() ?: mutableListOf()
-            transactions.removeAll { it.id == action.transaction.id }
-            transactions.add(action.transaction)
+            transactions.replace(action.transaction)
             transactions.sortByDescending { it.date }
             currentState.copy(
                 loading = false,
