@@ -7,11 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="fontFamily">@font/ubuntu</item>
-        <item name="statusBarBackground">@color/colorBackgroundPrimary</item>
-        <item name="statusBarForeground">@color/colorTextPrimary</item>
-        <item name="android:statusBarColor">@color/colorBackgroundPrimary</item>
+        <item name="android:statusBarColor">#00000000</item>
         <item name="android:windowBackground">@color/colorBackgroundPrimary</item>
-        <item name="android:navigationBarColor">@color/colorBackgroundPrimary</item>
+        <item name="android:navigationBarColor">#00000000</item>
         <item name="android:timePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
         <item name="android:datePickerDialogTheme">@style/DateTimePickerDialogTheme</item>
         <item name="android:dialogTheme">@style/DialogTheme</item>

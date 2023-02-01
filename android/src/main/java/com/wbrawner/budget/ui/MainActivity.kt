@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -30,12 +31,15 @@ import com.wbrawner.budget.ui.auth.LoginScreen
 import com.wbrawner.budget.ui.base.TwigsApp
 import com.wbrawner.budget.ui.category.CategoriesScreen
 import com.wbrawner.budget.ui.category.CategoryDetailsScreen
+import com.wbrawner.budget.ui.recurringtransaction.RecurringTransactionDetailsScreen
+import com.wbrawner.budget.ui.recurringtransaction.RecurringTransactionsScreen
 import com.wbrawner.budget.ui.transaction.TransactionDetailsScreen
 import com.wbrawner.budget.ui.transaction.TransactionsScreen
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.budget.BudgetAction
 import com.wbrawner.twigs.shared.category.CategoryAction
+import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransactionAction
 import com.wbrawner.twigs.shared.transaction.TransactionAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -50,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val state by store.state.collectAsState()
             val navController = rememberNavController()
@@ -89,9 +94,18 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         CategoryDetailsScreen(store = store)
                     }
-//                    composable(Route.RECURRING_TRANSACTIONS.path) {
-//                        RecurringTransactionsScreen(store = store)
-//                    }
+                    composable(Route.RecurringTransactions().path) {
+                        RecurringTransactionsScreen(store = store)
+                    }
+                    composable(
+                        Route.RecurringTransactions(selected = "{id}").path,
+                        arguments = listOf(navArgument("id") {
+                            type = NavType.StringType
+                            nullable = false
+                        })
+                    ) {
+                        RecurringTransactionDetailsScreen(store = store)
+                    }
                 }
             }
         }
@@ -158,8 +172,8 @@ fun TwigsScaffold(
                         label = { Text(text = "Categories") }
                     )
                     NavigationBarItem(
-                        selected = false,
-                        onClick = { store.dispatch(BudgetAction.OverviewClicked) },
+                        selected = state.route is Route.RecurringTransactions,
+                        onClick = { store.dispatch(RecurringTransactionAction.RecurringTransactionsClicked) },
                         icon = { Icon(Icons.Default.Repeat, contentDescription = null) },
                         label = { Text(text = "Recurring") }
                     )

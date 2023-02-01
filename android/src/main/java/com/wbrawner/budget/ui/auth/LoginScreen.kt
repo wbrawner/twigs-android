@@ -36,9 +36,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -145,12 +147,17 @@ fun LoginForm(
                 .fillMaxWidth()
                 .focusRequester(serverInput)
                 .onPreviewKeyEvent {
-                    if (it.key == Key.Tab && !it.isShiftPressed) {
-                        usernameInput.requestFocus()
-                        true
-                    } else {
-                        false
+                    if (it.type != KeyEventType.KeyDown) {
+                        return@onPreviewKeyEvent false
                     }
+                    if (it.key != Key.Tab) {
+                        return@onPreviewKeyEvent false
+                    }
+                    if (it.isShiftPressed) {
+                        return@onPreviewKeyEvent false
+                    }
+                    usernameInput.requestFocus()
+                    true
                 },
             value = server,
             onValueChange = setServer,
@@ -170,16 +177,18 @@ fun LoginForm(
                 .fillMaxWidth()
                 .focusRequester(usernameInput)
                 .onPreviewKeyEvent {
-                    if (it.key == Key.Tab) {
-                        if (it.isShiftPressed) {
-                            serverInput.requestFocus()
-                        } else {
-                            passwordInput.requestFocus()
-                        }
-                        true
-                    } else {
-                        false
+                    if (it.type != KeyEventType.KeyDown) {
+                        return@onPreviewKeyEvent false
                     }
+                    if (it.key != Key.Tab) {
+                        return@onPreviewKeyEvent false
+                    }
+                    if (it.isShiftPressed) {
+                        serverInput.requestFocus()
+                    } else {
+                        passwordInput.requestFocus()
+                    }
+                    true
                 },
             value = username,
             onValueChange = setUsername,
@@ -199,6 +208,9 @@ fun LoginForm(
                 .fillMaxWidth()
                 .focusRequester(passwordInput)
                 .onPreviewKeyEvent {
+                    if (it.type != KeyEventType.KeyDown) {
+                        return@onPreviewKeyEvent false
+                    }
                     when (it.key) {
                         Key.Tab -> {
                             if (it.isShiftPressed) {
@@ -214,9 +226,7 @@ fun LoginForm(
                             true
                         }
 
-                        else -> {
-                            false
-                        }
+                        else -> false
                     }
                 },
             value = password,

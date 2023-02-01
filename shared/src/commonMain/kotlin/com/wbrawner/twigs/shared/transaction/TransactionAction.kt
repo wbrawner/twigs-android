@@ -144,6 +144,7 @@ class TransactionReducer(
         is TransactionAction.SaveTransactionSuccess -> {
             val currentState = state()
             val transactions = currentState.transactions?.toMutableList() ?: mutableListOf()
+            transactions.removeAll { it.id == action.transaction.id }
             transactions.add(action.transaction)
             transactions.sortByDescending { it.date }
             currentState.copy(
