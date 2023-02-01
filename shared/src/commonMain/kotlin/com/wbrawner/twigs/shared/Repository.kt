@@ -16,3 +16,11 @@ interface Repository<T> {
 interface Identifiable {
     val id: String?
 }
+
+inline fun <T : Identifiable> MutableList<T>.replace(item: T) {
+    val index = indexOf(item)
+    if (index > -1) {
+        removeAt(index)
+    }
+    add(index.coerceAtLeast(0), item)
+}

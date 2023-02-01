@@ -6,6 +6,7 @@ import com.wbrawner.twigs.shared.Action
 import com.wbrawner.twigs.shared.Reducer
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.State
+import com.wbrawner.twigs.shared.replace
 import com.wbrawner.twigs.shared.user.ConfigAction
 import com.wbrawner.twigs.shared.user.UserPermission
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ class BudgetReducer(
         is BudgetAction.SaveBudgetSuccess -> {
             val currentState = state()
             val budgets = currentState.budgets?.toMutableList() ?: mutableListOf()
-            budgets.add(action.budget)
+            budgets.replace(action.budget)
             budgets.sortBy { it.name }
             currentState.copy(
                 loading = false,

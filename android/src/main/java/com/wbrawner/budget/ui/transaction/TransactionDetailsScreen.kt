@@ -37,7 +37,8 @@ import kotlinx.datetime.Clock
 @Composable
 fun TransactionDetailsScreen(store: Store) {
     val state by store.state.collectAsState()
-    val transaction = remember { state.transactions!!.first { it.id == state.selectedTransaction } }
+    val transaction =
+        remember(state.editingTransaction) { state.transactions!!.first { it.id == state.selectedTransaction } }
     val createdBy = state.selectedTransactionCreatedBy ?: run {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()

@@ -5,6 +5,7 @@ import com.wbrawner.twigs.shared.Reducer
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.State
 import com.wbrawner.twigs.shared.budget.BudgetAction
+import com.wbrawner.twigs.shared.replace
 import kotlinx.coroutines.launch
 
 sealed interface CategoryAction : Action {
@@ -16,8 +17,11 @@ sealed interface CategoryAction : Action {
 
     data class LoadCategoriesSuccess(val categories: List<Category>) : CategoryAction
     data class LoadCategoriesFailed(val error: Exception) : CategoryAction
+    object NewCategoryClicked : CategoryAction
+    object CancelEditCategory : CategoryAction
+
     data class CreateCategory(
-        val name: String,
+        val title: String,
         val description: String? = null,
         val amount: Long,
         val expense: Boolean
@@ -27,7 +31,7 @@ sealed interface CategoryAction : Action {
 
     data class SaveCategoryFailure(
         val id: String? = null,
-        val name: String,
+        val title: String,
         val description: String? = null,
         val amount: Long,
         val expense: Boolean,
@@ -38,14 +42,12 @@ sealed interface CategoryAction : Action {
 
     data class SelectCategory(val id: String?) : CategoryAction
 
-    data class CategorySelected(val id: String) : CategoryAction
-
     data class UpdateCategory(
         val id: String,
-        val name: String,
+        val title: String,
         val description: String? = null,
         val amount: Long,
-        val expense: Boolean
+        val expense: Boolean,
     ) : CategoryAction
 
     data class DeleteCategory(val id: String) : CategoryAction
@@ -102,95 +104,62 @@ class CategoryReducer(private val categoryRepository: CategoryRepository) : Redu
             budgetBalance = action.budgetBalance,
             categoryBalances = action.categoryBalances
         )
-//        is BudgetAction.CreateBudget -> {
-//            launch {
-//                val budget = budgetRepository.create(
-//                    Budget(
-//                        name = action.name,
-//                        description = action.description,
-//                        users = action.users
-//                    )
-//                )
-//                dispatch(BudgetAction.SaveBudgetSuccess(budget))
-//            }
-//            state().copy(loading = true)
-//        }
-//        is BudgetAction.SaveBudgetSuccess -> {
-//            val currentState = state()
-//            val budgets = currentState.budgets?.toMutableList() ?: mutableListOf()
-//            budgets.add(action.budget)
-//            budgets.sortBy { it.name }
-//            currentState.copy(
-//                loading = false,
-//                budgets = budgets.toList(),
-//                selectedBudget = action.budget.id,
-//                editingBudget = false
-//            )
-//        }
-//        is ConfigAction.LoginSuccess -> {
-//            launch {
-//                try {
-//                    val budgets = budgetRepository.findAll()
-//                    dispatch(BudgetAction.LoadBudgetsSuccess(budgets))
-//                } catch (e: Exception) {
-//                    dispatch(BudgetAction.LoadBudgetsFailed(e))
-//                }
-//            }
-//            state().copy(loading = true)
-//        }
-//        is ConfigAction.Logout -> state().copy(
-//            budgets = null,
-//            selectedBudget = null,
-//            editingBudget = false
-//        )
-////        is BudgetAction.EditBudget -> state.copy(
-////            editingBudget = true,
-////            selectedBudget = action.id
-////        )
-//        is BudgetAction.SelectBudget -> {
-//            val currentState = state()
-//            val budgetId = currentState.budgets
-//                ?.firstOrNull { it.id == action.id }
-//                ?.id
-//                ?: currentState.budgets?.firstOrNull()?.id
-//            settings[KEY_LAST_BUDGET] = budgetId
-//            dispatch(BudgetAction.BudgetSelected(budgetId!!))
-//            state()
-//        }
-//        is BudgetAction.BudgetSelected -> state().copy(selectedBudget = action.id)
-//
-////        is BudgetAction.UpdateBudget -> state.copy(loading = true).also {
-////            dispatch(action.async())
-////        }
-////        is BudgetAction.DeleteBudget -> state.copy(loading = true).also {
-////            dispatch(action.async())
-////        }
-////
-////        is BudgetAsyncAction.UpdateBudgetAsync -> {
-////            budgetRepository.update(
-////                Budget(
-////                    id = action.id,
-////                    name = action.name,
-////                    description = action.description,
-////                    users = action.users
-////                )
-////            )
-////            state().copy(
-////                loading = false,
-////                editingBudget = false,
-////            )
-////        }
-////        is BudgetAsyncAction.DeleteBudgetAsync -> {
-////            budgetRepository.delete(action.id)
-////            val currentState = state()
-////            val budgets = currentState.budgets?.filterNot { it.id == action.id }
-////            currentState.copy(
-////                loading = false,
-////                budgets = budgets,
-////                editingBudget = false,
-////                selectedBudget = null
-////            )
-////        }
+
+        is CategoryAction.CancelEditCategory -> state().copy(editingCategory = false)
+
+        is CategoryAction.NewCategoryClicked -> state().copy(editingCategory = true)
+
+        is CategoryAction.CreateCategory -> {
+            val currentState = state()
+            val budgetId = requireNotNull(currentState.selectedBudget)
+            launch {
+                val category = categoryRepository.create(
+                    Category(
+                        title = action.title,
+                        description = action.description,
+                        amount = action.amount,
+                        budgetId = budgetId
+                    )
+                )
+                dispatch(CategoryAction.SaveCategorySuccess(category))
+            }
+            currentState.copy(loading = true)
+        }
+
+        is CategoryAction.SaveCategorySuccess -> {
+            val currentState = state()
+            val categories = currentState.categories?.toMutableList() ?: mutableListOf()
+            categories.replace(action.category)
+            categories.sortBy { it.title }
+            currentState.copy(
+                loading = false,
+                categories = categories.toList(),
+                selectedCategory = action.category.id,
+                editingCategory = false,
+                route = Route.Categories(action.category.id)
+            )
+        }
+
+        is CategoryAction.EditCategory -> state().copy(
+            editingCategory = true,
+            selectedCategory = action.id
+        )
+
+        is CategoryAction.UpdateCategory -> {
+            launch {
+                val oldCategory = categoryRepository.findById(action.id)
+                val category = categoryRepository.update(
+                    oldCategory.copy(
+                        title = action.title,
+                        description = action.description,
+                        amount = action.amount
+                    )
+                )
+                dispatch(CategoryAction.SaveCategorySuccess(category))
+            }
+            state().copy(loading = true)
+        }
+
         else -> state()
     }
 }

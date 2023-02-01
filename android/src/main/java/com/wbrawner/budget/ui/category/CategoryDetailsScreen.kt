@@ -21,12 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.budget.ui.TwigsScaffold
 import com.wbrawner.budget.ui.base.TwigsApp
+import com.wbrawner.budget.ui.transaction.TransactionFormDialog
 import com.wbrawner.budget.ui.transaction.TransactionListItem
 import com.wbrawner.budget.ui.transaction.toCurrencyString
 import com.wbrawner.budget.ui.util.format
 import com.wbrawner.twigs.shared.Action
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.category.Category
+import com.wbrawner.twigs.shared.category.CategoryAction
 import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.transaction.TransactionAction
 import com.wbrawner.twigs.shared.transaction.groupByDate
@@ -38,7 +40,8 @@ import kotlin.math.abs
 @Composable
 fun CategoryDetailsScreen(store: Store) {
     val state by store.state.collectAsState()
-    val category = remember { state.categories!!.first { it.id == state.selectedCategory } }
+    val category =
+        remember(state.editingCategory) { state.categories!!.first { it.id == state.selectedCategory } }
     TwigsScaffold(
         store = store,
         title = category.title,
@@ -48,21 +51,27 @@ fun CategoryDetailsScreen(store: Store) {
             }
         },
         actions = {
-            IconButton({ store.dispatch(TransactionAction.EditTransaction(requireNotNull(category.id))) }) {
+            IconButton({ store.dispatch(CategoryAction.EditCategory(requireNotNull(category.id))) }) {
                 Icon(Icons.Default.Edit, "Edit")
             }
+        },
+        onClickFab = {
+            store.dispatch(TransactionAction.NewTransactionClicked)
         }
     ) { padding ->
         CategoryDetails(
             modifier = Modifier.padding(padding),
             category = category,
-            balance = state.categoryBalances!![category.id!!]!!,
+            balance = state.categoryBalances!![category.id!!] ?: 0,
             transactions = state.transactions!!.filter { it.categoryId == category.id },
             onTransactionClicked = { store.dispatch(TransactionAction.SelectTransaction(it.id)) }
         )
-//        if (state.editingCategory) {
-//            CategoryFormDialog(store = store)
-//        }
+        if (state.editingTransaction) {
+            TransactionFormDialog(store = store)
+        }
+        if (state.editingCategory) {
+            CategoryFormDialog(store = store)
+        }
     }
 }
 

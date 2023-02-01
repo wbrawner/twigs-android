@@ -33,7 +33,13 @@ import kotlin.math.max
 @Composable
 fun CategoriesScreen(store: Store) {
     val scrollState = rememberLazyListState()
-    TwigsScaffold(store = store, title = "Categories") {
+    TwigsScaffold(
+        store = store,
+        title = "Categories",
+        onClickFab = {
+            store.dispatch(CategoryAction.NewCategoryClicked)
+        }
+    ) {
         val state by store.state.collectAsState()
         state.categories?.let { categories ->
             LazyColumn(
@@ -50,6 +56,9 @@ fun CategoriesScreen(store: Store) {
             }
         } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
+        }
+        if (state.editingCategory) {
+            CategoryFormDialog(store = store)
         }
     }
 }

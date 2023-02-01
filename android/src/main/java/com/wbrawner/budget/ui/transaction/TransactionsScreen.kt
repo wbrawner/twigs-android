@@ -133,4 +133,13 @@ fun TransactionListItem_Preview() {
 fun Long.toCurrencyString(): String =
     NumberFormat.getCurrencyInstance().format(this.toDouble() / 100.0)
 
-fun Long.toDecimalString(): String = if (this > 0) (this.toDouble() / 100.0).toString() else ""
+fun Long.toDecimalString(): String = if (this > 0) {
+    val decimal = (this.toDouble() / 100.0).toString()
+    if (decimal.length - decimal.lastIndexOf('.') == 2) {
+        decimal + '0'
+    } else {
+        decimal
+    }
+} else {
+    ""
+}
