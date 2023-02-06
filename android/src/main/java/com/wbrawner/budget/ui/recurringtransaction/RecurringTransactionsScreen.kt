@@ -37,10 +37,9 @@ fun RecurringTransactionsScreen(store: Store) {
     TwigsScaffold(
         store = store,
         title = "Recurring Transactions",
-        // TODO: Implement RecurringTransaction creation/editing
-//        onClickFab = {
-//            store.dispatch(RecurringTransactionAction.NewRecurringTransactionClicked)
-//        }
+        onClickFab = {
+            store.dispatch(RecurringTransactionAction.NewRecurringTransactionClicked)
+        }
     ) {
         val state by store.state.collectAsState()
         state.recurringTransactions?.let { transactions ->
@@ -78,9 +77,9 @@ fun RecurringTransactionsScreen(store: Store) {
         } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-//        if (state.editingTransaction) {
-//            RecurringTransactionFormDialog(store = store)
-//        }
+        if (state.editingRecurringTransaction) {
+            RecurringTransactionFormDialog(store = store)
+        }
     }
 }
 

@@ -32,15 +32,12 @@ import com.wbrawner.budget.ui.base.TwigsApp
 import com.wbrawner.budget.ui.transaction.toDecimalString
 import com.wbrawner.budget.ui.util.DatePicker
 import com.wbrawner.budget.ui.util.FrequencyPicker
-import com.wbrawner.budget.ui.util.TimePicker
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.category.Category
 import com.wbrawner.twigs.shared.recurringtransaction.Frequency
 import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransaction
 import com.wbrawner.twigs.shared.recurringtransaction.RecurringTransactionAction
 import com.wbrawner.twigs.shared.recurringtransaction.Time
-import com.wbrawner.twigs.shared.recurringtransaction.time
-import com.wbrawner.twigs.shared.transaction.TransactionAction
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import java.util.*
@@ -49,7 +46,7 @@ import java.util.*
 @Composable
 fun RecurringTransactionFormDialog(store: Store) {
     Dialog(
-        onDismissRequest = { store.dispatch(TransactionAction.CancelEditTransaction) },
+        onDismissRequest = { store.dispatch(RecurringTransactionAction.CancelEditRecurringTransaction) },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
@@ -94,7 +91,7 @@ fun RecurringTransactionForm(store: Store) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { store.dispatch(TransactionAction.CancelEditTransaction) }) {
+                    IconButton(onClick = { store.dispatch(RecurringTransactionAction.CancelEditRecurringTransaction) }) {
                         Icon(Icons.Default.Close, "Cancel")
                     }
                 },
@@ -267,24 +264,66 @@ fun RecurringTransactionForm(
             }),
         )
         FrequencyPicker(frequency, setFrequency)
-        val (datePickerVisible, setDatePickerVisible) = remember { mutableStateOf(false) }
+        val (startPickerVisible, setStartPickerVisible) = remember { mutableStateOf(false) }
         DatePicker(
             modifier = Modifier.fillMaxWidth(),
             date = start,
             setDate = setStart,
-            dialogVisible = datePickerVisible,
-            setDialogVisible = setDatePickerVisible
+            label = "Start Date",
+            dialogVisible = startPickerVisible,
+            setDialogVisible = setStartPickerVisible
         )
-        val (timePickerVisible, setTimePickerVisible) = remember { mutableStateOf(false) }
-        TimePicker(
-            modifier = Modifier.fillMaxWidth(),
-            time = start.time(),
-            setTime = {
-
-            },
-            dialogVisible = timePickerVisible,
-            setDialogVisible = setTimePickerVisible
-        )
+        val (endExpanded, setEndExpanded) = remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            modifier = Modifier
+                .fillMaxWidth(),
+            expanded = endExpanded,
+            onExpandedChange = setEndExpanded,
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                value = end?.let { "On Date" } ?: "Never",
+                onValueChange = {},
+                readOnly = true,
+                label = {
+                    Text("End Criteria")
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = endExpanded)
+                }
+            )
+            ExposedDropdownMenu(expanded = endExpanded, onDismissRequest = {
+                setEndExpanded(false)
+            }) {
+                DropdownMenuItem(
+                    text = { Text("Never") },
+                    onClick = {
+                        setEnd(null)
+                        setEndExpanded(false)
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("On Date") },
+                    onClick = {
+                        setEnd(Clock.System.now())
+                        setEndExpanded(false)
+                    }
+                )
+            }
+        }
+        end?.let {
+            val (endPickerVisible, setEndPickerVisible) = remember { mutableStateOf(false) }
+            DatePicker(
+                modifier = Modifier.fillMaxWidth(),
+                date = end,
+                setDate = setEnd,
+                label = "End Date",
+                dialogVisible = endPickerVisible,
+                setDialogVisible = setEndPickerVisible
+            )
+        }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = spacedBy(8.dp)) {
             Row(
                 modifier = Modifier.clickable {
