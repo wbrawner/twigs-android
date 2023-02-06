@@ -18,12 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.budget.ui.TwigsScaffold
 import com.wbrawner.budget.ui.base.TwigsApp
-import com.wbrawner.budget.ui.util.format
+import com.wbrawner.budget.ui.util.formatWithTime
 import com.wbrawner.twigs.shared.Action
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.budget.Budget
@@ -96,9 +95,13 @@ fun TransactionDetails(
             text = transaction.title,
             style = MaterialTheme.typography.headlineMedium
         )
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = transaction.date.format(LocalContext.current),
+                text = transaction.date.formatWithTime(),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(

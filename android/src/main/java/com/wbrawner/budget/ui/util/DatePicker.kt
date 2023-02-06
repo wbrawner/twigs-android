@@ -26,6 +26,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import java.text.DateFormat.getDateTimeInstance
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,3 +109,5 @@ fun Instant.format(context: Context): String =
             this.toLocalDateTime(TimeZone.currentSystemDefault()).date.atStartOfDayIn(TimeZone.currentSystemDefault())
                 .toEpochMilliseconds()
         )
+
+fun Instant.formatWithTime(): String = getDateTimeInstance().format(this.toEpochMilliseconds())
