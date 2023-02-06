@@ -35,10 +35,13 @@ sealed class Frequency {
     abstract val count: Int
     abstract val time: Time
     abstract val name: String
+    abstract val description: String
 
     data class Daily(override val count: Int, override val time: Time) : Frequency() {
         override fun toString(): String = "D;$count;$time"
         override val name: String = "Daily"
+        override val description: String
+            get() = if (count == 1) "Every day" else "Every $count days"
 
         companion object {
             fun parse(s: String): Daily {
@@ -60,6 +63,9 @@ sealed class Frequency {
     ) : Frequency() {
         override fun toString(): String = "W;$count;${daysOfWeek.joinToString(",")};$time"
         override val name: String = "Weekly"
+        override val description: String
+            get() = if (count == 1) "Every week on ${daysOfWeek.joinToString(", ") { it.capitalizedName }}"
+            else "Every $count weeks on ${daysOfWeek.joinToString(", ") { it.capitalizedName }}"
 
         companion object {
             fun parse(s: String): Weekly {
@@ -82,6 +88,9 @@ sealed class Frequency {
     ) : Frequency() {
         override fun toString(): String = "M;$count;$dayOfMonth;$time"
         override val name: String = "Monthly"
+        override val description: String
+            get() = if (count == 1) "Every month on ${dayOfMonth.description}"
+            else "Every $count months on ${dayOfMonth.description}"
 
         companion object {
             fun parse(s: String): Monthly {
@@ -103,6 +112,9 @@ sealed class Frequency {
             "Y;$count;${dayOfYear.month.padStart(2, '0')}-${dayOfYear.day.padStart(2, '0')};$time"
 
         override val name: String = "Yearly"
+        override val description: String
+            get() = if (count == 1) "Every year on ${dayOfYear.description}"
+            else "Every $count years on ${dayOfYear.description}"
 
         companion object {
             fun parse(s: String): Yearly {
@@ -141,11 +153,19 @@ sealed class Frequency {
 
 
 sealed class DayOfMonth {
+    abstract val description: String
+
     data class OrdinalDayOfMonth(val ordinal: Ordinal, val dayOfWeek: DayOfWeek) : DayOfMonth() {
+        override val description: String
+            get() = "${ordinal.capitalizedName} ${dayOfWeek.capitalizedName}"
+
         override fun toString(): String = "${ordinal.name}-${dayOfWeek.name}"
     }
 
     data class FixedDayOfMonth(val day: Int) : DayOfMonth() {
+        override val description: String
+            get() = "$day"
+
         override fun toString(): String = "DAY-$day"
     }
 
@@ -178,6 +198,9 @@ val Enum<*>.capitalizedName: String
     get() = name.lowercase().replaceFirstChar { it.uppercaseChar() }
 
 class DayOfYear private constructor(val month: Int, val day: Int) {
+
+    val description: String
+        get() = "${month.toMonth().capitalizedName} $day"
 
     override fun toString(): String {
         return "${month.padStart(2, '0')}-${day.padStart(2, '0')}"
