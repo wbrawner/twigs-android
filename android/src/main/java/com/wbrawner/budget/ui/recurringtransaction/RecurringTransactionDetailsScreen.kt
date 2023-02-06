@@ -113,6 +113,8 @@ fun RecurringTransactionDetails(
             )
         }
         LabeledField("Description", transaction.description ?: "")
+        LabeledField("Frequency", transaction.frequency.description)
+        LabeledField("Time", transaction.frequency.time.toString())
         LabeledField("Start", transaction.start.format(LocalContext.current))
         transaction.finish?.let {
             LabeledField("End", it.format(LocalContext.current))
