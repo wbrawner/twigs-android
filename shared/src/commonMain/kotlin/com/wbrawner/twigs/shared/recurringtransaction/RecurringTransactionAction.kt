@@ -81,7 +81,7 @@ class RecurringTransactionReducer(
         is Action.Back -> {
             val currentState = state()
             currentState.copy(
-                editingTransaction = false,
+                editingRecurringTransaction = false,
                 selectedRecurringTransaction = if (currentState.editingRecurringTransaction) currentState.selectedRecurringTransaction else null,
                 route = if (currentState.route is Route.RecurringTransactions && !currentState.route.selected.isNullOrBlank() && !currentState.editingRecurringTransaction) {
                     Route.RecurringTransactions()
@@ -113,7 +113,7 @@ class RecurringTransactionReducer(
         is RecurringTransactionAction.CancelEditRecurringTransaction -> {
             val currentState = state()
             currentState.copy(
-                editingTransaction = false,
+                editingRecurringTransaction = false,
                 selectedRecurringTransaction = if (currentState.route is Route.RecurringTransactions && !currentState.route.selected.isNullOrBlank()) {
                     currentState.selectedRecurringTransaction
                 } else {
@@ -178,7 +178,7 @@ class RecurringTransactionReducer(
                 recurringTransactions = transactions.toList(),
                 selectedRecurringTransaction = action.transaction.id,
                 selectedRecurringTransactionCreatedBy = currentState.user,
-                editingTransaction = false
+                editingRecurringTransaction = false
             )
         }
 
@@ -202,11 +202,11 @@ class RecurringTransactionReducer(
         is ConfigAction.Logout -> state().copy(
             transactions = null,
             selectedRecurringTransaction = null,
-            editingTransaction = false
+            editingRecurringTransaction = false
         )
 
         is RecurringTransactionAction.EditRecurringTransaction -> state().copy(
-            editingTransaction = true,
+            editingRecurringTransaction = true,
             selectedRecurringTransaction = action.id
         )
 

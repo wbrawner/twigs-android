@@ -4,6 +4,7 @@ import com.wbrawner.twigs.shared.startOfMonth
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.KSerializer
@@ -33,9 +34,11 @@ data class RecurringTransaction(
 sealed class Frequency {
     abstract val count: Int
     abstract val time: Time
+    abstract val name: String
 
     data class Daily(override val count: Int, override val time: Time) : Frequency() {
         override fun toString(): String = "D;$count;$time"
+        override val name: String = "Daily"
 
         companion object {
             fun parse(s: String): Daily {
@@ -56,6 +59,7 @@ sealed class Frequency {
         override val time: Time
     ) : Frequency() {
         override fun toString(): String = "W;$count;${daysOfWeek.joinToString(",")};$time"
+        override val name: String = "Weekly"
 
         companion object {
             fun parse(s: String): Weekly {
@@ -77,6 +81,7 @@ sealed class Frequency {
         override val time: Time
     ) : Frequency() {
         override fun toString(): String = "M;$count;$dayOfMonth;$time"
+        override val name: String = "Monthly"
 
         companion object {
             fun parse(s: String): Monthly {
@@ -97,6 +102,8 @@ sealed class Frequency {
         override fun toString(): String =
             "Y;$count;${dayOfYear.month.padStart(2, '0')}-${dayOfYear.day.padStart(2, '0')};$time"
 
+        override val name: String = "Yearly"
+
         companion object {
             fun parse(s: String): Yearly {
                 require(s[0] == 'Y') { "Invalid format for Yearly: $s" }
@@ -113,6 +120,13 @@ sealed class Frequency {
 
     fun instant(now: Instant): Instant =
         Instant.parse(now.toString().split("T")[0] + "T" + time.toString() + "Z")
+
+    fun update(count: Int = this.count, time: Time = this.time): Frequency = when (this) {
+        is Daily -> copy(count = count, time = time)
+        is Weekly -> copy(count = count, time = time)
+        is Monthly -> copy(count = count, time = time)
+        is Yearly -> copy(count = count, time = time)
+    }
 
     companion object {
         fun parse(s: String): Frequency = when (s[0]) {
@@ -160,6 +174,9 @@ enum class Ordinal {
     LAST
 }
 
+val Enum<*>.capitalizedName: String
+    get() = name.lowercase().replaceFirstChar { it.uppercaseChar() }
+
 class DayOfYear private constructor(val month: Int, val day: Int) {
 
     override fun toString(): String {
@@ -185,6 +202,8 @@ class DayOfYear private constructor(val month: Int, val day: Int) {
         }
     }
 }
+
+fun Int.toMonth(): Month = Month(this)
 
 data class Time(val hours: Int, val minutes: Int, val seconds: Int) {
     override fun toString(): String {

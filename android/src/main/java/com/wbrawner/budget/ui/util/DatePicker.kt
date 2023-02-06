@@ -33,6 +33,7 @@ fun DatePicker(
     modifier: Modifier,
     date: Instant,
     setDate: (Instant) -> Unit,
+    label: String = "Date",
     dialogVisible: Boolean,
     setDialogVisible: (Boolean) -> Unit
 ) {
@@ -52,7 +53,7 @@ fun DatePicker(
         onValueChange = {},
         readOnly = true,
         label = {
-            Text("Date")
+            Text(label)
         }
     )
     val dialog = remember {

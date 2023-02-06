@@ -78,7 +78,7 @@ fun RecurringTransactionDetailsScreen(store: Store) {
             budget = budget,
             createdBy = createdBy
         )
-        if (state.editingTransaction) {
+        if (state.editingRecurringTransaction) {
             RecurringTransactionFormDialog(store = store)
         }
     }
