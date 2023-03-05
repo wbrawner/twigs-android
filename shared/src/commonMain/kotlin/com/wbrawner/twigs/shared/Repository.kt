@@ -18,7 +18,7 @@ interface Identifiable {
 }
 
 inline fun <T : Identifiable> MutableList<T>.replace(item: T) {
-    val index = indexOf(item)
+    val index = indexOfFirst { it.id == item.id }
     if (index > -1) {
         removeAt(index)
     }
