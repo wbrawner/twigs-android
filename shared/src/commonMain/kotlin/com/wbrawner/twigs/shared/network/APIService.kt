@@ -14,6 +14,7 @@ import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 
 const val BASE_PATH = "/api"
@@ -40,7 +41,7 @@ interface APIService {
 
     suspend fun getCategories(
         budgetIds: Array<String>? = null,
-        archived: Boolean? = false,
+        archived: Boolean? = null,
         count: Int? = null,
         page: Int? = null,
     ): List<Category>
@@ -74,10 +75,10 @@ interface APIService {
     suspend fun deleteRecurringTransaction(id: String)
 
     suspend fun getTransactions(
+        from: Instant,
+        to: Instant,
         budgetIds: List<String>? = null,
         categoryIds: List<String>? = null,
-        from: String? = null,
-        to: String? = null,
         count: Int? = null,
         page: Int? = null
     ): List<Transaction>
@@ -85,8 +86,10 @@ interface APIService {
     suspend fun getTransaction(id: String): Transaction
 
     suspend fun sumTransactions(
+        from: Instant,
+        to: Instant,
         budgetId: String? = null,
-        categoryId: String? = null
+        categoryId: String? = null,
     ): BalanceResponse
 
     suspend fun newTransaction(transaction: Transaction): Transaction
@@ -122,7 +125,7 @@ interface APIService {
     companion object
 }
 
-fun <T: HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
+fun <T : HttpClientEngineConfig> HttpClientConfig<T>.commonConfig() {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true

@@ -73,13 +73,18 @@ fun TransactionForm(store: Store) {
             state.transactions?.first { it.id == state.selectedTransaction } ?: defaultTransaction
         }
     }
-    val (title, setTitle) = remember { mutableStateOf(transaction.title) }
-    val (description, setDescription) = remember { mutableStateOf(transaction.description ?: "") }
-    val (date, setDate) = remember { mutableStateOf(transaction.date) }
-    val (amount, setAmount) = remember { mutableStateOf(transaction.amount.toDecimalString()) }
-    val (expense, setExpense) = remember { mutableStateOf(transaction.expense) }
-    val budget = remember { state.budgets!!.first { it.id == transaction.budgetId } }
-    val (category, setCategory) = remember { mutableStateOf(transaction.categoryId?.let { categoryId -> state.categories?.firstOrNull { it.id == categoryId } }) }
+    val (title, setTitle) = remember(state.editingTransaction) { mutableStateOf(transaction.title) }
+    val (description, setDescription) = remember(state.editingTransaction) {
+        mutableStateOf(
+            transaction.description ?: ""
+        )
+    }
+    val (date, setDate) = remember(state.editingTransaction) { mutableStateOf(transaction.date) }
+    val (amount, setAmount) = remember(state.editingTransaction) { mutableStateOf(transaction.amount.toDecimalString()) }
+    val (expense, setExpense) = remember(state.editingTransaction) { mutableStateOf(transaction.expense) }
+    val budget =
+        remember(state.editingTransaction) { state.budgets!!.first { it.id == transaction.budgetId } }
+    val (category, setCategory) = remember(state.editingTransaction) { mutableStateOf(transaction.categoryId?.let { categoryId -> state.categories?.firstOrNull { it.id == categoryId } }) }
     Scaffold(
         topBar = {
             TopAppBar(

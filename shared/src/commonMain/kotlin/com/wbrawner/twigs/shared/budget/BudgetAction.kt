@@ -7,6 +7,7 @@ import com.wbrawner.twigs.shared.Reducer
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.State
 import com.wbrawner.twigs.shared.replace
+import com.wbrawner.twigs.shared.transaction.TransactionAction
 import com.wbrawner.twigs.shared.user.ConfigAction
 import com.wbrawner.twigs.shared.user.UserPermission
 import kotlinx.coroutines.launch
@@ -126,6 +127,17 @@ class BudgetReducer(
         }
 
         is BudgetAction.BudgetSelected -> state().copy(selectedBudget = action.id)
+
+        is TransactionAction.LoadTransactionsSuccess -> {
+            val balance = action.transactions.sumOf {
+                if (it.expense) {
+                    it.amount * -1
+                } else {
+                    it.amount
+                }
+            }
+            state().copy(budgetBalance = balance)
+        }
 
 //        is BudgetAction.UpdateBudget -> state.copy(loading = true).also {
 //            dispatch(action.async())

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 
 sealed class Route(val path: String) {
     object Welcome : Route("welcome")
@@ -36,6 +37,10 @@ data class State(
     val user: User? = null,
     val budgets: List<Budget>? = null,
     val budgetBalance: Long? = null,
+    val actualIncome: Long? = null,
+    val actualExpenses: Long? = null,
+    val expectedIncome: Long? = null,
+    val expectedExpenses: Long? = null,
     val selectedBudget: String? = null,
     val editingBudget: Boolean = false,
     val categories: List<Category>? = null,
@@ -46,6 +51,8 @@ data class State(
     val selectedTransaction: String? = null,
     val selectedTransactionCreatedBy: User? = null,
     val editingTransaction: Boolean = false,
+    val from: Instant = startOfMonth(),
+    val to: Instant = endOfMonth(),
     val recurringTransactions: List<RecurringTransaction>? = null,
     val selectedRecurringTransaction: String? = null,
     val selectedRecurringTransactionCreatedBy: User? = null,
@@ -53,11 +60,7 @@ data class State(
     val loading: Boolean = false,
     val route: Route = Route.Login,
     val initialRoute: Route = Route.Login
-) {
-    override fun toString(): String {
-        return "State(recurringTransactionsSize=${recurringTransactions?.size}, route=$route)"
-    }
-}
+)
 
 interface Action {
     object AboutClicked : Action

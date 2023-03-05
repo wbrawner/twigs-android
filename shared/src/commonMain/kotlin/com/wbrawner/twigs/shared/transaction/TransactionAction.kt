@@ -1,6 +1,7 @@
 package com.wbrawner.twigs.shared.transaction
 
 import com.wbrawner.twigs.shared.Action
+import com.wbrawner.twigs.shared.Effect
 import com.wbrawner.twigs.shared.Reducer
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.State
@@ -25,6 +26,7 @@ sealed interface TransactionAction : Action {
     object TransactionsClicked : TransactionAction
     data class LoadTransactionsSuccess(val transactions: List<Transaction>) : TransactionAction
     data class LoadTransactionsFailed(val error: Exception) : TransactionAction
+    data class ChangeDateRange(val from: Instant, val to: Instant) : TransactionAction
     object NewTransactionClicked : TransactionAction
     data class CreateTransaction(
         val title: String,
@@ -67,6 +69,10 @@ sealed interface TransactionAction : Action {
     ) : TransactionAction
 
     data class DeleteTransaction(val id: String) : TransactionAction
+
+    data class TransactionDeleted(val id: String) : TransactionAction
+
+    data class TransactionDeletedFailure(val id: String) : TransactionAction
 }
 
 class TransactionReducer(
@@ -89,6 +95,24 @@ class TransactionReducer(
 
         is TransactionAction.TransactionsClicked -> state().copy(route = Route.Transactions(null))
         is TransactionAction.LoadTransactionsSuccess -> state().copy(transactions = action.transactions)
+        is TransactionAction.ChangeDateRange -> state().copy(
+            from = action.from,
+            to = action.to
+        ).also {
+            launch {
+                try {
+                    val transactions = transactionRepository.findAll(
+                        budgetIds = listOf(it.selectedBudget!!),
+                        start = it.from,
+                        end = it.to,
+                    )
+                    dispatch(TransactionAction.LoadTransactionsSuccess(transactions))
+                } catch (e: Exception) {
+                    dispatch(TransactionAction.LoadTransactionsFailed(e))
+                }
+            }
+        }
+
         is TransactionAction.NewTransactionClicked -> state().copy(editingTransaction = true)
         is TransactionAction.CancelEditTransaction -> {
             val currentState = state()
@@ -147,25 +171,30 @@ class TransactionReducer(
             val transactions = currentState.transactions?.toMutableList() ?: mutableListOf()
             transactions.replace(action.transaction)
             transactions.sortByDescending { it.date }
+            dispatch(TransactionAction.LoadTransactionsSuccess(transactions))
             currentState.copy(
                 loading = false,
                 transactions = transactions.toList(),
                 selectedTransaction = action.transaction.id,
                 selectedTransactionCreatedBy = currentState.user,
+                route = Route.Transactions(action.transaction.id),
                 editingTransaction = false
             )
         }
 
-        is BudgetAction.BudgetSelected -> {
+        is BudgetAction.BudgetSelected -> state().copy(transactions = null).also {
             launch {
                 try {
-                    val transactions = transactionRepository.findAll(budgetIds = listOf(action.id))
+                    val transactions = transactionRepository.findAll(
+                        start = it.from,
+                        end = it.to,
+                        budgetIds = listOf(action.id)
+                    )
                     dispatch(TransactionAction.LoadTransactionsSuccess(transactions))
                 } catch (e: Exception) {
                     dispatch(TransactionAction.LoadTransactionsFailed(e))
                 }
             }
-            state().copy(transactions = null)
         }
 
         is ConfigAction.Logout -> state().copy(
@@ -197,6 +226,32 @@ class TransactionReducer(
             selectedTransaction = action.transaction.id,
             selectedTransactionCreatedBy = action.createdBy
         )
+
+        is TransactionAction.DeleteTransaction -> state().copy(loading = true).also {
+            launch {
+                try {
+                    transactionRepository.delete(action.id)
+                    dispatch(TransactionAction.TransactionDeleted(action.id))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    dispatch(TransactionAction.TransactionDeletedFailure(action.id))
+                }
+            }
+        }
+
+        is TransactionAction.TransactionDeleted -> {
+            val currentState = state()
+            currentState.copy(
+                transactions = currentState.transactions?.filter { it.id != action.id },
+                selectedTransaction = if (currentState.selectedTransaction == action.id) null else currentState.selectedTransaction,
+                editingTransaction = if (currentState.selectedTransaction == action.id) false else currentState.editingTransaction,
+                route = if (currentState.selectedTransaction == action.id) Route.Transactions() else currentState.route,
+            )
+        }
+
+        is TransactionAction.TransactionDeletedFailure -> state().also {
+            emit(Effect.Error("Failed to delete transaction"))
+        }
 
         else -> state()
     }

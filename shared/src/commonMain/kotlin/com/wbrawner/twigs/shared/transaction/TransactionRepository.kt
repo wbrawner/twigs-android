@@ -10,8 +10,8 @@ interface TransactionRepository : Repository<Transaction> {
     suspend fun findAll(
         budgetIds: List<String>? = null,
         categoryIds: List<String>? = null,
-        start: Instant? = startOfMonth(),
-        end: Instant? = endOfMonth()
+        start: Instant,
+        end: Instant
     ): List<Transaction>
 }
 
@@ -19,16 +19,21 @@ class NetworkTransactionRepository(private val apiService: APIService) : Transac
     override suspend fun findAll(
         budgetIds: List<String>?,
         categoryIds: List<String>?,
-        start: Instant?,
-        end: Instant?
+        start: Instant,
+        end: Instant
     ): List<Transaction> = apiService.getTransactions(
-        budgetIds,
-        categoryIds,
-        from = start.toString(),
-        to = end.toString()
+        budgetIds = budgetIds,
+        categoryIds = categoryIds,
+        from = start,
+        to = end
     )
 
-    override suspend fun findAll(): List<Transaction> = findAll(null, null)
+    override suspend fun findAll(): List<Transaction> = findAll(
+        start = startOfMonth(),
+        end = endOfMonth(),
+        budgetIds = null,
+        categoryIds = null
+    )
 
     override suspend fun create(newItem: Transaction): Transaction =
         apiService.newTransaction(newItem)

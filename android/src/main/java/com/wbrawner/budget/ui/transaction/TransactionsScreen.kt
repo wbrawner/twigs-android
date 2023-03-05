@@ -5,7 +5,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,37 +36,36 @@ import java.text.NumberFormat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(store: Store) {
+    val state by store.state.collectAsState()
+    val budget = state.selectedBudget?.let { id -> state.budgets?.first { it.id == id } }
     TwigsScaffold(
         store = store,
-        title = "Transactions",
+        title = budget?.name ?: "Select a Budget",
         onClickFab = {
             store.dispatch(TransactionAction.NewTransactionClicked)
         }
     ) {
-        val state by store.state.collectAsState()
         state.transactions?.let { transactions ->
-            val transactionGroups = remember { transactions.groupByDate() }
-            LazyColumn(
+            val transactionGroups =
+                remember(state.editingTransaction) { transactions.groupByDate() }
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
-                    .padding(horizontal = 8.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
                 transactionGroups.forEach { (timestamp, transactions) ->
-                    item(timestamp) {
-                        Text(
-                            modifier = Modifier.padding(8.dp),
-                            text = timestamp.toInstant().format(LocalContext.current),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    item(transactions) {
-                        Card {
-                            transactions.forEach { transaction ->
-                                TransactionListItem(transaction) {
-                                    store.dispatch(TransactionAction.SelectTransaction(transaction.id))
-                                }
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = timestamp.toInstant().format(LocalContext.current),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Card {
+                        transactions.forEach { transaction ->
+                            TransactionListItem(transaction) {
+                                store.dispatch(TransactionAction.SelectTransaction(transaction.id))
                             }
                         }
                     }
@@ -106,7 +105,7 @@ fun TransactionListItem(transaction: Transaction, onClick: (Transaction) -> Unit
         }
         Text(
             transaction.amount.toCurrencyString(),
-            color = if (transaction.expense) Color.Red else Color.Green,
+            color = if (transaction.expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
         )
     }
 }
