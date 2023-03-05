@@ -70,6 +70,7 @@ fun CategoryForm(store: Store) {
     val (description, setDescription) = remember { mutableStateOf(category.description ?: "") }
     val (amount, setAmount) = remember { mutableStateOf(category.amount.toDecimalString()) }
     val (expense, setExpense) = remember { mutableStateOf(category.expense) }
+    val (archived, setArchived) = remember { mutableStateOf(category.archived) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -94,6 +95,8 @@ fun CategoryForm(store: Store) {
             setAmount = setAmount,
             expense = expense,
             setExpense = setExpense,
+            archived = archived,
+            setArchived = setArchived
         ) {
             store.dispatch(
                 category.id?.let { id ->
@@ -103,12 +106,14 @@ fun CategoryForm(store: Store) {
                         description = description,
                         amount = (amount.toDouble() * 100).toLong(),
                         expense = expense,
+                        archived = archived
                     )
                 } ?: CategoryAction.CreateCategory(
                     title = title,
                     description = description,
                     amount = (amount.toDouble() * 100).toLong(),
                     expense = expense,
+                    archived = archived
                 )
             )
         }
@@ -127,6 +132,8 @@ fun CategoryForm(
     setAmount: (String) -> Unit,
     expense: Boolean,
     setExpense: (Boolean) -> Unit,
+    archived: Boolean,
+    setArchived: (Boolean) -> Unit,
     save: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -238,6 +245,15 @@ fun CategoryForm(
                 RadioButton(selected = !expense, onClick = { setExpense(false) })
                 Text(text = "Income")
             }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { setArchived(!archived) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(checked = archived, onCheckedChange = { setArchived(!archived) })
+            Text("Archived")
         }
         Button(
             modifier = Modifier.fillMaxWidth(),

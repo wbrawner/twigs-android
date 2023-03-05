@@ -1,6 +1,7 @@
 package com.wbrawner.budget.ui
 
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -35,6 +36,7 @@ import com.wbrawner.budget.ui.recurringtransaction.RecurringTransactionDetailsSc
 import com.wbrawner.budget.ui.recurringtransaction.RecurringTransactionsScreen
 import com.wbrawner.budget.ui.transaction.TransactionDetailsScreen
 import com.wbrawner.budget.ui.transaction.TransactionsScreen
+import com.wbrawner.twigs.shared.Action
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.Store
 import com.wbrawner.twigs.shared.budget.BudgetAction
@@ -63,6 +65,9 @@ class MainActivity : AppCompatActivity() {
             }
             TwigsApp {
                 val authViewModel: AuthViewModel = hiltViewModel()
+                BackHandler {
+                    store.dispatch(Action.Back)
+                }
                 NavHost(navController, state.initialRoute.path) {
                     composable(Route.Login.path) {
                         LoginScreen(store = store, viewModel = authViewModel)

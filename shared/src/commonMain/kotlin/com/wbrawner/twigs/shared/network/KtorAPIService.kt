@@ -21,6 +21,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.URLBuilder
 import io.ktor.http.contentType
 import io.ktor.http.path
+import kotlinx.datetime.Instant
 
 class KtorAPIService(
     private val client: HttpClient
@@ -84,10 +85,10 @@ class KtorAPIService(
     )
 
     override suspend fun getTransactions(
+        from: Instant,
+        to: Instant,
         budgetIds: List<String>?,
         categoryIds: List<String>?,
-        from: String?,
-        to: String?,
         count: Int?,
         page: Int?
     ): List<Transaction> = request(
@@ -95,8 +96,8 @@ class KtorAPIService(
         queryParams = listOf(
             "budgetIds" to budgetIds,
             "categoryIds" to categoryIds,
-            "from" to from,
-            "to" to to,
+            "from" to from.toString(),
+            "to" to to.toString(),
             "count" to count,
             "page" to page,
         )
@@ -104,12 +105,19 @@ class KtorAPIService(
 
     override suspend fun getTransaction(id: String): Transaction = request("transactions/$id")
 
-    override suspend fun sumTransactions(budgetId: String?, categoryId: String?): BalanceResponse =
+    override suspend fun sumTransactions(
+        from: Instant,
+        to: Instant,
+        budgetId: String?,
+        categoryId: String?
+    ): BalanceResponse =
         request(
             path = "transactions/sum",
             queryParams = listOf(
                 "budgetId" to budgetId,
-                "categoryId" to categoryId
+                "categoryId" to categoryId,
+                "from" to from.toString(),
+                "to" to to.toString(),
             )
         )
 

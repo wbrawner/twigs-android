@@ -9,15 +9,16 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wbrawner.budget.ui.TwigsScaffold
@@ -46,6 +47,7 @@ fun TransactionDetailsScreen(store: Store) {
     }
     val category = state.categories?.firstOrNull { it.id == transaction.categoryId }
     val budget = state.budgets!!.first { it.id == transaction.budgetId }
+    val (confirmDeletionShown, setConfirmDeletionShown) = remember { mutableStateOf(false) }
 
     TwigsScaffold(
         store = store,
@@ -59,6 +61,9 @@ fun TransactionDetailsScreen(store: Store) {
             IconButton({ store.dispatch(TransactionAction.EditTransaction(requireNotNull(transaction.id))) }) {
                 Icon(Icons.Default.Edit, "Edit")
             }
+            IconButton({ setConfirmDeletionShown(true) }) {
+                Icon(Icons.Default.Delete, "Delete")
+            }
         }
     ) { padding ->
         TransactionDetails(
@@ -70,6 +75,35 @@ fun TransactionDetailsScreen(store: Store) {
         )
         if (state.editingTransaction) {
             TransactionFormDialog(store = store)
+        }
+        if (confirmDeletionShown) {
+            AlertDialog(
+                text = {
+                    Text("Are you sure you want to delete this transaction?")
+                },
+                onDismissRequest = { setConfirmDeletionShown(false) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        setConfirmDeletionShown(false)
+                        store.dispatch(
+                            TransactionAction.DeleteTransaction(
+                                requireNotNull(
+                                    transaction.id
+                                )
+                            )
+                        )
+                    }) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        setConfirmDeletionShown(false)
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }
@@ -107,7 +141,7 @@ fun TransactionDetails(
             Text(
                 text = transaction.amount.toCurrencyString(),
                 style = MaterialTheme.typography.headlineSmall,
-                color = if (transaction.expense) Color.Red else Color.Green
+                color = if (transaction.expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
             )
         }
         LabeledField("Description", transaction.description ?: "")

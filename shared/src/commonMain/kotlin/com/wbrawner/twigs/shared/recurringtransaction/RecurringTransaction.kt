@@ -89,7 +89,7 @@ sealed class Frequency {
         override fun toString(): String = "M;$count;$dayOfMonth;$time"
         override val name: String = "Monthly"
         override val description: String
-            get() = if (count == 1) "Every month on ${dayOfMonth.description}"
+            get() = if (count == 1) "Every month on the ${dayOfMonth.description}"
             else "Every $count months on ${dayOfMonth.description}"
 
         companion object {
@@ -163,8 +163,7 @@ sealed class DayOfMonth {
     }
 
     data class FixedDayOfMonth(val day: Int) : DayOfMonth() {
-        override val description: String
-            get() = "$day"
+        override val description: String = day.ordinalString
 
         override fun toString(): String = "DAY-$day"
     }
@@ -200,7 +199,7 @@ val Enum<*>.capitalizedName: String
 class DayOfYear private constructor(val month: Int, val day: Int) {
 
     val description: String
-        get() = "${month.toMonth().capitalizedName} $day"
+        get() = "${month.toMonth().capitalizedName} ${day.ordinalString}"
 
     override fun toString(): String {
         return "${month.padStart(2, '0')}-${day.padStart(2, '0')}"
@@ -227,6 +226,14 @@ class DayOfYear private constructor(val month: Int, val day: Int) {
 }
 
 fun Int.toMonth(): Month = Month(this)
+
+val Int.ordinalString: String
+    get() = when {
+        mod(1) == 0 -> "${this}st"
+        mod(2) == 0 -> "${this}nd"
+        mod(3) == 0 -> "${this}rd"
+        else -> "${this}th"
+    }
 
 data class Time(val hours: Int, val minutes: Int, val seconds: Int) {
     override fun toString(): String {

@@ -2,10 +2,11 @@ package com.wbrawner.twigs.shared.category
 
 import com.wbrawner.twigs.shared.Repository
 import com.wbrawner.twigs.shared.network.APIService
+import kotlinx.datetime.Instant
 
 interface CategoryRepository : Repository<Category> {
     suspend fun findAll(budgetIds: Array<String>? = null): List<Category>
-    suspend fun getBalance(id: String): Long
+    suspend fun getBalance(id: String, from: Instant, to: Instant): Long
 }
 
 class NetworkCategoryRepository(private val apiService: APIService) : CategoryRepository {
@@ -14,8 +15,8 @@ class NetworkCategoryRepository(private val apiService: APIService) : CategoryRe
 
     override suspend fun findAll(): List<Category> = findAll(null)
 
-    override suspend fun getBalance(id: String): Long =
-        apiService.sumTransactions(categoryId = id).balance
+    override suspend fun getBalance(id: String, from: Instant, to: Instant): Long =
+        apiService.sumTransactions(categoryId = id, from = from, to = to).balance
 
     override suspend fun create(newItem: Category): Category = apiService.newCategory(newItem)
 

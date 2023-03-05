@@ -2,9 +2,10 @@ package com.wbrawner.twigs.shared.budget
 
 import com.wbrawner.twigs.shared.Repository
 import com.wbrawner.twigs.shared.network.APIService
+import kotlinx.datetime.Instant
 
 interface BudgetRepository : Repository<Budget> {
-    suspend fun getBalance(id: String): Long
+    suspend fun getBalance(id: String, from: Instant, to: Instant): Long
 }
 
 class NetworkBudgetRepository(private val apiService: APIService) : BudgetRepository {
@@ -19,6 +20,6 @@ class NetworkBudgetRepository(private val apiService: APIService) : BudgetReposi
 
     override suspend fun delete(id: String) = apiService.deleteBudget(id)
 
-    override suspend fun getBalance(id: String): Long =
-        apiService.sumTransactions(budgetId = id).balance
+    override suspend fun getBalance(id: String, from: Instant, to: Instant): Long =
+        apiService.sumTransactions(budgetId = id, from = from, to = to).balance
 }
