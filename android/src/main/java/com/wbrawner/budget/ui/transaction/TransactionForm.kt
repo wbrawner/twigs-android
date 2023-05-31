@@ -111,7 +111,8 @@ fun TransactionForm(store: Store) {
             setAmount = setAmount,
             expense = expense,
             setExpense = setExpense,
-            categories = state.categories?.filter { c -> c.expense == expense } ?: emptyList(),
+            categories = state.categories?.filter { c -> c.expense == expense && !c.archived }
+                ?: emptyList(),
             category = category,
             setCategory = setCategory
         ) {
