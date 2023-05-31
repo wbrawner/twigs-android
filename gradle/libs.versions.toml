@@ -1,38 +1,39 @@
 [versions]
 androidx-core = "1.9.0"
-androidx-appcompat = "1.5.1"
+androidx-appcompat = "1.6.1"
 androidx-splash = "1.0.0"
-androidx-test-runner = "1.5.1"
+androidx-test-runner = "1.5.2"
 androidx-test-orchestrator = "1.4.2"
-compose = "1.3.1"
-compose-compiler = "1.3.2"
-compose-material3 = "1.0.1"
-espresso = "3.3.0"
+compose = "1.3.3"
+compose-compiler = "1.4.3"
+compose-material = "1.3.1"
+compose-material3 = "1.1.0-alpha07"
+espresso = "3.5.1"
 hilt-android = "2.44"
-kotlin = "1.7.20"
+kotlin = "1.8.10"
 kotlinx-serialization = "1.4.1"
 kotlinx-coroutines = "1.6.4"
 kotlinx-datetime = "0.4.0"
-ktor = "2.1.2"
-material = "1.3.0"
+ktor = "2.2.3"
+material = "1.8.0"
 maxSdk = "33"
 minSdk = "26"
-navigation = "2.4.1"
+navigation = "2.5.3"
 okhttp = "4.2.2"
 settings = "0.8.1"
 versionCode = "1"
 versionName = "1.0"
 
 [libraries]
-android-gradle = { module = "com.android.tools.build:gradle", version = "7.4.0" }
+android-gradle = { module = "com.android.tools.build:gradle", version = "7.4.2" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test-orchestrator" }
-compose-activity = { module = "androidx.activity:activity-compose", version = "1.6.0" }
-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
+compose-activity = { module = "androidx.activity:activity-compose", version = "1.6.1" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
+compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose-material" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-material3-window = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
 compose-test-junit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
@@ -45,10 +46,11 @@ hilt-android-core = { module = "com.google.dagger:hilt-android", version.ref = "
 hilt-android-kapt = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-android" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0" }
-junit = { module = "junit:junit", version = "4.12" }
+junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
@@ -66,8 +68,8 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg
 navigation-compose = { module = "androidx.navigation:navigation-compose", version = "navigation" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
-preference = { module = "androidx.preference:preference-ktx", version = "1.1.1" }
-test-ext = { module = "androidx.test.ext:junit", version = "1.1.2" }
+preference = { module = "androidx.preference:preference-ktx", version = "1.2.0" }
+test-ext = { module = "androidx.test.ext:junit", version = "1.1.5" }
 
 [bundles]
 compose = [
