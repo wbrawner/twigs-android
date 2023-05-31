@@ -6,14 +6,23 @@ import com.wbrawner.twigs.shared.Action
 import com.wbrawner.twigs.shared.Reducer
 import com.wbrawner.twigs.shared.Route
 import com.wbrawner.twigs.shared.State
+import com.wbrawner.twigs.shared.endOfMonth
 import com.wbrawner.twigs.shared.replace
+import com.wbrawner.twigs.shared.startOfMonth
 import com.wbrawner.twigs.shared.transaction.TransactionAction
 import com.wbrawner.twigs.shared.user.ConfigAction
 import com.wbrawner.twigs.shared.user.UserPermission
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 sealed interface BudgetAction : Action {
     object OverviewClicked : BudgetAction
+    data class SetDateRange(val month: Month, val year: Int) : BudgetAction
     data class LoadBudgetsSuccess(val budgets: List<Budget>) : BudgetAction
     data class LoadBudgetsFailed(val error: Exception) : BudgetAction
     data class CreateBudget(
@@ -79,6 +88,20 @@ class BudgetReducer(
                 dispatch(BudgetAction.SaveBudgetSuccess(budget))
             }
             state().copy(loading = true)
+        }
+
+        is BudgetAction.SetDateRange -> {
+            val now = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+            val month = LocalDateTime(action.year, action.month, now.dayOfMonth, 0, 0)
+                .toInstant(TimeZone.UTC)
+            val from = startOfMonth(month)
+            val to = endOfMonth(month)
+            state().copy(
+                from = from,
+                to = to
+            ).also {
+                dispatch(BudgetAction.BudgetSelected(it.selectedBudget!!))
+            }
         }
 
         is BudgetAction.SaveBudgetSuccess -> {
