@@ -2,14 +2,15 @@ package com.wbrawner.budget.ui.transaction
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
 import java.text.NumberFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionsScreen(store: Store) {
     val state by store.state.collectAsState()
@@ -48,25 +49,29 @@ fun TransactionsScreen(store: Store) {
         state.transactions?.let { transactions ->
             val transactionGroups =
                 remember(state.editingTransaction) { transactions.groupByDate() }
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)
-                    .verticalScroll(rememberScrollState())
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
                 transactionGroups.forEach { (timestamp, transactions) ->
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = timestamp.toInstant().format(LocalContext.current),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Card {
-                        transactions.forEach { transaction ->
-                            TransactionListItem(transaction) {
-                                store.dispatch(TransactionAction.SelectTransaction(transaction.id))
-                            }
+                    item {
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = timestamp.toInstant().format(LocalContext.current),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    itemsIndexed(transactions) { index, transaction ->
+                        TransactionListItem(
+                            modifier = Modifier.animateItemPlacement(),
+                            transaction,
+                            index == 0,
+                            index == transactions.lastIndex
+                        ) {
+                            store.dispatch(TransactionAction.SelectTransaction(transaction.id))
                         }
                     }
                 }
@@ -81,9 +86,26 @@ fun TransactionsScreen(store: Store) {
 }
 
 @Composable
-fun TransactionListItem(transaction: Transaction, onClick: (Transaction) -> Unit) {
+fun TransactionListItem(
+    modifier: Modifier = Modifier,
+    transaction: Transaction,
+    isFirst: Boolean,
+    isLast: Boolean,
+    onClick: (Transaction) -> Unit
+) {
+    val top = if (isFirst) MaterialTheme.shapes.medium.topStart else CornerSize(0.dp)
+    val bottom = if (isLast) MaterialTheme.shapes.medium.bottomStart else CornerSize(0.dp)
     Row(
-        modifier = Modifier
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = top,
+                    topEnd = top,
+                    bottomStart = bottom,
+                    bottomEnd = bottom
+                )
+            )
             .fillMaxWidth()
             .clickable { onClick(transaction) }
             .padding(8.dp)
@@ -124,7 +146,9 @@ fun TransactionListItem_Preview() {
                 budgetId = "budgetId",
                 expense = true,
                 createdBy = "createdBy"
-            )
+            ),
+            isFirst = true,
+            isLast = true
         ) {}
     }
 }
