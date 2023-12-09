@@ -2,9 +2,12 @@ package com.wbrawner.budget.ui.category
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -75,6 +78,7 @@ fun CategoryDetailsScreen(store: Store) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryDetails(
     modifier: Modifier = Modifier,
@@ -115,12 +119,14 @@ fun CategoryDetails(
                     fontWeight = FontWeight.Bold
                 )
             }
-            item(transactions) {
-                Card {
-                    transactions.forEach { transaction ->
-                        TransactionListItem(transaction, onTransactionClicked)
-                    }
-                }
+            itemsIndexed(transactions) { index, transaction ->
+                TransactionListItem(
+                    modifier = Modifier.animateItemPlacement(),
+                    transaction = transaction,
+                    isFirst = index == 0,
+                    isLast = index == transactions.lastIndex,
+                    onClick = onTransactionClicked
+                )
             }
         }
     }
