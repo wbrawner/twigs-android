@@ -23,6 +23,7 @@ try {
 }
 
 android {
+    namespace = "com.wbrawner.twigs.android"
     compileSdk = libs.versions.maxSdk.get().toInt()
     defaultConfig {
         applicationId = "com.wbrawner.twigs"
@@ -52,11 +53,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = project.ext["jvm"] as JavaVersion
+        targetCompatibility = project.ext["jvm"] as JavaVersion
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = (project.ext["jvm"] as JavaVersion).majorVersion
     }
     buildFeatures {
         compose = true
