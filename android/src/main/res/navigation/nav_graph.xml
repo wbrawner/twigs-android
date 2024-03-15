@@ -6,7 +6,7 @@
     app:startDestination="@id/overviewFragment">
     <fragment
         android:id="@+id/categoryListFragment"
-        android:name="com.wbrawner.budget.ui.categories.CategoryListFragment"
+        android:name="com.wbrawner.twigs.ui.categories.CategoryListFragment"
         android:label="Categories"
         tools:layout="@layout/fragment_transaction_list">
         <action
@@ -18,12 +18,12 @@
     </fragment>
     <fragment
         android:id="@+id/transactionListFragment"
-        android:name="com.wbrawner.budget.ui.transactions.TransactionListFragment"
+        android:name="com.wbrawner.twigs.ui.transactions.TransactionListFragment"
         android:label="@string/title_transactions"
         tools:layout="@layout/fragment_transaction_list" />
     <fragment
         android:id="@+id/budgetsFragment"
-        android:name="com.wbrawner.budget.ui.budgets.BudgetListFragment"
+        android:name="com.wbrawner.twigs.ui.budgets.BudgetListFragment"
         android:label="@string/title_budgets"
         tools:layout="@layout/fragment_list_with_add_button">
         <action
@@ -32,31 +32,31 @@
     </fragment>
     <fragment
         android:id="@+id/addEditBudget"
-        android:name="com.wbrawner.budget.ui.budgets.AddEditBudgetFragment"
+        android:name="com.wbrawner.twigs.ui.budgets.AddEditBudgetFragment"
         android:label="@string/title_add_budget"
         tools:layout="@layout/fragment_add_edit_budget" />
     <fragment
         android:id="@+id/overviewFragment"
-        android:name="com.wbrawner.budget.ui.overview.OverviewFragment"
+        android:name="com.wbrawner.twigs.ui.overview.OverviewFragment"
         android:label="@string/title_overview"
         tools:layout="@layout/fragment_overview" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.wbrawner.budget.ui.profile.ProfileFragment"
+        android:name="com.wbrawner.twigs.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.wbrawner.budget.ui.categories.CategoryDetailsFragment"
+        android:name="com.wbrawner.twigs.ui.categories.CategoryDetailsFragment"
         android:label="fragment_category"
         tools:layout="@layout/fragment_list_with_add_button" />
     <activity
         android:id="@+id/addEditTransactionActivity"
-        android:name="com.wbrawner.budget.ui.transactions.TransactionFormActivity"
+        android:name="com.wbrawner.twigs.ui.transactions.TransactionFormActivity"
         android:label="AddEditTransactionActivity" />
     <activity
         android:id="@+id/addEditCategoryActivity"
-        android:name="com.wbrawner.budget.ui.categories.CategoryFormActivity"
+        android:name="com.wbrawner.twigs.ui.categories.CategoryFormActivity"
         android:label="@string/title_add_category" >
         <argument
             android:name="categoryId"

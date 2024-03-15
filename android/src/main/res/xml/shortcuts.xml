@@ -9,8 +9,8 @@
         tools:ignore="UnusedAttribute">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.wbrawner.budget"
-            android:targetClass="com.wbrawner.budget.ui.transactions.TransactionFormActivity">
+            android:targetPackage="com.wbrawner.twigs"
+            android:targetClass="com.wbrawner.twigs.ui.transactions.TransactionFormActivity">
         </intent>
     </shortcut>
 </shortcuts>

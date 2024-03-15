@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget()
     listOf(iosArm64(), iosSimulatorArm64()).forEach {
         it.binaries.framework {
             baseName = "Twigs"
@@ -56,15 +56,15 @@ android {
     compileSdk = libs.versions.maxSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.maxSdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = project.ext["jvm"] as JavaVersion
+        targetCompatibility = project.ext["jvm"] as JavaVersion
     }
     buildTypes {
         release {
             consumerProguardFiles("proguard-rules.pro")
         }
     }
+    namespace = "com.wbrawner.twigs.android"
 }

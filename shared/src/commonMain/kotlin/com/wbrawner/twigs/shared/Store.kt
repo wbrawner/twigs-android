@@ -7,6 +7,7 @@ import com.wbrawner.twigs.shared.transaction.Transaction
 import com.wbrawner.twigs.shared.user.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -84,7 +85,7 @@ abstract class Reducer : CoroutineScope by CoroutineScope(Dispatchers.Main) {
 class Store(
     private val reducers: List<Reducer>,
     initialState: State = State()
-) : CoroutineScope by CoroutineScope(Dispatchers.Main) {
+) : CoroutineScope by CoroutineScope(Dispatchers.IO) {
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state
     private val _effects = MutableSharedFlow<Effect>()
@@ -112,7 +113,6 @@ class Store(
     }
 
     fun dispatch(action: Action) {
-        println(action)
         launch {
             var newState = _state.value
             reducers.forEach {
