@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -121,13 +121,11 @@ fun CategoryListItem(category: Category, balance: Long?, onClick: (Category) -> 
             Spacer(modifier = Modifier.height(8.dp))
             balance?.let {
                 val denominator = remember { max(abs(it), abs(category.amount)).toFloat() }
-                val progress =
-                    remember { if (denominator == 0f) 0f else abs(it).toFloat() / denominator }
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(4.dp)),
-                    progress = progress,
+                    progress = { if (denominator == 0f) 0f else abs(it).toFloat() / denominator },
                     color = if (category.expense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                     trackColor = Color.LightGray
                 )
