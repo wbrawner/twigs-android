@@ -2,11 +2,12 @@ package com.wbrawner.twigs.shared
 
 import com.wbrawner.twigs.shared.budget.Budget
 import com.wbrawner.twigs.shared.budget.BudgetRepository
+import kotlinx.datetime.Instant
 
 class FakeBudgetRepository: BudgetRepository {
     val budgets = mutableListOf<Budget>()
 
-    override suspend fun getBalance(id: String): Long {
+    override suspend fun getBalance(id: String, from: Instant, to: Instant): Long {
         return 0
     }
 
