@@ -3,6 +3,10 @@ name: Test
 on:
   pull_request:
 
+permissions:
+  statuses: write
+  checks: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
