@@ -18,7 +18,7 @@ ktor = "2.3.9"
 material = "1.11.0"
 maxSdk = "34"
 minSdk = "26"
-settings = "0.8.1"
+settings = "1.1.1"
 versionCode = "1"
 versionName = "1.0"
 
