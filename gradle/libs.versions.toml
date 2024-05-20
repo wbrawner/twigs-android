@@ -24,7 +24,7 @@ versionCode = "1"
 versionName = "1.0"
 
 [libraries]
-android-gradle = { module = "com.android.tools.build:gradle", version = "8.4.0" }
+android-gradle = { module = "com.android.tools.build:gradle", version = "8.4.1" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
