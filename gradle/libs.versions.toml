@@ -67,7 +67,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "settings" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 preference = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
-test-ext = { module = "androidx.test.ext:junit", version = "1.1.5" }
+test-ext = { module = "androidx.test.ext:junit", version = "1.2.1" }
 
 [bundles]
 compose = [
